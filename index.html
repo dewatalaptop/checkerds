@@ -1,1 +1,392 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pemesanan Barang</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .input-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        select, input, button {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.copy-btn {
+            background-color: #2196F3;
+        }
+        button.copy-btn:hover {
+            background-color: #0b7dda;
+        }
+        button.email-btn {
+            background-color: #ff9800;
+        }
+        button.email-btn:hover {
+            background-color: #e68a00;
+        }
+        .category {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .item-list {
+            margin-top: 10px;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            .input-section, button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aplikasi Pemesanan Barang</h1>
+        
+        <div class="input-section">
+            <h2>Input Pesanan</h2>
+            <select id="category-select">
+                <option value="elektronik">Elektronik</option>
+                <option value="perabotan">Perabotan</option>
+                <option value="alat_tulis">Alat Tulis</option>
+                <option value="lainnya">Lainnya</option>
+            </select>
+            
+            <select id="item-select">
+                <!-- Items will be populated by JavaScript -->
+            </select>
+            
+            <input type="number" id="quantity" placeholder="Jumlah" min="1" value="1">
+            <button onclick="addItem()">Tambah Pesanan</button>
+        </div>
+        
+        <div id="output-section">
+            <h2>Daftar Pesanan</h2>
+            <div id="categories-container">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="email-btn" onclick="printOrders()">Cetak untuk Email</button>
+            <button onclick="clearAll()">Hapus Semua</button>
+        </div>
+    </div>
+
+    <script>
+        // Data barang berdasarkan kategori
+        const itemsData = {
+            elektronik: [
+                "Laptop",
+                "Smartphone",
+                "Tablet",
+                "Monitor",
+                "Printer"
+            ],
+            perabotan: [
+                "Meja",
+                "Kursi",
+                "Lemari",
+                "Rak Buku",
+                "Sofa"
+            ],
+            alat_tulis: [
+                "Pensil",
+                "Pulpen",
+                "Buku Tulis",
+                "Penggaris",
+                "Stapler"
+            ],
+            lainnya: [
+                "Kipas Angin",
+                "Lampu",
+                "Jam Dinding",
+                "Tas",
+                "Payung"
+            ]
+        };
+
+        // Data pesanan disimpan di sini
+        let orders = {
+            elektronik: {},
+            perabotan: {},
+            alat_tulis: {},
+            lainnya: {}
+        };
+
+        // Inisialisasi aplikasi
+        document.addEventListener('DOMContentLoaded', function() {
+            populateItemSelect();
+            loadFromLocalStorage();
+            renderOrders();
+        });
+
+        // Mengisi dropdown item berdasarkan kategori yang dipilih
+        function populateItemSelect() {
+            const categorySelect = document.getElementById('category-select');
+            const itemSelect = document.getElementById('item-select');
+            
+            const selectedCategory = categorySelect.value;
+            itemSelect.innerHTML = '';
+            
+            itemsData[selectedCategory].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                itemSelect.appendChild(option);
+            });
+        }
+
+        // Event listener untuk perubahan kategori
+        document.getElementById('category-select').addEventListener('change', populateItemSelect);
+
+        // Menambahkan item ke pesanan
+        function addItem() {
+            const categorySelect = document.getElementById('category-select');
+            const itemSelect = document.getElementById('item-select');
+            const quantityInput = document.getElementById('quantity');
+            
+            const category = categorySelect.value;
+            const item = itemSelect.value;
+            const quantity = parseInt(quantityInput.value);
+            
+            if (isNaN(quantity) || quantity < 1) {
+                alert('Masukkan jumlah yang valid');
+                return;
+            }
+            
+            // Tambahkan ke pesanan
+            if (orders[category][item]) {
+                orders[category][item] += quantity;
+            } else {
+                orders[category][item] = quantity;
+            }
+            
+            // Simpan ke localStorage
+            saveToLocalStorage();
+            
+            // Render ulang daftar pesanan
+            renderOrders();
+            
+            // Reset quantity
+            quantityInput.value = 1;
+        }
+
+        // Render daftar pesanan
+        function renderOrders() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = '';
+            
+            for (const category in orders) {
+                if (Object.keys(orders[category]).length > 0) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'category';
+                    
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.textContent = formatCategoryName(category);
+                    
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'copy-btn';
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.onclick = () => copyCategory(category);
+                    
+                    const titleContainer = document.createElement('div');
+                    titleContainer.style.display = 'flex';
+                    titleContainer.style.justifyContent = 'space-between';
+                    titleContainer.style.alignItems = 'center';
+                    titleContainer.appendChild(categoryTitle);
+                    titleContainer.appendChild(copyBtn);
+                    
+                    categoryDiv.appendChild(titleContainer);
+                    
+                    const itemList = document.createElement('div');
+                    itemList.className = 'item-list';
+                    
+                    for (const item in orders[category]) {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'item';
+                        
+                        const itemName = document.createElement('span');
+                        itemName.textContent = item;
+                        
+                        const itemQuantity = document.createElement('span');
+                        itemQuantity.textContent = orders[category][item] + ' pcs';
+                        
+                        itemDiv.appendChild(itemName);
+                        itemDiv.appendChild(itemQuantity);
+                        itemList.appendChild(itemDiv);
+                    }
+                    
+                    categoryDiv.appendChild(itemList);
+                    container.appendChild(categoryDiv);
+                }
+            }
+        }
+
+        // Format nama kategori untuk ditampilkan
+        function formatCategoryName(category) {
+            return category.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+
+        // Copy isi kategori ke clipboard
+        function copyCategory(category) {
+            let textToCopy = formatCategoryName(category) + ":\n";
+            
+            for (const item in orders[category]) {
+                textToCopy += `- ${item}: ${orders[category][item]} pcs\n`;
+            }
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Kategori berhasil disalin ke clipboard!');
+            }).catch(err => {
+                console.error('Gagal menyalin: ', err);
+                // Fallback untuk browser yang tidak mendukung clipboard API
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Kategori berhasil disalin ke clipboard!');
+            });
+        }
+
+        // Cetak pesanan untuk dikirim via email
+        function printOrders() {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Daftar Pesanan</title>
+                    <style>
+                        body { font-family: Arial; margin: 0; padding: 20px; }
+                        h1 { text-align: center; }
+                        .category { margin-bottom: 20px; }
+                        .item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                        @page { size: A4; margin: 15mm; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Daftar Pesanan</h1>
+            `);
+            
+            for (const category in orders) {
+                if (Object.keys(orders[category]).length > 0) {
+                    printWindow.document.write(`
+                        <div class="category">
+                            <h3>${formatCategoryName(category)}</h3>
+                    `);
+                    
+                    for (const item in orders[category]) {
+                        printWindow.document.write(`
+                            <div class="item">
+                                <span>${item}</span>
+                                <span>${orders[category][item]} pcs</span>
+                            </div>
+                        `);
+                    }
+                    
+                    printWindow.document.write('</div>');
+                }
+            }
+            
+            printWindow.document.write(`
+                <div style="margin-top: 30px; text-align: center; font-style: italic;">
+                    Dokumen ini dicetak pada ${new Date().toLocaleString()}
+                </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+
+        // Hapus semua pesanan
+        function clearAll() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua pesanan?')) {
+                orders = {
+                    elektronik: {},
+                    perabotan: {},
+                    alat_tulis: {},
+                    lainnya: {}
+                };
+                saveToLocalStorage();
+                renderOrders();
+            }
+        }
+
+        // Simpan ke localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+
+        // Muat dari localStorage
+        function loadFromLocalStorage() {
+            const savedOrders = localStorage.getItem('orders');
+            if (savedOrders) {
+                orders = JSON.parse(savedOrders);
+            }
+        }
+    </script>
+</body>
+</html>
