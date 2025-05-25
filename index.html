@@ -3,82 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StikerLotere - Beli Stiker, Menangkan Hadiah!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>StikerLotere ✨ Beli & Menangkan Jutaan!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Global & Variabel CSS */
         :root {
-            --primary: #25D366;
-            --secondary: #075E54;
-            --accent: #FFD700;
-            --dark: #1A1A1A;
-            --light: #FFFFFF;
-            --rainbow-1: #FF5252;
-            --rainbow-2: #FFD740;
-            --rainbow-3: #69F0AE;
-            --rainbow-4: #40C4FF;
-            --rainbow-5: #E040FB;
+            --primary: #FF3D67; /* Pink terang, lebih menarik */
+            --secondary: #2E1546; /* Ungu gelap */
+            --accent: #FFEB3B; /* Kuning cerah */
+            --dark: #120A20; /* Ungu sangat gelap */
+            --light: #F0F0F0;
+            --gradient-main: linear-gradient(135deg, var(--primary), #FF7B00); /* Orange-pink */
+            --gradient-dark: linear-gradient(135deg, var(--dark), var(--secondary));
+
+            /* Warna Pelangi untuk aksen */
+            --rainbow-1: #FF5733;
+            --rainbow-2: #FFBD33;
+            --rainbow-3: #75FF33;
+            --rainbow-4: #33FFBD;
+            --rainbow-5: #3357FF;
+            --rainbow-6: #B933FF;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Hilangkan highlight tap */
         }
         
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Rubik', sans-serif;
             background-color: var(--dark);
             color: var(--light);
             overflow-x: hidden;
+            line-height: 1.6;
         }
-        
+
+        /* Utility Classes */
         .container {
-            max-width: 1200px;
+            max-width: 100%; /* Lebar penuh untuk mobile */
+            padding: 0 15px; /* Padding samping */
             margin: 0 auto;
-            padding: 0 20px;
         }
-        
-        /* Header */
-        header {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            padding: 20px 0;
+
+        .text-center {
+            text-align: center;
+        }
+
+        .section {
+            padding: 60px 0; /* Padding disesuaikan untuk mobile */
             position: relative;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
-        header::before {
+        .section-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.2rem; /* Ukuran font disesuaikan */
+            margin-bottom: 40px;
+            color: var(--light);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            position: relative;
+            display: inline-block; /* Agar after border bekerja dengan baik */
+        }
+        
+        .section-title::after {
             content: "";
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            animation: pulse 8s infinite linear;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-main);
+            border-radius: 5px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--gradient-main);
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 12px 30px; /* Padding disesuaikan */
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            animation: bounceIn 0.8s ease-out forwards; /* Animasi muncul */
         }
         
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05); /* Sedikit lift dan scale */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            background: #FF7B00; /* Warna akhir gradien saat hover */
+        }
+
+        /* Keyframes untuk Animasi */
         @keyframes pulse {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-        
-        .logo {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--light);
-            text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.1); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideInUp {
+            0% { opacity: 0; transform: translateY(50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Floating WhatsApp Button */
+        .floating.whatsapp {
+            position: fixed;
+            bottom: 20px; /* Lebih dekat ke bawah */
+            right: 20px; /* Lebih dekat ke kanan */
+            background: #25D366; /* Warna WhatsApp asli */
+            width: 55px; /* Ukuran disesuaikan */
+            height: 55px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--light);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite ease-in-out; /* Animasi berdenyut */
         }
         
-        .logo span {
-            color: var(--accent);
+        .floating.whatsapp:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
-        
-        .logo-icon {
-            font-size: 3rem;
-            margin-right: 10px;
+
+        /* Header */
+        header {
+            background: var(--gradient-dark);
+            padding: 15px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+            border-bottom: 3px solid var(--primary);
         }
         
         .header-content {
@@ -89,29 +171,90 @@
             z-index: 2;
         }
         
+        .logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem; /* Ukuran font disesuaikan */
+            font-weight: 800;
+            color: var(--light);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--accent);
+            margin-left: 5px; /* Sedikit jarak */
+        }
+        
+        .logo-icon {
+            font-size: 2.2rem; /* Ukuran ikon disesuaikan */
+            margin-right: 8px;
+            color: var(--primary); /* Warna ikon logo */
+        }
+        
         .countdown {
-            background: rgba(0,0,0,0.3);
-            padding: 10px 20px;
-            border-radius: 50px;
+            background: rgba(0,0,0,0.4);
+            padding: 8px 15px;
+            border-radius: 30px;
             font-weight: 600;
             display: flex;
             align-items: center;
+            font-size: 0.9rem; /* Ukuran font lebih kecil untuk mobile */
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
         }
         
+        .countdown i {
+            color: var(--accent);
+            margin-right: 5px;
+        }
+
         .countdown span {
             color: var(--accent);
-            margin-left: 5px;
+            font-weight: 700;
+            margin-left: 3px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
-        
+    </style>
+</head>
+<body>
+    <a href="https://wa.me/6281234567890" class="floating whatsapp" aria-label="Hubungi Kami via WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-gem"></i> </div>
+                    Stiker<span style="color: var(--accent);">LOTERE</span>
+                </div>
+                <div class="countdown">
+                    <i class="fas fa-hourglass-half"></i> Undian: <span>00:00:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    ```
+
+---
+
+**Bagian 2: Hero Section & How It Works**
+
+```html
+    <style>
         /* Hero Section */
         .hero {
-            background: url('https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center;
+            background: url('https://images.unsplash.com/photo-1627918818817-57b17165a21c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center;
             background-size: cover;
-            height: 80vh;
-            min-height: 500px;
+            min-height: 70vh; /* Tinggi yang pas untuk mobile */
             display: flex;
             align-items: center;
             position: relative;
+            padding: 40px 0;
+            text-align: center; /* Teks di tengah untuk mobile */
         }
         
         .hero::before {
@@ -121,189 +264,268 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(37,211,102,0.8), rgba(7,94,84,0.9));
+            background: linear-gradient(45deg, rgba(46,21,70,0.95), rgba(255,61,103,0.8)); /* Overlay lebih gelap */
+            z-index: 1;
         }
         
         .hero-content {
             position: relative;
             z-index: 2;
             width: 100%;
+            animation: fadeIn 1.5s ease-out; /* Animasi muncul */
         }
         
         .hero h1 {
-            font-size: 4rem;
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.8rem; /* Ukuran font disesuaikan */
             font-weight: 800;
             line-height: 1.2;
-            margin-bottom: 20px;
-            text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            color: var(--light);
         }
         
         .hero h1 span {
             color: var(--accent);
             position: relative;
             display: inline-block;
+            text-shadow: 0 0 10px var(--accent); /* Efek glow */
         }
         
         .hero h1 span::after {
             content: "";
             position: absolute;
-            bottom: 5px;
+            bottom: 0px;
             left: 0;
             width: 100%;
-            height: 10px;
-            background: var(--rainbow-1);
+            height: 8px;
+            background: linear-gradient(90deg, var(--rainbow-1), var(--rainbow-2), var(--rainbow-3));
             z-index: -1;
-            opacity: 0.7;
+            opacity: 0.8;
+            transform: skew(-15deg); /* Efek garis miring */
+            border-radius: 3px;
         }
         
         .hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin-bottom: 30px;
+            font-size: 1rem; /* Ukuran font disesuaikan */
+            max-width: 90%; /* Lebar terbatas untuk mobile */
+            margin: 0 auto 30px auto;
+            opacity: 0.9;
         }
-        
-        .cta-button {
-            display: inline-block;
-            background: var(--accent);
-            color: var(--dark);
-            font-weight: 700;
-            font-size: 1.2rem;
-            padding: 15px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        }
-        
+
         /* How It Works */
-        .section {
-            padding: 80px 0;
+        .how-it-works {
+            background-color: var(--secondary);
+            padding: 60px 0;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.2);
         }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 60px;
-            position: relative;
-        }
-        
-        .section-title::after {
-            content: "";
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 5px;
-            background: linear-gradient(90deg, var(--rainbow-1), var(--rainbow-2), var(--rainbow-3), var(--rainbow-4), var(--rainbow-5));
-            border-radius: 5px;
-        }
-        
+
         .steps {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            flex-direction: column; /* Kolom tunggal untuk mobile */
+            gap: 25px; /* Jarak antar step */
         }
         
         .step {
-            flex: 0 0 calc(33.333% - 30px);
             text-align: center;
-            padding: 30px;
+            padding: 25px; /* Padding disesuaikan */
             background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            margin-bottom: 30px;
+            border-radius: 18px;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transform: translateY(20px); /* Initial for animation */
+            opacity: 0; /* Initial for animation */
         }
         
+        .step.is-visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .step::before { /* Efek gradien di latar belakang */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,61,103,0.1), rgba(255,123,0,0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .step:hover::before {
+            opacity: 1;
+        }
+
         .step:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+            border-color: var(--primary);
         }
         
         .step-number {
-            font-size: 3rem;
+            font-family: 'Fredoka One', cursive;
+            font-size: 3.5rem;
             font-weight: 800;
-            color: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.08); /* Lebih transparan */
             position: absolute;
             top: 10px;
             right: 20px;
+            z-index: 1;
         }
         
         .step-icon {
             font-size: 3rem;
-            margin-bottom: 20px;
-            color: var(--accent);
+            margin-bottom: 15px;
+            color: var(--accent); /* Warna ikon */
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 0 8px rgba(255,235,59,0.5);
         }
         
         .step h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem; /* Ukuran disesuaikan */
+            margin-bottom: 10px;
+            color: var(--primary);
+            position: relative;
+            z-index: 2;
         }
         
-        /* Stickers */
+        .step p {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Beli Stiker, Menangkan **Hadiah Impian**!</h1>
+                <p>Jutaan rupiah menanti Anda! Dapatkan stiker WhatsApp eksklusif, kumpulkan tiket undian, dan jadi pemenang berikutnya!</p>
+                <a href="#stickers" class="cta-button">Pilih Stiker & Menangkan Sekarang!</a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section how-it-works">
+        <div class="container text-center">
+            <h2 class="section-title">Bagaimana Cara Menang?</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-star-of-life"></i> </div>
+                    <h3>PILIH STIKER KEBERUNTUNGANMU</h3>
+                    <p>Temukan koleksi stiker WhatsApp paling keren dengan harga yang sangat terjangkau. Tiap stiker adalah tiket emasmu!</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3>OTOMATIS DAPAT TIKET UNDIAN</h3>
+                    <p>Setiap pembelian stiker, kamu otomatis mendapatkan tiket undian. Semakin banyak beli, semakin besar peluangmu!</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>RAIH HADIAH JUTAAN RUPIAH!</h3>
+                    <p>Tunggu pengumuman undian mingguan! Bersiaplah jadi jutawan baru dengan hadiah-hadiah fantastis kami!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    ```
+
+---
+
+**Bagian 3: Stickers Section & Prizes Section**
+
+```html
+    <style>
+        /* Stickers Section */
         .stickers {
-            background: linear-gradient(135deg, rgba(37,211,102,0.1), rgba(7,94,84,0.2));
+            background: var(--dark);
+            padding: 60px 0;
         }
         
         .sticker-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Kolom adaptif */
+            gap: 20px; /* Jarak antar kartu */
         }
         
         .sticker-card {
-            background: var(--light);
+            background: var(--secondary); /* Background kartu stiker */
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: all 0.4s ease;
             position: relative;
+            border: 2px solid transparent; /* Border default */
+            transform: translateY(20px); /* Initial for animation */
+            opacity: 0; /* Initial for animation */
+        }
+
+        .sticker-card.is-visible {
+            transform: translateY(0);
+            opacity: 1;
         }
         
         .sticker-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+            border-color: var(--accent); /* Border saat hover */
         }
         
         .sticker-image {
-            height: 200px;
-            background: #f5f5f5;
+            height: 150px; /* Tinggi gambar disesuaikan */
+            background: rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 10px; /* Padding disesuaikan */
         }
         
         .sticker-image img {
-            max-width: 100%;
-            max-height: 100%;
+            max-width: 90%; /* Ukuran gambar dalam container */
+            max-height: 90%;
             object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .sticker-card:hover .sticker-image img {
+            transform: scale(1.05); /* Sedikit zoom saat hover */
         }
         
         .sticker-info {
-            padding: 20px;
-            color: var(--dark);
+            padding: 15px; /* Padding disesuaikan */
+            color: var(--light);
         }
         
         .sticker-info h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.1rem; /* Ukuran font disesuaikan */
+            margin-bottom: 8px;
+            font-weight: 700;
         }
         
         .sticker-price {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.3rem; /* Ukuran font disesuaikan */
+            font-weight: 800;
             color: var(--primary);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
         }
         
         .sticker-button {
@@ -312,40 +534,40 @@
             background: var(--primary);
             color: var(--light);
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            font-size: 0.95rem;
         }
         
         .sticker-button:hover {
-            background: var(--secondary);
+            background: #FF7B00; /* Warna gradien kedua */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
         }
         
         .prize-badge {
             position: absolute;
             top: 10px;
-            right: 10px;
-            background: linear-gradient(45deg, var(--rainbow-1), var(--rainbow-5));
-            color: white;
-            padding: 5px 10px;
+            left: 10px; /* Pindah ke kiri atas */
+            background: var(--accent); /* Warna badge */
+            color: var(--dark);
+            padding: 4px 8px;
             border-radius: 5px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            animation: pulse 2s infinite;
+            font-size: 0.75rem;
+            font-weight: 800;
+            animation: pulse 2s infinite ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        /* Prizes */
+        /* Prizes Section */
         .prizes {
-            background: url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center;
+            background: url('https://images.unsplash.com/photo-1579547672280-9289d021c32c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center;
             background-size: cover;
             position: relative;
+            padding: 80px 0; /* Padding lebih besar */
         }
         
         .prizes::before {
@@ -355,7 +577,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(37,211,102,0.9), rgba(7,94,84,0.9));
+            background: linear-gradient(180deg, rgba(46,21,70,0.95), rgba(255,61,103,0.8)); /* Gradien vertikal */
+            z-index: 1;
         }
         
         .prizes .container {
@@ -364,181 +587,379 @@
         }
         
         .prize-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+            display: flex;
+            flex-direction: column; /* Kolom tunggal untuk mobile */
+            gap: 25px; /* Jarak antar kartu */
         }
         
         .prize-card {
-            background: rgba(255,255,255,0.9);
-            border-radius: 15px;
-            padding: 30px;
+            background: rgba(255,255,255,0.97); /* Hampir putih */
+            border-radius: 18px;
+            padding: 25px;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: all 0.4s ease;
             color: var(--dark);
+            border: 3px solid transparent; /* Border default */
+            transform: translateY(20px); /* Initial for animation */
+            opacity: 0; /* Initial for animation */
+        }
+
+        .prize-card.is-visible {
+            transform: translateY(0);
+            opacity: 1;
         }
         
         .prize-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
         
         .prize-card.gold {
-            border: 3px solid var(--accent);
+            border-color: var(--accent); /* Kuning emas */
+            background: linear-gradient(135deg, #FFFDE7, #FFEB3B); /* Gradien emas */
+            color: #795548; /* Teks lebih gelap */
         }
         
         .prize-card.silver {
-            border: 3px solid #C0C0C0;
+            border-color: #B0BEC5; /* Abu-abu perak */
+            background: linear-gradient(135deg, #ECEFF1, #CFD8DC);
+            color: #455A64;
         }
         
         .prize-card.bronze {
-            border: 3px solid #CD7F32;
+            border-color: #A1887F; /* Coklat perunggu */
+            background: linear-gradient(135deg, #EFEBE9, #D7CCC8);
+            color: #5D4037;
         }
         
         .prize-icon {
             font-size: 3rem;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .prize-card.gold .prize-icon {
             color: var(--accent);
+            text-shadow: 0 0 15px rgba(255,235,59,0.7);
         }
         
         .prize-card.silver .prize-icon {
-            color: #C0C0C0;
+            color: #78909C;
         }
         
         .prize-card.bronze .prize-icon {
-            color: #CD7F32;
+            color: #8D6E63;
         }
         
         .prize-card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem; /* Ukuran disesuaikan */
+            margin-bottom: 10px;
         }
         
         .prize-card p {
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
         }
         
         .prize-value {
-            font-size: 2rem;
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.2rem; /* Ukuran disesuaikan */
             font-weight: 800;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
         }
         
         .prize-card.gold .prize-value {
-            color: var(--accent);
+            color: #D4AF37; /* Emas */
         }
         
         .prize-card.silver .prize-value {
-            color: #C0C0C0;
+            color: #9E9E9E; /* Perak */
         }
         
         .prize-card.bronze .prize-value {
-            color: #CD7F32;
+            color: #8D6E63; /* Perunggu */
         }
-        
+    </style>
+
+    <section class="section stickers" id="stickers">
+        <div class="container text-center">
+            <h2 class="section-title">Pilih Stiker Keberuntunganmu</h2>
+            <p style="margin-bottom: 30px; font-size: 1rem; opacity: 0.9;">Setiap stiker adalah kunci menuju hadiah fantastis! Pilih favoritmu dan kumpulkan tiket undianmu sekarang!</p>
+            <div class="sticker-grid">
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/200x200/FF3D67/FFFFFF?text=FUN%20EMOJI" alt="Stiker Emoji Lucu">
+                    </div>
+                    <div class="sticker-info">
+                        <h3>Paket Fun Emoji</h3>
+                        <div class="sticker-price">Rp 5.000</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                    <div class="prize-badge">1 Tiket Undian</div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/200x200/2E1546/FFFFFF?text=CUTE%20ANIMALS" alt="Stiker Hewan Menggemaskan">
+                    </div>
+                    <div class="sticker-info">
+                        <h3>Paket Cute Animals</h3>
+                        <div class="sticker-price">Rp 10.000</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                    <div class="prize-badge">2 Tiket Undian</div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/200x200/FF7B00/FFFFFF?text=TRENDY%20CARTOON" alt="Stiker Kartun Populer">
+                    </div>
+                    <div class="sticker-info">
+                        <h3>Paket Trendy Cartoon</h3>
+                        <div class="sticker-price">Rp 15.000</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                    <div class="prize-badge">3 Tiket Undian</div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/200x200/FFEB3B/2E1546?text=SPECIAL%20EVENT" alt="Stiker Hari Raya">
+                    </div>
+                    <div class="sticker-info">
+                        <h3>Paket Special Event</h3>
+                        <div class="sticker-price">Rp 20.000</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                    <div class="prize-badge">4 Tiket Undian</div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/200x200/FF3D67/FFFFFF?text=ULTIMATE" alt="Paket Super Lengkap">
+                    </div>
+                    <div class="sticker-info">
+                        <h3>Paket Ultimate Edition</h3>
+                        <div class="sticker-price">Rp 50.000</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                    <div class="prize-badge">10 Tiket Undian</div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/200x200/2E1546/FFFFFF?text=COLLECTOR" alt="Paket Limited Edition">
+                    </div>
+                    <div class="sticker-info">
+                        <h3>Paket Collector's Item</h3>
+                        <div class="sticker-price">Rp 100.000</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                    <div class="prize-badge">25 Tiket Undian</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section prizes" id="prizes">
+        <div class="container text-center">
+            <h2 class="section-title" style="color: var(--light);">Hadiah Menggila Menanti Anda!</h2>
+            <p style="margin-bottom: 30px; font-size: 1rem; opacity: 0.9; color: var(--light);">Siapa bilang mimpi tak bisa jadi kenyataan? Berikut adalah hadiah-hadiah fantastis yang bisa kamu menangkan!</p>
+            <div class="prize-grid">
+                <div class="prize-card gold">
+                    <div class="prize-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>HADIAH UTAMA</h3>
+                    <p>Wujudkan mimpimu! Jackpot super besar menanti pemenang yang beruntung!</p>
+                    <div class="prize-value">Rp 50.000.000</div> <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Premium SEUMUR HIDUP!</p>
+                </div>
+                <div class="prize-card silver">
+                    <div class="prize-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>HADIAH KEDUA</h3>
+                    <p>Laptop gaming atau gadget idaman impianmu kini bisa jadi milikmu!</p>
+                    <div class="prize-value">Laptop Gaming Canggih</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Premium 2 Tahun</p>
+                </div>
+                <div class="prize-card bronze">
+                    <div class="prize-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>HADIAH KETIGA</h3>
+                    <p>Upgrade smartphone kamu ke yang terbaru. Jangan lewatkan kesempatan ini!</p>
+                    <div class="prize-value">Smartphone Flagship Terbaru</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Premium 1 Tahun</p>
+                </div>
+                <div class="prize-card">
+                    <div class="prize-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3>HADIAH UANG TUNAI</h3>
+                    <p>10 Pemenang Hadiah Uang Tunai Langsung!</p>
+                    <div class="prize-value">Rp 1.000.000</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Eksklusif</p>
+                </div>
+                <div class="prize-card">
+                    <div class="prize-icon">
+                        <i class="fas fa-plane-departure"></i>
+                    </div>
+                    <h3>HADIAH PETUALANGAN</h3>
+                    <p>Liburan impian GRATIS untuk 2 orang!</p>
+                    <div class="prize-value">Tiket Liburan ke Bali</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Uang Saku & Stiker Travel</p>
+                </div>
+                <div class="prize-card">
+                    <div class="prize-icon">
+                        <i class="fas fa-surprise"></i>
+                    </div>
+                    <h3>HADIAH KEJUTAN MISTERI</h3>
+                    <p>Siap-siap terkejut dengan hadiah spesial yang tak terduga!</p>
+                    <div class="prize-value">? ? ?</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Limited Edition</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    ```
+
+---
+
+**Bagian 4: Testimonials, Footer, dan JavaScript**
+
+```html
+    <style>
         /* Testimonials */
         .testimonials {
-            background: linear-gradient(135deg, rgba(37,211,102,0.1), rgba(7,94,84,0.2));
+            background: var(--dark);
+            padding: 60px 0;
         }
         
         .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+            display: flex;
+            flex-direction: column; /* Kolom tunggal untuk mobile */
+            gap: 25px;
         }
         
         .testimonial-card {
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: var(--secondary); /* Warna background */
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            transform: translateY(20px); /* Initial for animation */
+            opacity: 0; /* Initial for animation */
+        }
+
+        .testimonial-card.is-visible {
+            transform: translateY(0);
+            opacity: 1;
         }
         
-        .testimonial-card::before {
-            content: """;
+        .testimonial-card::before { /* Tanda kutip lebih menonjol */
+            content: "\f10d"; /* Font Awesome quote icon */
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
             position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 5rem;
+            top: 15px;
+            left: 15px;
+            font-size: 3.5rem;
             color: rgba(255,255,255,0.1);
             line-height: 1;
+            z-index: 0;
         }
         
         .testimonial-content {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-style: italic;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+            padding-left: 20px; /* Jarak dari tanda kutip */
         }
         
         .testimonial-author {
             display: flex;
             align-items: center;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 15px;
         }
         
         .testimonial-author img {
-            width: 50px;
-            height: 50px;
+            width: 45px; /* Ukuran gambar disesuaikan */
+            height: 45px;
             border-radius: 50%;
-            margin-right: 15px;
+            margin-right: 12px;
             object-fit: cover;
+            border: 2px solid var(--primary); /* Border di avatar */
         }
         
         .author-info h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
+            font-size: 1rem;
+            margin-bottom: 3px;
+            color: var(--accent); /* Warna nama */
+            font-weight: 700;
         }
         
         .author-info p {
-            font-size: 0.9rem;
-            opacity: 0.8;
+            font-size: 0.8rem;
+            opacity: 0.7;
         }
         
         /* Footer */
         footer {
-            background: linear-gradient(135deg, var(--secondary), var(--dark));
-            padding: 50px 0 20px;
+            background: var(--gradient-dark);
+            padding: 40px 0 20px;
             color: var(--light);
+            border-top: 3px solid var(--primary);
         }
         
         .footer-content {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
+            flex-direction: column; /* Kolom tunggal untuk mobile */
+            gap: 30px; /* Jarak antar kolom */
+            margin-bottom: 20px;
         }
         
         .footer-column {
-            flex: 0 0 calc(25% - 30px);
-            margin-bottom: 30px;
+            text-align: center; /* Teks tengah untuk mobile */
         }
         
         .footer-column h3 {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
             position: relative;
-            padding-bottom: 10px;
+            display: inline-block; /* Untuk garis bawah */
+            padding-bottom: 8px;
         }
         
         .footer-column h3::after {
             content: "";
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 50px;
+            left: 50%; /* Tengah */
+            transform: translateX(-50%);
+            width: 60px;
             height: 3px;
             background: var(--primary);
+            border-radius: 2px;
         }
         
+        .footer-column p, .footer-column ul {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
         .footer-column ul {
             list-style: none;
+            padding: 0;
         }
         
         .footer-column ul li {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .footer-column ul li a {
@@ -550,346 +971,160 @@
         
         .footer-column ul li a:hover {
             opacity: 1;
-            padding-left: 5px;
+            color: var(--primary);
         }
         
         .social-links {
             display: flex;
-            gap: 15px;
+            justify-content: center; /* Tengah untuk mobile */
+            gap: 12px;
+            margin-top: 15px;
         }
         
         .social-links a {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
+            width: 38px;
+            height: 38px;
+            background: rgba(255,255,255,0.15);
             border-radius: 50%;
             color: var(--light);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .social-links a:hover {
             background: var(--primary);
-            transform: translateY(-5px);
+            transform: translateY(-3px) scale(1.1);
         }
         
         .copyright {
             text-align: center;
-            padding-top: 20px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.9rem;
-            opacity: 0.7;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: 20px;
         }
-        
-        /* Floating Elements */
-        .floating {
-            position: fixed;
-            z-index: 100;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        .floating.whatsapp {
-            bottom: 30px;
-            right: 30px;
-            background: var(--primary);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: var(--light);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .floating.whatsapp:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        }
-        
-        /* Responsive */
-        @media (max-width: 992px) {
+
+        /* Responsifitas untuk Tablet (Opsional, jika ingin 2 kolom) */
+        @media (min-width: 600px) {
+            .sticker-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            .prize-grid, .testimonial-grid {
+                flex-direction: row; /* Kembali ke baris untuk tablet */
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .prize-card, .testimonial-card {
+                flex: 0 0 calc(50% - 15px); /* Dua kolom */
+            }
+            .steps {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
             .step {
-                flex: 0 0 calc(50% - 20px);
+                flex: 0 0 calc(50% - 15px); /* Dua kolom */
             }
-            
+            .footer-content {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
             .footer-column {
-                flex: 0 0 calc(50% - 20px);
+                flex: 0 0 calc(50% - 15px);
+                text-align: left;
+            }
+            .footer-column h3::after {
+                left: 0;
+                transform: translateX(0);
+            }
+            .social-links {
+                justify-content: flex-start;
             }
         }
-        
-        @media (max-width: 768px) {
+
+        /* Responsifitas untuk Desktop (Opsional) */
+        @media (min-width: 992px) {
+            .container {
+                max-width: 960px;
+            }
+            .section {
+                padding: 80px 0;
+            }
+            .section-title {
+                font-size: 3rem;
+            }
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 4rem;
             }
-            
-            .step {
-                flex: 0 0 100%;
+            .hero p {
+                font-size: 1.2rem;
             }
-            
+            .cta-button {
+                font-size: 1.2rem;
+                padding: 15px 40px;
+            }
+            .steps .step {
+                flex: 0 0 calc(33.333% - 20px); /* Tiga kolom untuk desktop */
+            }
+            .sticker-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            .prize-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+            .testimonial-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
             .footer-column {
-                flex: 0 0 100%;
+                flex: 0 0 calc(25% - 22px); /* Empat kolom */
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <!-- Floating WhatsApp Button -->
-    <a href="#" class="floating whatsapp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
     
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-sticky-note"></i>
-                    </div>
-                    <div>
-                        Stiker<span>Lotere</span>
-                    </div>
-                </div>
-                <div class="countdown">
-                    <i class="fas fa-clock"></i> Undian berikutnya dalam: <span>12:34:56</span>
-                </div>
-            </div>
-        </div>
-    </header>
-    
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Beli <span>Stiker</span>, Menangkan <span>Hadiah</span> Mewah!</h1>
-                <p>Dapatkan stiker WhatsApp eksklusif dengan harga terjangkau dan dapatkan kesempatan memenangkan hadiah-hadiah spektakuler setiap minggunya!</p>
-                <a href="#stickers" class="cta-button">Lihat Stiker Sekarang</a>
-            </div>
-        </div>
-    </section>
-    
-    <!-- How It Works -->
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title">Cara Bermain</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <h3>Beli Stiker</h3>
-                    <p>Pilih dan beli paket stiker WhatsApp eksklusif kami dengan harga sangat terjangkau.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-icon">
-                        <i class="fas fa-ticket-alt"></i>
-                    </div>
-                    <h3>Dapatkan Tiket</h3>
-                    <p>Setiap pembelian stiker akan memberikan Anda tiket untuk undian mingguan kami.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <h3>Menangkan Hadiah</h3>
-                    <p>Tunggu pengundian setiap minggu dan lihat apakah Anda menjadi pemenangnya!</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Stickers -->
-    <section class="section stickers" id="stickers">
-        <div class="container">
-            <h2 class="section-title">Pilih Stiker Favoritmu</h2>
-            <div class="sticker-grid">
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/25D366/FFFFFF?text=Stiker+1" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Paket Emoji Lucu</h3>
-                        <div class="sticker-price">Rp 5.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                    <div class="prize-badge">1 Tiket Undian</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/075E54/FFFFFF?text=Stiker+2" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Paket Hewan Menggemaskan</h3>
-                        <div class="sticker-price">Rp 10.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                    <div class="prize-badge">2 Tiket Undian</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/128C7E/FFFFFF?text=Stiker+3" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Paket Kartun Populer</h3>
-                        <div class="sticker-price">Rp 15.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                    <div class="prize-badge">3 Tiket Undian</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/25D366/FFFFFF?text=Stiker+4" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Paket Hari Raya</h3>
-                        <div class="sticker-price">Rp 20.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                    <div class="prize-badge">4 Tiket Undian</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/075E54/FFFFFF?text=Stiker+5" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Paket Super Lengkap</h3>
-                        <div class="sticker-price">Rp 50.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                    <div class="prize-badge">10 Tiket Undian</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/128C7E/FFFFFF?text=Stiker+6" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Paket Limited Edition</h3>
-                        <div class="sticker-price">Rp 100.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                    <div class="prize-badge">25 Tiket Undian</div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Prizes -->
-    <section class="section prizes">
-        <div class="container">
-            <h2 class="section-title">Hadiah Menanti Anda</h2>
-            <div class="prize-grid">
-                <div class="prize-card gold">
-                    <div class="prize-icon">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <h3>Hadiah Utama</h3>
-                    <p>Hadiah spektakuler untuk pemenang beruntung</p>
-                    <div class="prize-value">Rp 10.000.000</div>
-                    <p>+ Paket Stiker Premium 1 Tahun</p>
-                </div>
-                <div class="prize-card silver">
-                    <div class="prize-icon">
-                        <i class="fas fa-medal"></i>
-                    </div>
-                    <h3>Hadiah Kedua</h3>
-                    <p>Hadiah menarik untuk runner-up</p>
-                    <div class="prize-value">Rp 5.000.000</div>
-                    <p>+ Paket Stiker Premium 6 Bulan</p>
-                </div>
-                <div class="prize-card bronze">
-                    <div class="prize-icon">
-                        <i class="fas fa-award"></i>
-                    </div>
-                    <h3>Hadiah Ketiga</h3>
-                    <p>Hadiah untuk pemenang ketiga</p>
-                    <div class="prize-value">Rp 2.500.000</div>
-                    <p>+ Paket Stiker Premium 3 Bulan</p>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-icon">
-                        <i class="fas fa-gift"></i>
-                    </div>
-                    <h3>Hadiah Hiburan</h3>
-                    <p>10 Pemenang Hadiah Hiburan</p>
-                    <div class="prize-value">Rp 500.000</div>
-                    <p>+ Paket Stiker Eksklusif</p>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Hadiah Spesial</h3>
-                    <p>Smartphone Flagship</p>
-                    <div class="prize-value">iPhone 13 Pro</div>
-                    <p>Untuk pembelian stiker ke-10.000</p>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-icon">
-                        <i class="fas fa-plane"></i>
-                    </div>
-                    <h3>Hadiah Kejutan</h3>
-                    <p>Liburan Keluarga</p>
-                    <div class="prize-value">Trip ke Bali</div>
-                    <p>Untuk pembelian stiker ke-50.000</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Testimonials -->
     <section class="section testimonials">
-        <div class="container">
-            <h2 class="section-title">Kata Mereka</h2>
+        <div class="container text-center">
+            <h2 class="section-title">Apa Kata Pemenang Kami?</h2>
+            <p style="margin-bottom: 30px; font-size: 1rem; opacity: 0.9;">Mereka sudah membuktikannya! Giliran kamu selanjutnya!</p>
             <div class="testimonial-grid">
                 <div class="testimonial-card">
                     <div class="testimonial-content">
-                        "Awalnya cuma iseng beli stiker murah, eh menang hadiah 5 juta! Ga nyangka banget. Stikernya juga lucu-lucu!"
+                        "Gila! Baru pertama beli stiker di StikerLotere, eh langsung dapat hadiah utamanya! Ini beneran, bukan tipu-tipu. Stikernya juga lucu!"
                     </div>
                     <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Testimonial">
+                        <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Testimonial Sarah W.">
                         <div class="author-info">
                             <h4>Sarah Wijaya</h4>
-                            <p>Pemenang 12/05/2023</p>
+                            <p>Pemenang Jutaan!</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
                     <div class="testimonial-content">
-                        "Stikernya kualitas bagus banget, desainnya unik-unik. Belum menang sih, tapi next undian semoga beruntung!"
+                        "Desain stikernya super keren dan unik! Belum lagi kesempatan menangnya itu loh. Saya sudah koleksi beberapa, dan yakin banget bakal menang!"
                     </div>
                     <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Testimonial">
+                        <img src="https://randomuser.me/api/portraits/men/88.jpg" alt="Testimonial Budi S.">
                         <div class="author-info">
                             <h4>Budi Santoso</h4>
-                            <p>Pelanggan Setia</p>
+                            <p>Kolektor Stiker Beruntung</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
                     <div class="testimonial-content">
-                        "Pelayanan cepat, stikernya langsung bisa dipakai. Anak-anak suka banget sama stiker kartunnya. Terima kasih StikerLotere!"
+                        "Pelayanan super cepat dan ramah! Stikernya langsung bisa dipakai. Anak-anak saya happy banget sama stiker kartunnya. Recommended!"
                     </div>
                     <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Testimonial">
+                        <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="Testimonial Dewi L.">
                         <div class="author-info">
                             <h4>Dewi Lestari</h4>
-                            <p>Ibu Rumah Tangga</p>
+                            <p>Ibu Hebat & Pemenang</p>
                         </div>
                     </div>
                 </div>
@@ -897,51 +1132,50 @@
         </div>
     </section>
     
-    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
                     <h3>Tentang Kami</h3>
-                    <p>StikerLotere adalah platform inovatif yang menggabungkan penjualan stiker WhatsApp dengan sistem hadiah menarik secara legal dan transparan.</p>
+                    <p>StikerLotere adalah platform inovatif yang menyatukan kegembiraan koleksi stiker dengan sensasi undian berhadiah besar, legal, dan transparan!</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 <div class="footer-column">
                     <h3>Link Cepat</h3>
                     <ul>
                         <li><a href="#">Beranda</a></li>
-                        <li><a href="#stickers">Stiker</a></li>
-                        <li><a href="#prizes">Hadiah</a></li>
-                        <li><a href="#">Cara Bermain</a></li>
-                        <li><a href="#">Pemenang</a></li>
+                        <li><a href="#stickers">Stiker Koleksi</a></li>
+                        <li><a href="#prizes">Daftar Hadiah</a></li>
+                        <li><a href="#">Pemenang Terbaru</a></li>
+                        <li><a href="#">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Informasi</h3>
+                    <h3>Dukungan</h3>
                     <ul>
                         <li><a href="#">Syarat & Ketentuan</a></li>
                         <li><a href="#">Kebijakan Privasi</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Kontak Kami</a></li>
-                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Kontak Bantuan</a></li>
+                        <li><a href="#">Partnership</a></li>
+                        <li><a href="#">Karir</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Kontak</h3>
+                    <h3>Hubungi Kami</h3>
                     <ul>
-                        <li><i class="fas fa-envelope"></i> info@stikerlotere.com</li>
-                        <li><i class="fas fa-phone"></i> +62 812 3456 7890</li>
+                        <li><i class="fas fa-envelope"></i> support@stikerlotere.com</li>
+                        <li><i class="fas fa-phone"></i> +62 8XX XXXX XXXX</li>
                         <li><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2023 StikerLotere. Semua Hak Dilindungi.
+                &copy; 2023 StikerLotere. Semua Hak Dilindungi. Desain oleh AI.
             </div>
         </div>
     </footer>
@@ -952,52 +1186,55 @@
             const now = new Date();
             const nextSunday = new Date();
             
-            // Set to next Sunday at 20:00
-            nextSunday.setDate(now.getDate() + (7 - now.getDay()));
-            nextSunday.setHours(20, 0, 0, 0);
-            
-            // If today is Sunday and past 20:00, set to next Sunday
+            // Set to next Sunday at 20:00 WIB (GMT+7)
+            nextSunday.setDate(now.getDate() + (7 - now.getDay())); // Get next Sunday
+            nextSunday.setHours(20, 0, 0, 0); // Set to 20:00:00
+
+            // If today is Sunday and current time is past 20:00, set to next Sunday (7 days later)
             if (now.getDay() === 0 && now.getHours() >= 20) {
                 nextSunday.setDate(nextSunday.getDate() + 7);
             }
             
-            const diff = nextSunday - now;
+            const diff = nextSunday - now; // Difference in milliseconds
             
+            if (diff < 0) { // If countdown has passed
+                document.querySelector('.countdown span').textContent = 'UNDIAN TELAH USAI!';
+                return;
+            }
+
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000;
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
             document.querySelector('.countdown span').textContent = 
-                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                `${days > 0 ? days + 'd ' : ''}${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
         
         setInterval(updateCountdown, 1000);
-        updateCountdown();
-        
-        // Animate elements on scroll
+        updateCountdown(); // Call once immediately to avoid delay
+
+        // Animate elements on scroll with Intersection Observer for better performance
         const animateOnScroll = () => {
             const elements = document.querySelectorAll('.step, .sticker-card, .prize-card, .testimonial-card');
             
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once animated
+                    }
+                });
+            }, {
+                threshold: 0.3, // Adjust threshold as needed (0 to 1)
+                rootMargin: '0px 0px -50px 0px' // Start animation slightly before element enters viewport
+            });
+
             elements.forEach(element => {
-                const elementPosition = element.getBoundingClientRect().top;
-                const screenPosition = window.innerHeight / 1.3;
-                
-                if (elementPosition < screenPosition) {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                }
+                observer.observe(element);
             });
         };
         
-        // Set initial state
-        document.querySelectorAll('.step, .sticker-card, .prize-card, .testimonial-card').forEach(element => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(20px)';
-            element.style.transition = 'all 0.5s ease';
-        });
-        
-        window.addEventListener('scroll', animateOnScroll);
         window.addEventListener('load', animateOnScroll);
     </script>
 </body>
