@@ -1,490 +1,128 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Pemesanan Barang</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .input-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
-        select, input, button {
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        button.copy-btn {
-            background-color: #2196F3;
-        }
-        button.copy-btn:hover {
-            background-color: #0b7dda;
-        }
-        button.email-btn {
-            background-color: #ff9800;
-        }
-        button.email-btn:hover {
-            background-color: #e68a00;
-        }
-        .category {
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-        }
-        .item-list {
-            margin-top: 10px;
-        }
-        .item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px;
-            border-bottom: 1px solid #eee;
-        }
-        .item:last-child {
-            border-bottom: none;
-        }
-        .controls {
-            margin-top: 20px;
-            text-align: center;
-        }
-        @media print {
-            body {
-                background-color: white;
-                padding: 0;
-            }
-            .container {
-                box-shadow: none;
-                padding: 0;
-            }
-            .input-section, button {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sticker Spin - Lotere Berhadiah iPhone!</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #ffecd2, #fcb69f);
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .prize-img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .price {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #e91e63;
+      margin-bottom: 10px;
+    }
+    input, button, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+    .lottery-number {
+      font-size: 1.3em;
+      margin-top: 10px;
+      text-align: center;
+      color: #673ab7;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #f8f8f8;
+      font-size: 0.9em;
+      color: #777;
+      margin-top: 50px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Aplikasi Pemesanan Barang</h1>
-        
-        <div class="input-section">
-            <h2>Input Pesanan</h2>
-            <select id="category-select">
-                <option value="keringan">🧺 Keringan</option>
-                <option value="ayam_potong">🍗 Ayam Potong</option>
-                <option value="sayur">🥬 Sayur</option>
-                <option value="piteck_lanang">🦆 Piteck Lanang (Unggas Kampung)</option>
-                <option value="belanja_pusat">🧄 Belanja Pusat</option>
-            </select>
-            
-            <select id="item-select">
-                <!-- Items will be populated by JavaScript -->
-            </select>
-            
-            <input type="number" id="quantity" placeholder="Jumlah" min="1" value="1">
-            <button onclick="addItem()">Tambah Pesanan</button>
-        </div>
-        
-        <div id="output-section">
-            <h2>Daftar Pesanan</h2>
-            <div id="categories-container">
-                <!-- Categories will be populated by JavaScript -->
-            </div>
-        </div>
-        
-        <div class="controls">
-            <button class="email-btn" onclick="printOrders()">Cetak untuk Email</button>
-            <button onclick="clearAll()">Hapus Semua</button>
-        </div>
-    </div>
 
-    <script>
-        // Data barang berdasarkan kategori
-        const itemsData = {
-            keringan: [
-                "Bihun Padamu",
-                "Blue Band",
-                "Garam",
-                "Gula Pasir",
-                "Hemart",
-                "Kara",
-                "Kecap",
-                "Kobe Ayam Krispi",
-                "Micin Koki",
-                "Mi Atom Bulan",
-                "Royco Sapi",
-                "Sunlight",
-                "Telur",
-                "Tepung Beras",
-                "Tepung Pisang Sasa",
-                "Tepung Segitiga",
-                "Tepung Tapioka"
-            ],
-            ayam_potong: [
-                "Filet Dada",
-                "Filet Paha Tepong",
-                "Paha Bawah",
-                "Paha Tepong",
-                "Tepong 1 kg Isi 6"
-            ],
-            sayur: [
-                "Buncis",
-                "Brokoli",
-                "Cabai Ceplus",
-                "Cabai Pelintir Hijau",
-                "Cabai Pelintir Merah",
-                "Cabai Rawit Merah",
-                "Cabai Teropong Hijau",
-                "Cabai Teropong Merah",
-                "Daun Bawang",
-                "Jagung Manis",
-                "Jepan",
-                "Kacang Panjang",
-                "Kapri",
-                "Kentang",
-                "Kolbis",
-                "Kembang Kol",
-                "Sawi Bakso",
-                "Seledri",
-                "Timun",
-                "Tomat Hijau",
-                "Tomat Merah",
-                "Wortel"
-            ],
-            piteck_lanang: [
-                "Ayam Kampung",
-                "Bebek"
-            ],
-            belanja_pusat: [
-                "Babat",
-                "Bandeng",
-                "Bawang Bombay",
-                "Bawang Merah",
-                "Bawang Merah Kupas",
-                "Bawang Putih",
-                "Bawang Putih Kupas",
-                "Belut",
-                "Berambang Goreng",
-                "Bleng",
-                "Bumbu Rendang Indofood",
-                "Bunga Pepaya",
-                "Cuka Diksi",
-                "Daging Ayam Giling",
-                "Daging Sapi Giling",
-                "Daun Jeruk",
-                "Daun Melinjo",
-                "Daun Pepaya",
-                "Daun Pisang",
-                "Ebi",
-                "Gencur",
-                "Gula Aren",
-                "Iga Sapi Potong",
-                "Ikan Asin Jambal",
-                "Jahe",
-                "Jamur Kaleng",
-                "Jamur Putih Kering",
-                "Jantung Pisang",
-                "Kakap Filet",
-                "Kacang Tanah Kupas",
-                "Kangkung",
-                "Kapri",
-                "Kecap Ikan",
-                "Kemangi",
-                "Kemiri",
-                "Kerupuk Bawang",
-                "Kerupuk Udang",
-                "Kikil",
-                "Krecek Sum",
-                "Kunyit",
-                "Lada Hitam",
-                "Lele",
-                "Lengkuas",
-                "Maizena",
-                "Mangut",
-                "Merica Gelondongan",
-                "Nila",
-                "Pala",
-                "Pandan",
-                "Salam",
-                "Saus Inggris",
-                "Saus Tiram",
-                "Seledri",
-                "Sereh",
-                "Tahu Kulit",
-                "Tahu Pong",
-                "Tempe",
-                "Tepung Panir Coklat",
-                "Teri",
-                "Tetelan",
-                "Udang Rawa Kecil"
-            ]
-        };
+<header>
+  <h1>🎉 Sticker Spin 🎉</h1>
+  <p>Dapatkan stiker WhatsApp unik seharga Rp10.000 dan menangkan hadiah iPhone asli!</p>
+</header>
 
-        // Data pesanan disimpan di sini
-        let orders = {
-            keringan: {},
-            ayam_potong: {},
-            sayur: {},
-            piteck_lanang: {},
-            belanja_pusat: {}
-        };
+<div class="container">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/IPhone_14_Pro_vector.svg/800px-IPhone_14_Pro_vector.svg.png" alt="Hadiah iPhone" class="prize-img">
 
-        // Inisialisasi aplikasi
-        document.addEventListener('DOMContentLoaded', function() {
-            populateItemSelect();
-            loadFromLocalStorage();
-            renderOrders();
-        });
+  <div class="price">Harga Paket Stiker: <strong>Rp10.000</strong></div>
 
-        // Mengisi dropdown item berdasarkan kategori yang dipilih
-        function populateItemSelect() {
-            const categorySelect = document.getElementById('category-select');
-            const itemSelect = document.getElementById('item-select');
-            
-            const selectedCategory = categorySelect.value;
-            itemSelect.innerHTML = '';
-            
-            itemsData[selectedCategory].forEach(item => {
-                const option = document.createElement('option');
-                option.value = item;
-                option.textContent = item;
-                itemSelect.appendChild(option);
-            });
-        }
+  <form id="orderForm">
+    <label for="nama">Nama Lengkap:</label>
+    <input type="text" id="nama" required>
 
-        // Event listener untuk perubahan kategori
-        document.getElementById('category-select').addEventListener('change', populateItemSelect);
+    <label for="nomor">Nomor WhatsApp:</label>
+    <input type="tel" id="nomor" required>
 
-        // Menambahkan item ke pesanan
-        function addItem() {
-            const categorySelect = document.getElementById('category-select');
-            const itemSelect = document.getElementById('item-select');
-            const quantityInput = document.getElementById('quantity');
-            
-            const category = categorySelect.value;
-            const item = itemSelect.value;
-            const quantity = parseInt(quantityInput.value);
-            
-            if (isNaN(quantity) || quantity < 1) {
-                alert('Masukkan jumlah yang valid');
-                return;
-            }
-            
-            // Tambahkan ke pesanan
-            if (orders[category][item]) {
-                orders[category][item] += quantity;
-            } else {
-                orders[category][item] = quantity;
-            }
-            
-            // Simpan ke localStorage
-            saveToLocalStorage();
-            
-            // Render ulang daftar pesanan
-            renderOrders();
-            
-            // Reset quantity
-            quantityInput.value = 1;
-        }
+    <button type="submit">🎁 Beli dan Ambil Nomor Undian</button>
+  </form>
 
-        // Render daftar pesanan
-        function renderOrders() {
-            const container = document.getElementById('categories-container');
-            container.innerHTML = '';
-            
-            for (const category in orders) {
-                if (Object.keys(orders[category]).length > 0) {
-                    const categoryDiv = document.createElement('div');
-                    categoryDiv.className = 'category';
-                    
-                    const categoryTitle = document.createElement('h3');
-                    categoryTitle.textContent = formatCategoryName(category);
-                    
-                    const copyBtn = document.createElement('button');
-                    copyBtn.className = 'copy-btn';
-                    copyBtn.textContent = 'Copy';
-                    copyBtn.onclick = () => copyCategory(category);
-                    
-                    const titleContainer = document.createElement('div');
-                    titleContainer.style.display = 'flex';
-                    titleContainer.style.justifyContent = 'space-between';
-                    titleContainer.style.alignItems = 'center';
-                    titleContainer.appendChild(categoryTitle);
-                    titleContainer.appendChild(copyBtn);
-                    
-                    categoryDiv.appendChild(titleContainer);
-                    
-                    const itemList = document.createElement('div');
-                    itemList.className = 'item-list';
-                    
-                    for (const item in orders[category]) {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.className = 'item';
-                        
-                        const itemName = document.createElement('span');
-                        itemName.textContent = item;
-                        
-                        const itemQuantity = document.createElement('span');
-                        itemQuantity.textContent = orders[category][item] + ' pcs';
-                        
-                        itemDiv.appendChild(itemName);
-                        itemDiv.appendChild(itemQuantity);
-                        itemList.appendChild(itemDiv);
-                    }
-                    
-                    categoryDiv.appendChild(itemList);
-                    container.appendChild(categoryDiv);
-                }
-            }
-        }
+  <div class="lottery-number" id="undian" style="display:none;">
+    Nomor Undian Anda: <strong id="nomorUndian"></strong><br><br>
+    <a id="linkWA" href="#" target="_blank">
+      <button style="background:#25D366;">📩 Kirim via WhatsApp</button>
+    </a>
+  </div>
+</div>
 
-        // Format nama kategori untuk ditampilkan
-        function formatCategoryName(category) {
-            const categoryNames = {
-                keringan: "🧺 Keringan",
-                ayam_potong: "🍗 Ayam Potong",
-                sayur: "🥬 Sayur",
-                piteck_lanang: "🦆 Piteck Lanang (Unggas Kampung)",
-                belanja_pusat: "🧄 Belanja Pusat"
-            };
-            return categoryNames[category] || category.split('_').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ');
-        }
+<footer>
+  &copy; 2025 Sticker Spin | Undian transparan dan terverifikasi. Hadiah dikirim langsung ke pemenang.
+</footer>
 
-        // Copy isi kategori ke clipboard
-        function copyCategory(category) {
-            let textToCopy = formatCategoryName(category) + ":\n";
-            
-            for (const item in orders[category]) {
-                textToCopy += `- ${item}: ${orders[category][item]} pcs\n`;
-            }
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert('Kategori berhasil disalin ke clipboard!');
-            }).catch(err => {
-                console.error('Gagal menyalin: ', err);
-                // Fallback untuk browser yang tidak mendukung clipboard API
-                const textarea = document.createElement('textarea');
-                textarea.value = textToCopy;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                alert('Kategori berhasil disalin ke clipboard!');
-            });
-        }
+<script>
+  document.getElementById('orderForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const nama = document.getElementById('nama').value.trim();
+    const nomor = document.getElementById('nomor').value.trim();
+    if (!nama || !nomor) return;
 
-        // Cetak pesanan untuk dikirim via email
-        function printOrders() {
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Daftar Pesanan</title>
-                    <style>
-                        body { font-family: Arial; margin: 0; padding: 20px; }
-                        h1 { text-align: center; }
-                        .category { margin-bottom: 20px; }
-                        .item { display: flex; justify-content: space-between; margin-bottom: 5px; }
-                        @page { size: A4; margin: 15mm; }
-                    </style>
-                </head>
-                <body>
-                    <h1>Daftar Pesanan</h1>
-            `);
-            
-            for (const category in orders) {
-                if (Object.keys(orders[category]).length > 0) {
-                    printWindow.document.write(`
-                        <div class="category">
-                            <h3>${formatCategoryName(category)}</h3>
-                    `);
-                    
-                    for (const item in orders[category]) {
-                        printWindow.document.write(`
-                            <div class="item">
-                                <span>${item}</span>
-                                <span>${orders[category][item]} pcs</span>
-                            </div>
-                        `);
-                    }
-                    
-                    printWindow.document.write('</div>');
-                }
-            }
-            
-            printWindow.document.write(`
-                <div style="margin-top: 30px; text-align: center; font-style: italic;">
-                    Dokumen ini dicetak pada ${new Date().toLocaleString()}
-                </div>
-                </body>
-                </html>
-            `);
-            
-            printWindow.document.close();
-            setTimeout(() => {
-                printWindow.print();
-            }, 500);
-        }
+    const undian = "SS" + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('nomorUndian').textContent = undian;
+    document.getElementById('undian').style.display = 'block';
 
-        // Hapus semua pesanan
-        function clearAll() {
-            if (confirm('Apakah Anda yakin ingin menghapus semua pesanan?')) {
-                orders = {
-                    keringan: {},
-                    ayam_potong: {},
-                    sayur: {},
-                    piteck_lanang: {},
-                    belanja_pusat: {}
-                };
-                saveToLocalStorage();
-                renderOrders();
-            }
-        }
+    const pesan = `Halo admin! Saya telah membeli paket stiker.\n\nNama: ${nama}\nNomor WhatsApp: ${nomor}\nNomor Undian: ${undian}\n\nTolong kirimkan stiker dan konfirmasi undian saya ya.`;
+    const url = `https://wa.me/6281234567890?text=${encodeURIComponent(pesan)}`;
+    document.getElementById('linkWA').href = url;
+  });
+</script>
 
-        // Simpan ke localStorage
-        function saveToLocalStorage() {
-            localStorage.setItem('orders', JSON.stringify(orders));
-        }
-
-        // Muat dari localStorage
-        function loadFromLocalStorage() {
-            const savedOrders = localStorage.getItem('orders');
-            if (savedOrders) {
-                orders = JSON.parse(savedOrders);
-            }
-        }
-    </script>
 </body>
 </html>
