@@ -3,48 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StikerLotere ✨ Beli & Menangkan Jutaan!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>StikerLotere 🍍 Beli & Menangkan Jutaan di Bikini Bottom!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Global & Variabel CSS */
+        /* Global & Variabel CSS - Spongebob Theme! */
         :root {
-            --primary: #FF3D67; /* Pink terang, lebih menarik */
-            --secondary: #2E1546; /* Ungu gelap */
-            --accent: #FFEB3B; /* Kuning cerah */
-            --dark: #120A20; /* Ungu sangat gelap */
-            --light: #F0F0F0;
-            --gradient-main: linear-gradient(135deg, var(--primary), #FF7B00); /* Orange-pink */
-            --gradient-dark: linear-gradient(135deg, var(--dark), var(--secondary));
+            --spongebob-yellow: #FFEC43; /* Kuning Spongebob */
+            --spongebob-brown: #964B00; /* Cokelat celana Spongebob */
+            --spongebob-purple: #8A2BE2; /* Ungu Squidward */
+            --spongebob-green: #3CB371; /* Hijau laut */
+            --spongebob-pink: #FF69B4; /* Merah muda ubur-ubur */
+            --spongebob-blue: #4682B4; /* Biru langit/air */
+            --spongebob-red: #FF4500; /* Sedikit merah */
+            --spongebob-light: #FFFFFF;
+            --spongebob-dark: #36454F; /* Abu-abu gelap netral */
 
-            /* Warna Pelangi untuk aksen */
-            --rainbow-1: #FF5733;
-            --rainbow-2: #FFBD33;
-            --rainbow-3: #75FF33;
-            --rainbow-4: #33FFBD;
-            --rainbow-5: #3357FF;
-            --rainbow-6: #B933FF;
+            --gradient-ocean: linear-gradient(135deg, var(--spongebob-blue), var(--spongebob-green));
+            --gradient-jellyfish: linear-gradient(135deg, var(--spongebob-pink), var(--spongebob-red));
+            --gradient-krabby: linear-gradient(135deg, var(--spongebob-yellow), var(--spongebob-brown));
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* Hilangkan highlight tap */
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            font-family: 'Rubik', sans-serif;
-            background-color: var(--dark);
-            color: var(--light);
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--spongebob-dark);
+            color: var(--spongebob-light);
             overflow-x: hidden;
             line-height: 1.6;
         }
 
         /* Utility Classes */
         .container {
-            max-width: 100%; /* Lebar penuh untuk mobile */
-            padding: 0 15px; /* Padding samping */
+            max-width: 100%;
+            padding: 0 15px;
             margin: 0 auto;
         }
 
@@ -53,19 +51,20 @@
         }
 
         .section {
-            padding: 60px 0; /* Padding disesuaikan untuk mobile */
+            padding: 60px 0;
             position: relative;
             overflow: hidden;
         }
         
         .section-title {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.2rem; /* Ukuran font disesuaikan */
+            font-family: 'Bangers', cursive; /* Font gaya komik */
+            font-size: 2.5rem; /* Ukuran disesuaikan */
             margin-bottom: 40px;
-            color: var(--light);
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            color: var(--spongebob-yellow); /* Kuning cerah */
+            text-shadow: 3px 3px 0px var(--spongebob-brown), 5px 5px 0px rgba(0,0,0,0.3); /* Efek komik */
             position: relative;
-            display: inline-block; /* Agar after border bekerja dengan baik */
+            display: inline-block;
+            letter-spacing: 2px; /* Sedikit spasi */
         }
         
         .section-title::after {
@@ -73,20 +72,20 @@
             position: absolute;
             bottom: -10px;
             left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: var(--gradient-main);
+            transform: translateX(-50%) skew(-10deg); /* Miring sedikit */
+            width: 90px;
+            height: 5px;
+            background: var(--gradient-jellyfish); /* Gradien Jellyfish */
             border-radius: 5px;
         }
 
         .cta-button {
             display: inline-block;
-            background: var(--gradient-main);
-            color: var(--dark);
+            background: var(--gradient-krabby); /* Gradien Krabby Patty */
+            color: var(--spongebob-light); /* Teks putih */
             font-weight: 700;
             font-size: 1.1rem;
-            padding: 12px 30px; /* Padding disesuaikan */
+            padding: 12px 30px;
             border-radius: 50px;
             text-decoration: none;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
@@ -95,26 +94,27 @@
             letter-spacing: 1px;
             border: none;
             cursor: pointer;
-            animation: bounceIn 0.8s ease-out forwards; /* Animasi muncul */
+            animation: bounceIn 0.8s ease-out forwards;
+            font-family: 'Fredoka One', cursive; /* Font khusus untuk CTA */
         }
         
         .cta-button:hover {
-            transform: translateY(-3px) scale(1.05); /* Sedikit lift dan scale */
+            transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            background: #FF7B00; /* Warna akhir gradien saat hover */
+            background: var(--spongebob-brown); /* Warna akhir gradien saat hover */
         }
 
         /* Keyframes untuk Animasi */
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.08); } /* Lebih berdenyut */
             100% { transform: scale(1); }
         }
 
         @keyframes bounceIn {
             0% { opacity: 0; transform: scale(0.3); }
             50% { opacity: 1; transform: scale(1.1); }
-            70% { transform: scale(0.9); }
+            70% { transform: scale(0.95); }
             100% { transform: scale(1); }
         }
 
@@ -128,39 +128,58 @@
             100% { opacity: 1; }
         }
 
-        /* Floating WhatsApp Button */
+        /* Floating WhatsApp Button - Theme Spongebob */
         .floating.whatsapp {
             position: fixed;
-            bottom: 20px; /* Lebih dekat ke bawah */
-            right: 20px; /* Lebih dekat ke kanan */
-            background: #25D366; /* Warna WhatsApp asli */
-            width: 55px; /* Ukuran disesuaikan */
+            bottom: 20px;
+            right: 20px;
+            background: var(--spongebob-green); /* Hijau cerah */
+            width: 55px;
             height: 55px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
-            color: var(--light);
+            color: var(--spongebob-light);
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
             z-index: 1000;
             transition: all 0.3s ease;
-            animation: pulse 2s infinite ease-in-out; /* Animasi berdenyut */
+            animation: pulse 2s infinite ease-in-out;
+            border: 2px solid var(--spongebob-yellow); /* Border kuning */
         }
         
         .floating.whatsapp:hover {
             transform: scale(1.1) translateY(-3px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            background: #25D366; /* Warna WhatsApp asli saat hover */
         }
 
-        /* Header */
+        /* Header - Theme Spongebob */
         header {
-            background: var(--gradient-dark);
+            background: var(--spongebob-blue); /* Biru laut */
             padding: 15px 0;
             position: relative;
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-            border-bottom: 3px solid var(--primary);
+            border-bottom: 5px solid var(--spongebob-green); /* Garis hijau laut */
+        }
+
+        header::before { /* Efek gelembung air */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%),
+                        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
+            animation: bubbles 15s infinite linear;
+        }
+
+        @keyframes bubbles {
+            0% { background-position: 0% 0%, 50% 50%; }
+            100% { background-position: 100% 100%, 0% 0%; }
         }
         
         .header-content {
@@ -172,48 +191,51 @@
         }
         
         .logo {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem; /* Ukuran font disesuaikan */
+            font-family: 'Bangers', cursive;
+            font-size: 2rem;
             font-weight: 800;
-            color: var(--light);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: var(--spongebob-yellow); /* Kuning Spongebob */
+            text-shadow: 3px 3px 0px var(--spongebob-brown);
             display: flex;
             align-items: center;
+            letter-spacing: 1px;
         }
         
         .logo span {
-            color: var(--accent);
-            margin-left: 5px; /* Sedikit jarak */
+            color: var(--spongebob-pink); /* Merah muda ubur-ubur */
+            margin-left: 5px;
         }
         
         .logo-icon {
-            font-size: 2.2rem; /* Ukuran ikon disesuaikan */
+            font-size: 2.5rem;
             margin-right: 8px;
-            color: var(--primary); /* Warna ikon logo */
+            color: var(--spongebob-yellow); /* Kuning Spongebob */
+            text-shadow: 2px 2px 0px var(--spongebob-brown);
         }
         
         .countdown {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.3);
             padding: 8px 15px;
             border-radius: 30px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            font-size: 0.9rem; /* Ukuran font lebih kecil untuk mobile */
-            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.9rem;
+            border: 2px solid var(--spongebob-yellow); /* Border kuning */
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+            color: var(--spongebob-light);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         
         .countdown i {
-            color: var(--accent);
+            color: var(--spongebob-pink); /* Pink ubur-ubur */
             margin-right: 5px;
         }
 
         .countdown span {
-            color: var(--accent);
+            color: var(--spongebob-yellow); /* Kuning */
             font-weight: 700;
             margin-left: 3px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -227,11 +249,11 @@
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">
-                        <i class="fas fa-gem"></i> </div>
-                    Stiker<span style="color: var(--accent);">LOTERE</span>
+                        <i class="fas fa-pineapple"></i> </div>
+                    Stiker<span style="color: var(--spongebob-pink);">LOTERE</span>
                 </div>
                 <div class="countdown">
-                    <i class="fas fa-hourglass-half"></i> Undian: <span>00:00:00</span>
+                    <i class="fas fa-jellyfish"></i> Undian: <span>00:00:00</span>
                 </div>
             </div>
         </div>
@@ -241,20 +263,21 @@
 
 ---
 
-**Bagian 2: Hero Section & How It Works**
+**Bagian 2: Hero Section & How It Works dengan Tema Spongebob**
 
 ```html
     <style>
-        /* Hero Section */
+        /* Hero Section - Theme Spongebob */
         .hero {
-            background: url('https://images.unsplash.com/photo-1627918818817-57b17165a21c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center;
+            background: url('https://images.unsplash.com/photo-1544062590-b1ff8548972e?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center; /* Gambar dasar laut ceria */
             background-size: cover;
-            min-height: 70vh; /* Tinggi yang pas untuk mobile */
+            min-height: 75vh; /* Sedikit lebih tinggi */
             display: flex;
             align-items: center;
             position: relative;
             padding: 40px 0;
-            text-align: center; /* Teks di tengah untuk mobile */
+            text-align: center;
+            border-bottom: 8px solid var(--spongebob-green); /* Garis tebal hijau */
         }
         
         .hero::before {
@@ -264,7 +287,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(46,21,70,0.95), rgba(255,61,103,0.8)); /* Overlay lebih gelap */
+            background: linear-gradient(45deg, rgba(70,130,180,0.85), rgba(60,179,113,0.85)); /* Gradien air laut */
             z-index: 1;
         }
         
@@ -272,24 +295,30 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            animation: fadeIn 1.5s ease-out; /* Animasi muncul */
+            animation: fadeIn 1.5s ease-out;
+            background: rgba(255,255,255,0.1); /* Sedikit transparan untuk konten */
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px); /* Efek blur ringan */
+            border: 3px solid var(--spongebob-yellow);
         }
         
         .hero h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.8rem; /* Ukuran font disesuaikan */
-            font-weight: 800;
-            line-height: 1.2;
+            font-family: 'Bangers', cursive;
+            font-size: 3rem; /* Ukuran font lebih besar */
+            line-height: 1.1;
             margin-bottom: 15px;
-            text-shadow: 0 3px 8px rgba(0,0,0,0.5);
-            color: var(--light);
+            text-shadow: 4px 4px 0px var(--spongebob-brown), 6px 6px 0px rgba(0,0,0,0.4);
+            color: var(--spongebob-yellow);
+            letter-spacing: 3px;
         }
         
         .hero h1 span {
-            color: var(--accent);
+            color: var(--spongebob-pink);
             position: relative;
             display: inline-block;
-            text-shadow: 0 0 10px var(--accent); /* Efek glow */
+            text-shadow: 0 0 15px var(--spongebob-pink), 2px 2px 0px var(--spongebob-red); /* Efek glow & border */
         }
         
         .hero h1 span::after {
@@ -298,46 +327,50 @@
             bottom: 0px;
             left: 0;
             width: 100%;
-            height: 8px;
-            background: linear-gradient(90deg, var(--rainbow-1), var(--rainbow-2), var(--rainbow-3));
+            height: 10px; /* Lebih tebal */
+            background: var(--gradient-jellyfish);
             z-index: -1;
-            opacity: 0.8;
-            transform: skew(-15deg); /* Efek garis miring */
-            border-radius: 3px;
+            opacity: 0.9;
+            transform: skew(-15deg);
+            border-radius: 5px;
         }
         
         .hero p {
-            font-size: 1rem; /* Ukuran font disesuaikan */
-            max-width: 90%; /* Lebar terbatas untuk mobile */
+            font-family: 'Fredoka One', cursive; /* Font yang lebih ceria */
+            font-size: 1.1rem;
+            max-width: 90%;
             margin: 0 auto 30px auto;
-            opacity: 0.9;
+            opacity: 0.95;
+            color: var(--spongebob-light);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* How It Works */
+        /* How It Works - Theme Spongebob */
         .how-it-works {
-            background-color: var(--secondary);
+            background-color: var(--spongebob-blue); /* Biru laut */
             padding: 60px 0;
             box-shadow: inset 0 5px 15px rgba(0,0,0,0.2);
+            border-bottom: 8px solid var(--spongebob-green);
         }
 
         .steps {
             display: flex;
-            flex-direction: column; /* Kolom tunggal untuk mobile */
-            gap: 25px; /* Jarak antar step */
+            flex-direction: column;
+            gap: 25px;
         }
         
         .step {
             text-align: center;
-            padding: 25px; /* Padding disesuaikan */
-            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            background: var(--spongebob-dark); /* Background gelap */
             border-radius: 18px;
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            transform: translateY(20px); /* Initial for animation */
-            opacity: 0; /* Initial for animation */
+            border: 3px solid var(--spongebob-yellow); /* Border kuning cerah */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            transform: translateY(20px);
+            opacity: 0;
         }
         
         .step.is-visible {
@@ -345,102 +378,103 @@
             opacity: 1;
         }
 
-        .step::before { /* Efek gradien di latar belakang */
+        .step::before {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(255,61,103,0.1), rgba(255,123,0,0.1));
+            background: linear-gradient(45deg, var(--spongebob-pink), var(--spongebob-red)); /* Gradien ceria */
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 0;
         }
 
         .step:hover::before {
-            opacity: 1;
+            opacity: 0.2; /* Lebih terang saat hover */
         }
 
         .step:hover {
             transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
-            border-color: var(--primary);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+            border-color: var(--spongebob-pink);
         }
         
         .step-number {
-            font-family: 'Fredoka One', cursive;
-            font-size: 3.5rem;
+            font-family: 'Bangers', cursive;
+            font-size: 4rem; /* Lebih besar */
             font-weight: 800;
-            color: rgba(255,255,255,0.08); /* Lebih transparan */
+            color: rgba(255,255,255,0.08);
             position: absolute;
-            top: 10px;
-            right: 20px;
+            top: 5px;
+            right: 15px;
             z-index: 1;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
         }
         
         .step-icon {
-            font-size: 3rem;
+            font-size: 3.5rem; /* Ukuran ikon disesuaikan */
             margin-bottom: 15px;
-            color: var(--accent); /* Warna ikon */
+            color: var(--spongebob-yellow); /* Kuning cerah */
             position: relative;
             z-index: 2;
-            text-shadow: 0 0 8px rgba(255,235,59,0.5);
+            text-shadow: 0 0 10px rgba(255,236,67,0.7); /* Efek glow */
         }
         
         .step h3 {
             font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem; /* Ukuran disesuaikan */
+            font-size: 1.8rem;
             margin-bottom: 10px;
-            color: var(--primary);
+            color: var(--spongebob-pink); /* Merah muda */
             position: relative;
             z-index: 2;
         }
         
         .step p {
             font-size: 0.95rem;
-            opacity: 0.8;
+            opacity: 0.9;
             position: relative;
             z-index: 2;
+            color: var(--spongebob-light);
         }
     </style>
 
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>Beli Stiker, Menangkan **Hadiah Impian**!</h1>
-                <p>Jutaan rupiah menanti Anda! Dapatkan stiker WhatsApp eksklusif, kumpulkan tiket undian, dan jadi pemenang berikutnya!</p>
-                <a href="#stickers" class="cta-button">Pilih Stiker & Menangkan Sekarang!</a>
+                <h1>Siap-Siap! Beli Stiker & Menangkan <span>HADIAH KEREN</span>!</h1>
+                <p>Ikuti keseruan di Bikini Bottom! Dapatkan stiker WhatsApp super lucu, kumpulkan tiket, dan raih hadiah fantastis setiap minggu!</p>
+                <a href="#stickers" class="cta-button">PILIH STIKERMU SEKARANG!</a>
             </div>
         </div>
     </section>
     
     <section class="section how-it-works">
         <div class="container text-center">
-            <h2 class="section-title">Bagaimana Cara Menang?</h2>
+            <h2 class="section-title">CARA MAINNYA MUDAH BANGET!</h2>
             <div class="steps">
                 <div class="step">
                     <div class="step-number">1</div>
                     <div class="step-icon">
-                        <i class="fas fa-star-of-life"></i> </div>
-                    <h3>PILIH STIKER KEBERUNTUNGANMU</h3>
-                    <p>Temukan koleksi stiker WhatsApp paling keren dengan harga yang sangat terjangkau. Tiap stiker adalah tiket emasmu!</p>
+                        <i class="fas fa-fish"></i> </div>
+                    <h3>PILIH STIKER FAVORITMU</h3>
+                    <p>Dari Patrick sampai Tuan Krabs, koleksi stiker unik menanti. Pilih yang paling kamu suka!</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-icon">
                         <i class="fas fa-ticket-alt"></i>
                     </div>
-                    <h3>OTOMATIS DAPAT TIKET UNDIAN</h3>
-                    <p>Setiap pembelian stiker, kamu otomatis mendapatkan tiket undian. Semakin banyak beli, semakin besar peluangmu!</p>
+                    <h3>DAPATKAN TIKET UNDIAN AJAIB</h3>
+                    <p>Setiap pembelian stiker, kamu langsung dapat tiket undian. Lebih banyak stiker, lebih banyak peluang!</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
                     <div class="step-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <h3>RAIH HADIAH JUTAAN RUPIAH!</h3>
-                    <p>Tunggu pengumuman undian mingguan! Bersiaplah jadi jutawan baru dengan hadiah-hadiah fantastis kami!</p>
+                        <i class="fas fa-treasure-chest"></i> </div>
+                    <h3>MENANGKAN HARTA KARUN BIKINI BOTTOM!</h3>
+                    <p>Tunggu pengumuman pemenang! Siapa tahu kamu yang beruntung bawa pulang hadiah impian!</p>
                 </div>
             </div>
         </div>
@@ -450,32 +484,33 @@
 
 ---
 
-**Bagian 3: Stickers Section & Prizes Section**
+**Bagian 3: Stickers Section & Prizes Section dengan Tema Spongebob**
 
 ```html
     <style>
-        /* Stickers Section */
+        /* Stickers Section - Theme Spongebob */
         .stickers {
-            background: var(--dark);
+            background: var(--spongebob-dark); /* Background gelap */
             padding: 60px 0;
         }
         
         .sticker-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Kolom adaptif */
-            gap: 20px; /* Jarak antar kartu */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
         }
         
         .sticker-card {
-            background: var(--secondary); /* Background kartu stiker */
+            background: var(--spongebob-blue); /* Biru cerah */
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             transition: all 0.4s ease;
             position: relative;
-            border: 2px solid transparent; /* Border default */
-            transform: translateY(20px); /* Initial for animation */
-            opacity: 0; /* Initial for animation */
+            border: 3px solid var(--spongebob-yellow); /* Border kuning */
+            transform: translateY(20px);
+            opacity: 0;
+            animation: bubbles 10s infinite linear alternate; /* Animasi gelembung di kartu */
         }
 
         .sticker-card.is-visible {
@@ -485,89 +520,96 @@
         
         .sticker-card:hover {
             transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
-            border-color: var(--accent); /* Border saat hover */
+            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+            border-color: var(--spongebob-pink); /* Border pink saat hover */
         }
         
         .sticker-image {
-            height: 150px; /* Tinggi gambar disesuaikan */
-            background: rgba(255,255,255,0.05);
+            height: 150px;
+            background: var(--spongebob-light); /* Latar belakang gambar putih */
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px; /* Padding disesuaikan */
+            padding: 10px;
         }
         
         .sticker-image img {
-            max-width: 90%; /* Ukuran gambar dalam container */
+            max-width: 90%;
             max-height: 90%;
             object-fit: contain;
             transition: transform 0.3s ease;
         }
 
         .sticker-card:hover .sticker-image img {
-            transform: scale(1.05); /* Sedikit zoom saat hover */
+            transform: scale(1.05);
         }
         
         .sticker-info {
-            padding: 15px; /* Padding disesuaikan */
-            color: var(--light);
+            padding: 15px;
+            color: var(--spongebob-light);
+            background: var(--spongebob-brown); /* Latar belakang cokelat */
         }
         
         .sticker-info h3 {
-            font-size: 1.1rem; /* Ukuran font disesuaikan */
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
             margin-bottom: 8px;
-            font-weight: 700;
+            color: var(--spongebob-yellow); /* Kuning */
         }
         
         .sticker-price {
-            font-size: 1.3rem; /* Ukuran font disesuaikan */
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--spongebob-pink); /* Pink */
             margin-bottom: 12px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
         }
         
         .sticker-button {
             display: block;
             text-align: center;
-            background: var(--primary);
-            color: var(--light);
+            background: var(--spongebob-yellow); /* Kuning cerah */
+            color: var(--spongebob-brown); /* Teks cokelat */
             padding: 10px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            font-size: 0.95rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            font-size: 1rem;
+            font-family: 'Fredoka One', cursive;
         }
         
         .sticker-button:hover {
-            background: #FF7B00; /* Warna gradien kedua */
+            background: var(--spongebob-green); /* Hijau saat hover */
+            color: var(--spongebob-light);
             transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.4);
         }
         
         .prize-badge {
             position: absolute;
             top: 10px;
-            left: 10px; /* Pindah ke kiri atas */
-            background: var(--accent); /* Warna badge */
-            color: var(--dark);
+            left: 10px;
+            background: var(--spongebob-pink); /* Pink */
+            color: var(--spongebob-light);
             padding: 4px 8px;
             border-radius: 5px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 800;
-            animation: pulse 2s infinite ease-in-out;
+            animation: pulse 1.5s infinite ease-in-out;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-family: 'Fredoka One', cursive;
         }
         
-        /* Prizes Section */
+        /* Prizes Section - Theme Spongebob */
         .prizes {
-            background: url('https://images.unsplash.com/photo-1579547672280-9289d021c32c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center;
+            background: url('https://images.unsplash.com/photo-1542289658-0050811e58ae?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center; /* Karang warna-warni */
             background-size: cover;
             position: relative;
-            padding: 80px 0; /* Padding lebih besar */
+            padding: 80px 0;
+            border-bottom: 8px solid var(--spongebob-yellow);
         }
         
         .prizes::before {
@@ -577,7 +619,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, rgba(46,21,70,0.95), rgba(255,61,103,0.8)); /* Gradien vertikal */
+            background: linear-gradient(180deg, rgba(70,130,180,0.9), rgba(60,179,113,0.9)); /* Gradien air laut lebih gelap */
             z-index: 1;
         }
         
@@ -588,21 +630,21 @@
         
         .prize-grid {
             display: flex;
-            flex-direction: column; /* Kolom tunggal untuk mobile */
-            gap: 25px; /* Jarak antar kartu */
+            flex-direction: column;
+            gap: 25px;
         }
         
         .prize-card {
-            background: rgba(255,255,255,0.97); /* Hampir putih */
+            background: var(--spongebob-light); /* Putih */
             border-radius: 18px;
             padding: 25px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             transition: all 0.4s ease;
-            color: var(--dark);
-            border: 3px solid transparent; /* Border default */
-            transform: translateY(20px); /* Initial for animation */
-            opacity: 0; /* Initial for animation */
+            color: var(--spongebob-dark);
+            border: 3px solid var(--spongebob-green); /* Border hijau */
+            transform: translateY(20px);
+            opacity: 0;
         }
 
         .prize-card.is-visible {
@@ -612,48 +654,49 @@
         
         .prize-card:hover {
             transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         
         .prize-card.gold {
-            border-color: var(--accent); /* Kuning emas */
-            background: linear-gradient(135deg, #FFFDE7, #FFEB3B); /* Gradien emas */
-            color: #795548; /* Teks lebih gelap */
+            border-color: var(--spongebob-yellow);
+            background: linear-gradient(135deg, var(--spongebob-yellow), #FFD700); /* Gradien kuning-emas */
+            color: var(--spongebob-brown);
         }
         
         .prize-card.silver {
-            border-color: #B0BEC5; /* Abu-abu perak */
-            background: linear-gradient(135deg, #ECEFF1, #CFD8DC);
-            color: #455A64;
+            border-color: var(--spongebob-purple); /* Ungu Squidward */
+            background: linear-gradient(135deg, #B0BEC5, #CFD8DC);
+            color: var(--spongebob-dark);
         }
         
         .prize-card.bronze {
-            border-color: #A1887F; /* Coklat perunggu */
+            border-color: var(--spongebob-brown);
             background: linear-gradient(135deg, #EFEBE9, #D7CCC8);
-            color: #5D4037;
+            color: var(--spongebob-dark);
         }
         
         .prize-icon {
             font-size: 3rem;
             margin-bottom: 15px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
         }
         
         .prize-card.gold .prize-icon {
-            color: var(--accent);
-            text-shadow: 0 0 15px rgba(255,235,59,0.7);
+            color: var(--spongebob-red); /* Merah cerah */
+            text-shadow: 0 0 15px rgba(255,69,0,0.8);
         }
         
         .prize-card.silver .prize-icon {
-            color: #78909C;
+            color: var(--spongebob-purple); /* Ungu */
         }
         
         .prize-card.bronze .prize-icon {
-            color: #8D6E63;
+            color: var(--spongebob-brown); /* Cokelat */
         }
         
         .prize-card h3 {
             font-family: 'Fredoka One', cursive;
-            font-size: 1.6rem; /* Ukuran disesuaikan */
+            font-size: 1.6rem;
             margin-bottom: 10px;
         }
         
@@ -664,96 +707,96 @@
         }
         
         .prize-value {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.2rem; /* Ukuran disesuaikan */
+            font-family: 'Bangers', cursive;
+            font-size: 2.5rem; /* Lebih besar */
             font-weight: 800;
             margin-bottom: 15px;
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
         }
         
         .prize-card.gold .prize-value {
-            color: #D4AF37; /* Emas */
+            color: var(--spongebob-red); /* Merah */
         }
         
         .prize-card.silver .prize-value {
-            color: #9E9E9E; /* Perak */
+            color: var(--spongebob-purple);
         }
         
         .prize-card.bronze .prize-value {
-            color: #8D6E63; /* Perunggu */
+            color: var(--spongebob-brown);
         }
     </style>
 
     <section class="section stickers" id="stickers">
         <div class="container text-center">
-            <h2 class="section-title">Pilih Stiker Keberuntunganmu</h2>
-            <p style="margin-bottom: 30px; font-size: 1rem; opacity: 0.9;">Setiap stiker adalah kunci menuju hadiah fantastis! Pilih favoritmu dan kumpulkan tiket undianmu sekarang!</p>
+            <h2 class="section-title">KOLEKSI STIKER LUCU KAMI!</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1rem; opacity: 0.9; color: var(--spongebob-light); font-family: 'Fredoka One', cursive;">Setiap stiker membawa petualangan baru dan kesempatan emas!</p>
             <div class="sticker-grid">
                 <div class="sticker-card">
                     <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/FF3D67/FFFFFF?text=FUN%20EMOJI" alt="Stiker Emoji Lucu">
+                        <img src="https://via.placeholder.com/200x200/FFEC43/8A2BE2?text=SPONGEBOB!" alt="Stiker Spongebob">
                     </div>
                     <div class="sticker-info">
-                        <h3>Paket Fun Emoji</h3>
+                        <h3>Spongebob Ekspresif</h3>
                         <div class="sticker-price">Rp 5.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
                     </div>
-                    <div class="prize-badge">1 Tiket Undian</div>
+                    <div class="prize-badge">1 TIKET!</div>
                 </div>
                 <div class="sticker-card">
                     <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/2E1546/FFFFFF?text=CUTE%20ANIMALS" alt="Stiker Hewan Menggemaskan">
+                        <img src="https://via.placeholder.com/200x200/FF69B4/FFFFFF?text=PATRICK!" alt="Stiker Patrick">
                     </div>
                     <div class="sticker-info">
-                        <h3>Paket Cute Animals</h3>
+                        <h3>Patrick Bintang Laut</h3>
                         <div class="sticker-price">Rp 10.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
                     </div>
-                    <div class="prize-badge">2 Tiket Undian</div>
+                    <div class="prize-badge">2 TIKET!</div>
                 </div>
                 <div class="sticker-card">
                     <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/FF7B00/FFFFFF?text=TRENDY%20CARTOON" alt="Stiker Kartun Populer">
+                        <img src="https://via.placeholder.com/200x200/8A2BE2/FFFFFF?text=SQUIDWARD!" alt="Stiker Squidward">
                     </div>
                     <div class="sticker-info">
-                        <h3>Paket Trendy Cartoon</h3>
+                        <h3>Squidward Si Pemarah</h3>
                         <div class="sticker-price">Rp 15.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
                     </div>
-                    <div class="prize-badge">3 Tiket Undian</div>
+                    <div class="prize-badge">3 TIKET!</div>
                 </div>
                 <div class="sticker-card">
                     <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/FFEB3B/2E1546?text=SPECIAL%20EVENT" alt="Stiker Hari Raya">
+                        <img src="https://via.placeholder.com/200x200/964B00/FFEC43?text=MR.KRABS!" alt="Stiker Mr. Krabs">
                     </div>
                     <div class="sticker-info">
-                        <h3>Paket Special Event</h3>
+                        <h3>Tuan Krabs Pelit</h3>
                         <div class="sticker-price">Rp 20.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
                     </div>
-                    <div class="prize-badge">4 Tiket Undian</div>
+                    <div class="prize-badge">4 TIKET!</div>
                 </div>
                 <div class="sticker-card">
                     <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/FF3D67/FFFFFF?text=ULTIMATE" alt="Paket Super Lengkap">
+                        <img src="https://via.placeholder.com/200x200/3CB371/FFFFFF?text=PLANKTON!" alt="Stiker Plankton">
                     </div>
                     <div class="sticker-info">
-                        <h3>Paket Ultimate Edition</h3>
+                        <h3>Plankton Jahat</h3>
                         <div class="sticker-price">Rp 50.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
                     </div>
-                    <div class="prize-badge">10 Tiket Undian</div>
+                    <div class="prize-badge">10 TIKET!</div>
                 </div>
                 <div class="sticker-card">
                     <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/2E1546/FFFFFF?text=COLLECTOR" alt="Paket Limited Edition">
+                        <img src="https://via.placeholder.com/200x200/FF4500/FFFFFF?text=GARY!" alt="Stiker Gary">
                     </div>
                     <div class="sticker-info">
-                        <h3>Paket Collector's Item</h3>
+                        <h3>Gary Si Siput</h3>
                         <div class="sticker-price">Rp 100.000</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
                     </div>
-                    <div class="prize-badge">25 Tiket Undian</div>
+                    <div class="prize-badge">25 TIKET!</div>
                 </div>
             </div>
         </div>
@@ -761,61 +804,59 @@
     
     <section class="section prizes" id="prizes">
         <div class="container text-center">
-            <h2 class="section-title" style="color: var(--light);">Hadiah Menggila Menanti Anda!</h2>
-            <p style="margin-bottom: 30px; font-size: 1rem; opacity: 0.9; color: var(--light);">Siapa bilang mimpi tak bisa jadi kenyataan? Berikut adalah hadiah-hadiah fantastis yang bisa kamu menangkan!</p>
+            <h2 class="section-title" style="color: var(--spongebob-yellow);">HADIAH HEBOH DARI BIKINI BOTTOM!</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1rem; opacity: 0.9; color: var(--spongebob-light); font-family: 'Fredoka One', cursive;">Siapa yang siap berpetualang dan membawa pulang harta karun?</p>
             <div class="prize-grid">
                 <div class="prize-card gold">
                     <div class="prize-icon">
-                        <i class="fas fa-gem"></i>
+                        <i class="fas fa-crown"></i>
                     </div>
-                    <h3>HADIAH UTAMA</h3>
-                    <p>Wujudkan mimpimu! Jackpot super besar menanti pemenang yang beruntung!</p>
-                    <div class="prize-value">Rp 50.000.000</div> <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Premium SEUMUR HIDUP!</p>
+                    <h3>MAHKOTA NEPTUNE!</h3>
+                    <p>Hadiah utama yang bikin kamu jadi Raja/Ratu Bikini Bottom!</p>
+                    <div class="prize-value">Rp 100.000.000</div> <p style="font-weight: 600; font-size: 0.9rem;">+ Liburan ke Krusty Krab!</p>
                 </div>
                 <div class="prize-card silver">
                     <div class="prize-icon">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <h3>HADIAH KEDUA</h3>
-                    <p>Laptop gaming atau gadget idaman impianmu kini bisa jadi milikmu!</p>
-                    <div class="prize-value">Laptop Gaming Canggih</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Premium 2 Tahun</p>
+                        <i class="fas fa-burger-soda"></i> </div>
+                    <h3>RESEP RAHASIA!</h3>
+                    <p>Rasakan kelezatan Krabby Patty setiap hari dengan hadiah ini!</p>
+                    <div class="prize-value">Setahun Krabby Patty Gratis</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Eksklusif</p>
                 </div>
                 <div class="prize-card bronze">
                     <div class="prize-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>HADIAH KETIGA</h3>
-                    <p>Upgrade smartphone kamu ke yang terbaru. Jangan lewatkan kesempatan ini!</p>
-                    <div class="prize-value">Smartphone Flagship Terbaru</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Premium 1 Tahun</p>
+                        <i class="fas fa-saxophone"></i> </div>
+                    <h3>SAKSOFON SQUIDWARD!</h3>
+                    <p>Mainkan melodi terindah (atau terburuk) dengan hadiah ini!</p>
+                    <div class="prize-value">Saksofon Edisi Terbatas</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Meet & Greet Squidward</p>
                 </div>
                 <div class="prize-card">
                     <div class="prize-icon">
-                        <i class="fas fa-coins"></i>
+                        <i class="fas fa-jellyfish"></i>
                     </div>
-                    <h3>HADIAH UANG TUNAI</h3>
-                    <p>10 Pemenang Hadiah Uang Tunai Langsung!</p>
-                    <div class="prize-value">Rp 1.000.000</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Eksklusif</p>
+                    <h3>PEMBURU UBUR-UBUR!</h3>
+                    <p>Perlengkapan lengkap untuk petualangan seru!</p>
+                    <div class="prize-value">Jaring Ubur-ubur Spesial</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Gary</p>
                 </div>
                 <div class="prize-card">
                     <div class="prize-icon">
-                        <i class="fas fa-plane-departure"></i>
+                        <i class="fas fa-car"></i>
                     </div>
-                    <h3>HADIAH PETUALANGAN</h3>
-                    <p>Liburan impian GRATIS untuk 2 orang!</p>
-                    <div class="prize-value">Tiket Liburan ke Bali</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Uang Saku & Stiker Travel</p>
+                    <h3>SIM PERAHU PATRICK!</h3>
+                    <p>Belajar menyetir perahu tanpa harus ke sekolah Mrs. Puff!</p>
+                    <div class="prize-value">Kursus Mengemudi Perahu</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Patrick</p>
                 </div>
                 <div class="prize-card">
                     <div class="prize-icon">
-                        <i class="fas fa-surprise"></i>
+                        <i class="fas fa-umbrella-beach"></i>
                     </div>
-                    <h3>HADIAH KEJUTAN MISTERI</h3>
-                    <p>Siap-siap terkejut dengan hadiah spesial yang tak terduga!</p>
-                    <div class="prize-value">? ? ?</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Limited Edition</p>
+                    <h3>LIBURAN DI GOO LAGOON!</h3>
+                    <p>Nikmati santai di pantai terbaik Bikini Bottom!</p>
+                    <div class="prize-value">Paket Liburan 3 Hari 2 Malam</div>
+                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Pantai</p>
                 </div>
             </div>
         </div>
@@ -825,31 +866,31 @@
 
 ---
 
-**Bagian 4: Testimonials, Footer, dan JavaScript**
+**Bagian 4: Testimonials, Footer, dan JavaScript dengan Tema Spongebob**
 
 ```html
     <style>
-        /* Testimonials */
+        /* Testimonials - Theme Spongebob */
         .testimonials {
-            background: var(--dark);
+            background: var(--spongebob-dark);
             padding: 60px 0;
         }
         
         .testimonial-grid {
             display: flex;
-            flex-direction: column; /* Kolom tunggal untuk mobile */
+            flex-direction: column;
             gap: 25px;
         }
         
         .testimonial-card {
-            background: var(--secondary); /* Warna background */
+            background: var(--spongebob-blue); /* Background biru */
             padding: 25px;
             border-radius: 18px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
             position: relative;
-            border: 1px solid rgba(255,255,255,0.1);
-            transform: translateY(20px); /* Initial for animation */
-            opacity: 0; /* Initial for animation */
+            border: 3px solid var(--spongebob-green); /* Border hijau */
+            transform: translateY(20px);
+            opacity: 0;
         }
 
         .testimonial-card.is-visible {
@@ -857,15 +898,15 @@
             opacity: 1;
         }
         
-        .testimonial-card::before { /* Tanda kutip lebih menonjol */
-            content: "\f10d"; /* Font Awesome quote icon */
+        .testimonial-card::before {
+            content: "\f0a1"; /* Ikon balon bicara */
             font-family: "Font Awesome 5 Free";
             font-weight: 900;
             position: absolute;
             top: 15px;
             left: 15px;
             font-size: 3.5rem;
-            color: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.15); /* Lebih terlihat */
             line-height: 1;
             z-index: 0;
         }
@@ -873,83 +914,87 @@
         .testimonial-content {
             margin-bottom: 15px;
             font-style: italic;
-            font-size: 0.95rem;
+            font-size: 1rem; /* Ukuran font lebih besar */
             position: relative;
             z-index: 1;
-            padding-left: 20px; /* Jarak dari tanda kutip */
+            padding-left: 20px;
+            color: var(--spongebob-light);
         }
         
         .testimonial-author {
             display: flex;
             align-items: center;
             margin-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255,255,255,0.2);
             padding-top: 15px;
         }
         
         .testimonial-author img {
-            width: 45px; /* Ukuran gambar disesuaikan */
-            height: 45px;
+            width: 50px; /* Ukuran gambar lebih besar */
+            height: 50px;
             border-radius: 50%;
             margin-right: 12px;
             object-fit: cover;
-            border: 2px solid var(--primary); /* Border di avatar */
+            border: 3px solid var(--spongebob-yellow); /* Border kuning di avatar */
         }
         
         .author-info h4 {
-            font-size: 1rem;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
             margin-bottom: 3px;
-            color: var(--accent); /* Warna nama */
-            font-weight: 700;
+            color: var(--spongebob-yellow); /* Kuning */
         }
         
         .author-info p {
-            font-size: 0.8rem;
-            opacity: 0.7;
+            font-size: 0.85rem;
+            opacity: 0.8;
+            color: var(--spongebob-light);
         }
         
-        /* Footer */
+        /* Footer - Theme Spongebob */
         footer {
-            background: var(--gradient-dark);
+            background: var(--gradient-ocean); /* Gradien laut */
             padding: 40px 0 20px;
-            color: var(--light);
-            border-top: 3px solid var(--primary);
+            color: var(--spongebob-light);
+            border-top: 5px solid var(--spongebob-yellow);
         }
         
         .footer-content {
             display: flex;
-            flex-direction: column; /* Kolom tunggal untuk mobile */
-            gap: 30px; /* Jarak antar kolom */
+            flex-direction: column;
+            gap: 30px;
             margin-bottom: 20px;
         }
         
         .footer-column {
-            text-align: center; /* Teks tengah untuk mobile */
+            text-align: center;
         }
         
         .footer-column h3 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.4rem;
+            font-family: 'Bangers', cursive;
+            font-size: 1.6rem; /* Ukuran lebih besar */
             margin-bottom: 15px;
             position: relative;
-            display: inline-block; /* Untuk garis bawah */
+            display: inline-block;
             padding-bottom: 8px;
+            color: var(--spongebob-yellow);
+            text-shadow: 2px 2px 0px var(--spongebob-brown);
         }
         
         .footer-column h3::after {
             content: "";
             position: absolute;
             bottom: 0;
-            left: 50%; /* Tengah */
+            left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: var(--primary);
+            width: 70px;
+            height: 4px;
+            background: var(--spongebob-pink); /* Pink */
             border-radius: 2px;
         }
         
         .footer-column p, .footer-column ul {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             opacity: 0.9;
         }
 
@@ -963,7 +1008,7 @@
         }
         
         .footer-column ul li a {
-            color: var(--light);
+            color: var(--spongebob-light);
             text-decoration: none;
             opacity: 0.8;
             transition: all 0.3s ease;
@@ -971,12 +1016,12 @@
         
         .footer-column ul li a:hover {
             opacity: 1;
-            color: var(--primary);
+            color: var(--spongebob-yellow); /* Kuning saat hover */
         }
         
         .social-links {
             display: flex;
-            justify-content: center; /* Tengah untuk mobile */
+            justify-content: center;
             gap: 12px;
             margin-top: 15px;
         }
@@ -985,19 +1030,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 38px;
-            height: 38px;
-            background: rgba(255,255,255,0.15);
+            width: 40px; /* Ukuran ikon lebih besar */
+            height: 40px;
+            background: rgba(255,255,255,0.2); /* Sedikit transparan */
             border-radius: 50%;
-            color: var(--light);
-            font-size: 1.1rem;
+            color: var(--spongebob-light);
+            font-size: 1.2rem;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 2px solid var(--spongebob-pink); /* Border pink */
         }
         
         .social-links a:hover {
-            background: var(--primary);
+            background: var(--spongebob-red); /* Merah saat hover */
             transform: translateY(-3px) scale(1.1);
+            border-color: var(--spongebob-yellow);
         }
         
         .copyright {
@@ -1005,126 +1052,69 @@
             padding-top: 15px;
             border-top: 1px solid rgba(255,255,255,0.1);
             font-size: 0.8rem;
-            opacity: 0.6;
+            opacity: 0.7;
             margin-top: 20px;
         }
 
-        /* Responsifitas untuk Tablet (Opsional, jika ingin 2 kolom) */
+        /* Responsive - Tablet (min-width: 600px) */
         @media (min-width: 600px) {
-            .sticker-grid {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            }
-            .prize-grid, .testimonial-grid {
-                flex-direction: row; /* Kembali ke baris untuk tablet */
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .prize-card, .testimonial-card {
-                flex: 0 0 calc(50% - 15px); /* Dua kolom */
-            }
-            .steps {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .step {
-                flex: 0 0 calc(50% - 15px); /* Dua kolom */
-            }
-            .footer-content {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: space-between;
-            }
-            .footer-column {
-                flex: 0 0 calc(50% - 15px);
-                text-align: left;
-            }
-            .footer-column h3::after {
-                left: 0;
-                transform: translateX(0);
-            }
-            .social-links {
-                justify-content: flex-start;
-            }
+            .hero h1 { font-size: 3.5rem; }
+            .section-title { font-size: 3rem; }
+            .steps .step { flex: 0 0 calc(50% - 15px); }
+            .prize-grid .prize-card, .testimonial-grid .testimonial-card { flex: 0 0 calc(50% - 15px); }
         }
 
-        /* Responsifitas untuk Desktop (Opsional) */
+        /* Responsive - Desktop (min-width: 992px) */
         @media (min-width: 992px) {
-            .container {
-                max-width: 960px;
-            }
-            .section {
-                padding: 80px 0;
-            }
-            .section-title {
-                font-size: 3rem;
-            }
-            .hero h1 {
-                font-size: 4rem;
-            }
-            .hero p {
-                font-size: 1.2rem;
-            }
-            .cta-button {
-                font-size: 1.2rem;
-                padding: 15px 40px;
-            }
-            .steps .step {
-                flex: 0 0 calc(33.333% - 20px); /* Tiga kolom untuk desktop */
-            }
-            .sticker-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-            .prize-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-            .testimonial-grid {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            }
-            .footer-column {
-                flex: 0 0 calc(25% - 22px); /* Empat kolom */
-            }
+            .container { max-width: 1000px; }
+            .section { padding: 90px 0; }
+            .hero h1 { font-size: 5rem; }
+            .section-title { font-size: 4rem; }
+            .steps .step { flex: 0 0 calc(33.333% - 20px); }
+            .sticker-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+            .prize-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .testimonial-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
         }
     </style>
     
     <section class="section testimonials">
         <div class="container text-center">
-            <h2 class="section-title">Apa Kata Pemenang Kami?</h2>
-            <p style="margin-bottom: 30px; font-size: 1rem; opacity: 0.9;">Mereka sudah membuktikannya! Giliran kamu selanjutnya!</p>
+            <h2 class="section-title">KATA MEREKA YANG SUDAH MENANG!</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1rem; opacity: 0.9; color: var(--spongebob-light); font-family: 'Fredoka One', cursive;">Testimoni jujur dari para Petualang Bikini Bottom!</p>
             <div class="testimonial-grid">
                 <div class="testimonial-card">
                     <div class="testimonial-content">
-                        "Gila! Baru pertama beli stiker di StikerLotere, eh langsung dapat hadiah utamanya! Ini beneran, bukan tipu-tipu. Stikernya juga lucu!"
+                        "Wah, ini bukan mimpi! Saya beli stiker Patrick, eh dapat Mahkota Neptune! StikerLotere emang paling top di Bikini Bottom!"
                     </div>
                     <div class="testimonial-author">
                         <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Testimonial Sarah W.">
                         <div class="author-info">
                             <h4>Sarah Wijaya</h4>
-                            <p>Pemenang Jutaan!</p>
+                            <p>RATU BIKINI BOTTOM!</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
                     <div class="testimonial-content">
-                        "Desain stikernya super keren dan unik! Belum lagi kesempatan menangnya itu loh. Saya sudah koleksi beberapa, dan yakin banget bakal menang!"
+                        "Stikernya lucu-lucu banget, bikin WhatsApp makin ceria! Bonusnya bisa menang Krabby Patty setahun? Langsung borong semua stiker!"
                     </div>
                     <div class="testimonial-author">
                         <img src="https://randomuser.me/api/portraits/men/88.jpg" alt="Testimonial Budi S.">
                         <div class="author-info">
                             <h4>Budi Santoso</h4>
-                            <p>Kolektor Stiker Beruntung</p>
+                            <p>Pecinta Krabby Patty</p>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card">
                     <div class="testimonial-content">
-                        "Pelayanan super cepat dan ramah! Stikernya langsung bisa dipakai. Anak-anak saya happy banget sama stiker kartunnya. Recommended!"
+                        "Pelayanan cepat seperti ubur-ubur! Stikernya langsung sampai. Anak-anak saya suka banget stiker Spongebob-nya. Pasti langganan terus!"
                     </div>
                     <div class="testimonial-author">
                         <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="Testimonial Dewi L.">
                         <div class="author-info">
                             <h4>Dewi Lestari</h4>
-                            <p>Ibu Hebat & Pemenang</p>
+                            <p>Ibu Hebat dari Spongebob</p>
                         </div>
                     </div>
                 </div>
@@ -1136,8 +1126,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <h3>Tentang Kami</h3>
-                    <p>StikerLotere adalah platform inovatif yang menyatukan kegembiraan koleksi stiker dengan sensasi undian berhadiah besar, legal, dan transparan!</p>
+                    <h3>TENTANG PETUALANGAN KAMI</h3>
+                    <p>StikerLotere adalah gerbangmu menuju keseruan di Bikini Bottom, tempat stiker lucu bertemu dengan hadiah impian!</p>
                     <div class="social-links">
                         <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
@@ -1146,58 +1136,56 @@
                     </div>
                 </div>
                 <div class="footer-column">
-                    <h3>Link Cepat</h3>
+                    <h3>JALUR CEPAT</h3>
                     <ul>
-                        <li><a href="#">Beranda</a></li>
-                        <li><a href="#stickers">Stiker Koleksi</a></li>
-                        <li><a href="#prizes">Daftar Hadiah</a></li>
-                        <li><a href="#">Pemenang Terbaru</a></li>
-                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Rumah Nanas</a></li>
+                        <li><a href="#stickers">Krusty Komersial</a></li>
+                        <li><a href="#prizes">Gudang Harta</a></li>
+                        <li><a href="#">Dinding Pemenang</a></li>
+                        <li><a href="#">Pertanyaan Patrick</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Dukungan</h3>
+                    <h3>PUSAT BANTUAN</h3>
                     <ul>
-                        <li><a href="#">Syarat & Ketentuan</a></li>
-                        <li><a href="#">Kebijakan Privasi</a></li>
-                        <li><a href="#">Kontak Bantuan</a></li>
-                        <li><a href="#">Partnership</a></li>
-                        <li><a href="#">Karir</a></li>
+                        <li><a href="#">Aturan Permaianan</a></li>
+                        <li><a href="#">Rahasia Pribadi</a></li>
+                        <li><a href="#">Kontak Krusty</a></li>
+                        <li><a href="#">Jadi Karyawan</a></li>
+                        <li><a href="#">Berita Terbaru</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Hubungi Kami</h3>
+                    <h3>HUBUNGI BIKINI BOTTOM</h3>
                     <ul>
-                        <li><i class="fas fa-envelope"></i> support@stikerlotere.com</li>
+                        <li><i class="fas fa-envelope"></i> help@stikerlotere.com</li>
                         <li><i class="fas fa-phone"></i> +62 8XX XXXX XXXX</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Jakarta, Indonesia</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Bikini Bottom, Laut Pasifik</li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2023 StikerLotere. Semua Hak Dilindungi. Desain oleh AI.
+                &copy; 2023 StikerLotere. Dibuat dengan keceriaan dari Spongebob Squarepants!
             </div>
         </div>
     </footer>
     
     <script>
-        // Simple countdown timer
+        // Simple countdown timer (unchanged, but adjusted icon)
         function updateCountdown() {
             const now = new Date();
             const nextSunday = new Date();
             
-            // Set to next Sunday at 20:00 WIB (GMT+7)
-            nextSunday.setDate(now.getDate() + (7 - now.getDay())); // Get next Sunday
-            nextSunday.setHours(20, 0, 0, 0); // Set to 20:00:00
+            nextSunday.setDate(now.getDate() + (7 - now.getDay()));
+            nextSunday.setHours(20, 0, 0, 0);
 
-            // If today is Sunday and current time is past 20:00, set to next Sunday (7 days later)
             if (now.getDay() === 0 && now.getHours() >= 20) {
                 nextSunday.setDate(nextSunday.getDate() + 7);
             }
             
-            const diff = nextSunday - now; // Difference in milliseconds
+            const diff = nextSunday - now;
             
-            if (diff < 0) { // If countdown has passed
+            if (diff < 0) {
                 document.querySelector('.countdown span').textContent = 'UNDIAN TELAH USAI!';
                 return;
             }
@@ -1208,13 +1196,13 @@
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
             document.querySelector('.countdown span').textContent = 
-                `${days > 0 ? days + 'd ' : ''}${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                `${days > 0 ? days + 'h ' : ''}${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
         
         setInterval(updateCountdown, 1000);
-        updateCountdown(); // Call once immediately to avoid delay
+        updateCountdown();
 
-        // Animate elements on scroll with Intersection Observer for better performance
+        // Animate elements on scroll with Intersection Observer (unchanged logic, adjusted classes)
         const animateOnScroll = () => {
             const elements = document.querySelectorAll('.step, .sticker-card, .prize-card, .testimonial-card');
             
@@ -1222,12 +1210,12 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target); // Stop observing once animated
+                        observer.unobserve(entry.target);
                     }
                 });
             }, {
-                threshold: 0.3, // Adjust threshold as needed (0 to 1)
-                rootMargin: '0px 0px -50px 0px' // Start animation slightly before element enters viewport
+                threshold: 0.3,
+                rootMargin: '0px 0px -50px 0px'
             });
 
             elements.forEach(element => {
