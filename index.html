@@ -2,26 +2,22 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StikerLotere 🍍 Beli & Menangkan Jutaan di Bikini Bottom!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StikerLotere - Beli Stiker, Menangkan Hadiah!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Global & Variabel CSS - Spongebob Theme! */
         :root {
-            --spongebob-yellow: #FFEC43; /* Kuning Spongebob */
-            --spongebob-brown: #964B00; /* Cokelat celana Spongebob */
-            --spongebob-purple: #8A2BE2; /* Ungu Squidward */
-            --spongebob-green: #3CB371; /* Hijau laut */
-            --spongebob-pink: #FF69B4; /* Merah muda ubur-ubur */
-            --spongebob-blue: #4682B4; /* Biru langit/air */
-            --spongebob-red: #FF4500; /* Sedikit merah */
-            --spongebob-light: #FFFFFF;
-            --spongebob-dark: #36454F; /* Abu-abu gelap netral */
-
-            --gradient-ocean: linear-gradient(135deg, var(--spongebob-blue), var(--spongebob-green));
-            --gradient-jellyfish: linear-gradient(135deg, var(--spongebob-pink), var(--spongebob-red));
-            --gradient-krabby: linear-gradient(135deg, var(--spongebob-yellow), var(--spongebob-brown));
+            --primary: #25D366;
+            --primary-dark: #075E54;
+            --accent: #FFD700;
+            --dark: #1A1A1A;
+            --light: #FFFFFF;
+            --red: #FF5252;
+            --yellow: #FFD740;
+            --green: #69F0AE;
+            --blue: #40C4FF;
+            --purple: #E040FB;
+            --gray: #F5F5F5;
         }
         
         * {
@@ -32,1198 +28,1066 @@
         }
         
         body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: var(--spongebob-dark);
-            color: var(--spongebob-light);
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--gray);
+            color: var(--dark);
             overflow-x: hidden;
             line-height: 1.6;
         }
-
-        /* Utility Classes */
-        .container {
+        
+        /* App-like container */
+        .app-container {
             max-width: 100%;
-            padding: 0 15px;
+            width: 100%;
             margin: 0 auto;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .section {
-            padding: 60px 0;
             position: relative;
-            overflow: hidden;
+            background: var(--light);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow-x: hidden;
         }
         
-        .section-title {
-            font-family: 'Bangers', cursive; /* Font gaya komik */
-            font-size: 2.5rem; /* Ukuran disesuaikan */
-            margin-bottom: 40px;
-            color: var(--spongebob-yellow); /* Kuning cerah */
-            text-shadow: 3px 3px 0px var(--spongebob-brown), 5px 5px 0px rgba(0,0,0,0.3); /* Efek komik */
-            position: relative;
-            display: inline-block;
-            letter-spacing: 2px; /* Sedikit spasi */
-        }
-        
-        .section-title::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%) skew(-10deg); /* Miring sedikit */
-            width: 90px;
-            height: 5px;
-            background: var(--gradient-jellyfish); /* Gradien Jellyfish */
-            border-radius: 5px;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: var(--gradient-krabby); /* Gradien Krabby Patty */
-            color: var(--spongebob-light); /* Teks putih */
-            font-weight: 700;
-            font-size: 1.1rem;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: none;
-            cursor: pointer;
-            animation: bounceIn 0.8s ease-out forwards;
-            font-family: 'Fredoka One', cursive; /* Font khusus untuk CTA */
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            background: var(--spongebob-brown); /* Warna akhir gradien saat hover */
-        }
-
-        /* Keyframes untuk Animasi */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.08); } /* Lebih berdenyut */
-            100% { transform: scale(1); }
-        }
-
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3); }
-            50% { opacity: 1; transform: scale(1.1); }
-            70% { transform: scale(0.95); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes slideInUp {
-            0% { opacity: 0; transform: translateY(50px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* Floating WhatsApp Button - Theme Spongebob */
-        .floating.whatsapp {
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 15px;
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--spongebob-green); /* Hijau cerah */
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: var(--spongebob-light);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            animation: pulse 2s infinite ease-in-out;
-            border: 2px solid var(--spongebob-yellow); /* Border kuning */
-        }
-        
-        .floating.whatsapp:hover {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            background: #25D366; /* Warna WhatsApp asli saat hover */
-        }
-
-        /* Header - Theme Spongebob */
-        header {
-            background: var(--spongebob-blue); /* Biru laut */
-            padding: 15px 0;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-            border-bottom: 5px solid var(--spongebob-green); /* Garis hijau laut */
-        }
-
-        header::before { /* Efek gelembung air */
-            content: "";
-            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%),
-                        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
-            animation: bubbles 15s infinite linear;
-        }
-
-        @keyframes bubbles {
-            0% { background-position: 0% 0%, 50% 50%; }
-            100% { background-position: 100% 100%, 0% 0%; }
-        }
-        
-        .header-content {
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            z-index: 2;
         }
         
         .logo {
-            font-family: 'Bangers', cursive;
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--spongebob-yellow); /* Kuning Spongebob */
-            text-shadow: 3px 3px 0px var(--spongebob-brown);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--light);
             display: flex;
             align-items: center;
-            letter-spacing: 1px;
         }
         
         .logo span {
-            color: var(--spongebob-pink); /* Merah muda ubur-ubur */
-            margin-left: 5px;
+            color: var(--accent);
         }
         
         .logo-icon {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             margin-right: 8px;
-            color: var(--spongebob-yellow); /* Kuning Spongebob */
-            text-shadow: 2px 2px 0px var(--spongebob-brown);
         }
         
-        .countdown {
-            background: rgba(0,0,0,0.3);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-weight: 600;
+        .header-actions {
             display: flex;
             align-items: center;
-            font-size: 0.9rem;
-            border: 2px solid var(--spongebob-yellow); /* Border kuning */
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
-            color: var(--spongebob-light);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         
-        .countdown i {
-            color: var(--spongebob-pink); /* Pink ubur-ubur */
-            margin-right: 5px;
+        .header-icon {
+            font-size: 1.3rem;
+            color: var(--light);
+            margin-left: 15px;
+            position: relative;
         }
-
-        .countdown span {
-            color: var(--spongebob-yellow); /* Kuning */
-            font-weight: 700;
-            margin-left: 3px;
-        }
-    </style>
-</head>
-<body>
-    <a href="https://wa.me/6281234567890" class="floating whatsapp" aria-label="Hubungi Kami via WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-    
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-pineapple"></i> </div>
-                    Stiker<span style="color: var(--spongebob-pink);">LOTERE</span>
-                </div>
-                <div class="countdown">
-                    <i class="fas fa-jellyfish"></i> Undian: <span>00:00:00</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    ```
-
----
-
-**Bagian 2: Hero Section & How It Works dengan Tema Spongebob**
-
-```html
-    <style>
-        /* Hero Section - Theme Spongebob */
-        .hero {
-            background: url('https://images.unsplash.com/photo-1544062590-b1ff8548972e?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center; /* Gambar dasar laut ceria */
-            background-size: cover;
-            min-height: 75vh; /* Sedikit lebih tinggi */
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--red);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 0.7rem;
             display: flex;
             align-items: center;
-            position: relative;
-            padding: 40px 0;
-            text-align: center;
-            border-bottom: 8px solid var(--spongebob-green); /* Garis tebal hijau */
+            justify-content: center;
+            font-weight: bold;
         }
         
-        .hero::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(70,130,180,0.85), rgba(60,179,113,0.85)); /* Gradien air laut */
-            z-index: 1;
+        /* Main Content */
+        .main-content {
+            padding: 80px 0 70px;
         }
         
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            animation: fadeIn 1.5s ease-out;
-            background: rgba(255,255,255,0.1); /* Sedikit transparan untuk konten */
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px); /* Efek blur ringan */
-            border: 3px solid var(--spongebob-yellow);
-        }
-        
-        .hero h1 {
-            font-family: 'Bangers', cursive;
-            font-size: 3rem; /* Ukuran font lebih besar */
-            line-height: 1.1;
-            margin-bottom: 15px;
-            text-shadow: 4px 4px 0px var(--spongebob-brown), 6px 6px 0px rgba(0,0,0,0.4);
-            color: var(--spongebob-yellow);
-            letter-spacing: 3px;
-        }
-        
-        .hero h1 span {
-            color: var(--spongebob-pink);
-            position: relative;
-            display: inline-block;
-            text-shadow: 0 0 15px var(--spongebob-pink), 2px 2px 0px var(--spongebob-red); /* Efek glow & border */
-        }
-        
-        .hero h1 span::after {
-            content: "";
-            position: absolute;
-            bottom: 0px;
-            left: 0;
-            width: 100%;
-            height: 10px; /* Lebih tebal */
-            background: var(--gradient-jellyfish);
-            z-index: -1;
-            opacity: 0.9;
-            transform: skew(-15deg);
-            border-radius: 5px;
-        }
-        
-        .hero p {
-            font-family: 'Fredoka One', cursive; /* Font yang lebih ceria */
-            font-size: 1.1rem;
-            max-width: 90%;
-            margin: 0 auto 30px auto;
-            opacity: 0.95;
-            color: var(--spongebob-light);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        /* How It Works - Theme Spongebob */
-        .how-it-works {
-            background-color: var(--spongebob-blue); /* Biru laut */
-            padding: 60px 0;
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.2);
-            border-bottom: 8px solid var(--spongebob-green);
-        }
-
-        .steps {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .step {
-            text-align: center;
-            padding: 25px;
-            background: var(--spongebob-dark); /* Background gelap */
-            border-radius: 18px;
+        /* Banner */
+        .banner {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            padding: 20px;
+            margin: 15px;
+            border-radius: 15px;
+            color: white;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s ease;
-            border: 3px solid var(--spongebob-yellow); /* Border kuning cerah */
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            transform: translateY(20px);
-            opacity: 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .step.is-visible {
-            transform: translateY(0);
-            opacity: 1;
+        .banner::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s infinite linear;
         }
-
-        .step::before {
+        
+        @keyframes pulse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .banner-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .banner-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        
+        .banner-title span {
+            color: var(--accent);
+        }
+        
+        .banner-text {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .banner-button {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* Countdown */
+        .countdown-section {
+            background: var(--light);
+            margin: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .countdown-timer {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+        }
+        
+        .countdown-item {
+            flex: 1;
+        }
+        
+        .countdown-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            background: rgba(37,211,102,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .countdown-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        /* Prize Showcase */
+        .prize-showcase {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 20px 15px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .prize-showcase::after {
             content: "";
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
+            right: 0;
+            width: 100px;
             height: 100%;
-            background: linear-gradient(45deg, var(--spongebob-pink), var(--spongebob-red)); /* Gradien ceria */
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 0;
-        }
-
-        .step:hover::before {
-            opacity: 0.2; /* Lebih terang saat hover */
-        }
-
-        .step:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
-            border-color: var(--spongebob-pink);
+            background: url('https://cdn-icons-png.flaticon.com/512/3132/3132693.png') no-repeat right center;
+            background-size: contain;
+            opacity: 0.1;
         }
         
-        .step-number {
-            font-family: 'Bangers', cursive;
-            font-size: 4rem; /* Lebih besar */
+        .prize-showcase-title {
+            font-size: 1.5rem;
             font-weight: 800;
-            color: rgba(255,255,255,0.08);
-            position: absolute;
-            top: 5px;
-            right: 15px;
-            z-index: 1;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
-        }
-        
-        .step-icon {
-            font-size: 3.5rem; /* Ukuran ikon disesuaikan */
-            margin-bottom: 15px;
-            color: var(--spongebob-yellow); /* Kuning cerah */
-            position: relative;
-            z-index: 2;
-            text-shadow: 0 0 10px rgba(255,236,67,0.7); /* Efek glow */
-        }
-        
-        .step h3 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem;
             margin-bottom: 10px;
-            color: var(--spongebob-pink); /* Merah muda */
             position: relative;
             z-index: 2;
         }
         
-        .step p {
-            font-size: 0.95rem;
+        .prize-showcase-title span {
+            color: var(--accent);
+        }
+        
+        .prize-showcase-text {
+            font-size: 0.9rem;
             opacity: 0.9;
+            margin-bottom: 15px;
             position: relative;
             z-index: 2;
-            color: var(--spongebob-light);
         }
-    </style>
-
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Siap-Siap! Beli Stiker & Menangkan <span>HADIAH KEREN</span>!</h1>
-                <p>Ikuti keseruan di Bikini Bottom! Dapatkan stiker WhatsApp super lucu, kumpulkan tiket, dan raih hadiah fantastis setiap minggu!</p>
-                <a href="#stickers" class="cta-button">PILIH STIKERMU SEKARANG!</a>
-            </div>
-        </div>
-    </section>
-    
-    <section class="section how-it-works">
-        <div class="container text-center">
-            <h2 class="section-title">CARA MAINNYA MUDAH BANGET!</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-icon">
-                        <i class="fas fa-fish"></i> </div>
-                    <h3>PILIH STIKER FAVORITMU</h3>
-                    <p>Dari Patrick sampai Tuan Krabs, koleksi stiker unik menanti. Pilih yang paling kamu suka!</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-icon">
-                        <i class="fas fa-ticket-alt"></i>
-                    </div>
-                    <h3>DAPATKAN TIKET UNDIAN AJAIB</h3>
-                    <p>Setiap pembelian stiker, kamu langsung dapat tiket undian. Lebih banyak stiker, lebih banyak peluang!</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-icon">
-                        <i class="fas fa-treasure-chest"></i> </div>
-                    <h3>MENANGKAN HARTA KARUN BIKINI BOTTOM!</h3>
-                    <p>Tunggu pengumuman pemenang! Siapa tahu kamu yang beruntung bawa pulang hadiah impian!</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    ```
-
----
-
-**Bagian 3: Stickers Section & Prizes Section dengan Tema Spongebob**
-
-```html
-    <style>
-        /* Stickers Section - Theme Spongebob */
-        .stickers {
-            background: var(--spongebob-dark); /* Background gelap */
-            padding: 60px 0;
+        
+        .prize-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Sticker Packs */
+        .sticker-packs {
+            padding: 0 15px;
         }
         
         .sticker-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
         }
         
         .sticker-card {
-            background: var(--spongebob-blue); /* Biru cerah */
+            background: var(--light);
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            transition: all 0.4s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             position: relative;
-            border: 3px solid var(--spongebob-yellow); /* Border kuning */
-            transform: translateY(20px);
-            opacity: 0;
-            animation: bubbles 10s infinite linear alternate; /* Animasi gelembung di kartu */
-        }
-
-        .sticker-card.is-visible {
-            transform: translateY(0);
-            opacity: 1;
+            transition: all 0.3s ease;
         }
         
-        .sticker-card:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
-            border-color: var(--spongebob-pink); /* Border pink saat hover */
+        .sticker-card:active {
+            transform: scale(0.98);
+        }
+        
+        .sticker-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--red);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            z-index: 2;
         }
         
         .sticker-image {
-            height: 150px;
-            background: var(--spongebob-light); /* Latar belakang gambar putih */
+            height: 120px;
+            background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            padding: 15px;
+            position: relative;
         }
         
         .sticker-image img {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-
-        .sticker-card:hover .sticker-image img {
-            transform: scale(1.05);
         }
         
         .sticker-info {
-            padding: 15px;
-            color: var(--spongebob-light);
-            background: var(--spongebob-brown); /* Latar belakang cokelat */
+            padding: 12px;
         }
         
-        .sticker-info h3 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: var(--spongebob-yellow); /* Kuning */
+        .sticker-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .sticker-price {
-            font-family: 'Bangers', cursive;
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             font-weight: 800;
-            color: var(--spongebob-pink); /* Pink */
-            margin-bottom: 12px;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+            color: var(--primary);
+            margin-bottom: 8px;
         }
         
         .sticker-button {
             display: block;
             text-align: center;
-            background: var(--spongebob-yellow); /* Kuning cerah */
-            color: var(--spongebob-brown); /* Teks cokelat */
-            padding: 10px;
+            background: var(--primary);
+            color: var(--light);
+            padding: 8px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-            font-size: 1rem;
-            font-family: 'Fredoka One', cursive;
-        }
-        
-        .sticker-button:hover {
-            background: var(--spongebob-green); /* Hijau saat hover */
-            color: var(--spongebob-light);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.4);
-        }
-        
-        .prize-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--spongebob-pink); /* Pink */
-            color: var(--spongebob-light);
-            padding: 4px 8px;
-            border-radius: 5px;
+            font-weight: 600;
             font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sticker-button:active {
+            background: var(--primary-dark);
+        }
+        
+        .ticket-badge {
+            display: inline-block;
+            background: rgba(255,215,0,0.2);
+            color: var(--accent);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-top: 5px;
+            font-weight: 700;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 20px 15px;
+        }
+        
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .step {
+            display: flex;
+            background: var(--light);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            align-items: center;
+        }
+        
+        .step-number {
+            font-size: 1.5rem;
             font-weight: 800;
-            animation: pulse 1.5s infinite ease-in-out;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            font-family: 'Fredoka One', cursive;
+            color: var(--primary);
+            margin-right: 15px;
+            min-width: 40px;
+            text-align: center;
         }
         
-        /* Prizes Section - Theme Spongebob */
-        .prizes {
-            background: url('https://images.unsplash.com/photo-1542289658-0050811e58ae?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center; /* Karang warna-warni */
-            background-size: cover;
-            position: relative;
-            padding: 80px 0;
-            border-bottom: 8px solid var(--spongebob-yellow);
+        .step-content h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
         }
         
-        .prizes::before {
-            content: "";
-            position: absolute;
+        .step-content p {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        /* Winners */
+        .winners-section {
+            padding: 20px 15px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+            margin: 15px 0;
+        }
+        
+        .winner-card {
+            background: var(--light);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+        }
+        
+        .winner-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            margin-right: 15px;
+            overflow: hidden;
+        }
+        
+        .winner-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .winner-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+        
+        .winner-info p {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .winner-prize {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--light);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.7rem;
+        }
+        
+        .nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 3px;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        /* Swiper for banners */
+        .banner-slider {
+            margin: 15px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .swiper-slide {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            padding: 20px;
+            color: white;
+            border-radius: 15px;
+        }
+        
+        .swiper-pagination-bullet {
+            background: white;
+            opacity: 0.5;
+        }
+        
+        .swiper-pagination-bullet-active {
+            background: var(--accent);
+            opacity: 1;
+        }
+        
+        /* Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, rgba(70,130,180,0.9), rgba(60,179,113,0.9)); /* Gradien air laut lebih gelap */
-            z-index: 1;
-        }
-        
-        .prizes .container {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .prize-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .prize-card {
-            background: var(--spongebob-light); /* Putih */
-            border-radius: 18px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            transition: all 0.4s ease;
-            color: var(--spongebob-dark);
-            border: 3px solid var(--spongebob-green); /* Border hijau */
-            transform: translateY(20px);
-            opacity: 0;
-        }
-
-        .prize-card.is-visible {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        .prize-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-        
-        .prize-card.gold {
-            border-color: var(--spongebob-yellow);
-            background: linear-gradient(135deg, var(--spongebob-yellow), #FFD700); /* Gradien kuning-emas */
-            color: var(--spongebob-brown);
-        }
-        
-        .prize-card.silver {
-            border-color: var(--spongebob-purple); /* Ungu Squidward */
-            background: linear-gradient(135deg, #B0BEC5, #CFD8DC);
-            color: var(--spongebob-dark);
-        }
-        
-        .prize-card.bronze {
-            border-color: var(--spongebob-brown);
-            background: linear-gradient(135deg, #EFEBE9, #D7CCC8);
-            color: var(--spongebob-dark);
-        }
-        
-        .prize-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
-        }
-        
-        .prize-card.gold .prize-icon {
-            color: var(--spongebob-red); /* Merah cerah */
-            text-shadow: 0 0 15px rgba(255,69,0,0.8);
-        }
-        
-        .prize-card.silver .prize-icon {
-            color: var(--spongebob-purple); /* Ungu */
-        }
-        
-        .prize-card.bronze .prize-icon {
-            color: var(--spongebob-brown); /* Cokelat */
-        }
-        
-        .prize-card h3 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.6rem;
-            margin-bottom: 10px;
-        }
-        
-        .prize-card p {
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-        
-        .prize-value {
-            font-family: 'Bangers', cursive;
-            font-size: 2.5rem; /* Lebih besar */
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 3px 3px 0px rgba(0,0,0,0.2);
-        }
-        
-        .prize-card.gold .prize-value {
-            color: var(--spongebob-red); /* Merah */
-        }
-        
-        .prize-card.silver .prize-value {
-            color: var(--spongebob-purple);
-        }
-        
-        .prize-card.bronze .prize-value {
-            color: var(--spongebob-brown);
-        }
-    </style>
-
-    <section class="section stickers" id="stickers">
-        <div class="container text-center">
-            <h2 class="section-title">KOLEKSI STIKER LUCU KAMI!</h2>
-            <p style="margin-bottom: 30px; font-size: 1.1rem; opacity: 0.9; color: var(--spongebob-light); font-family: 'Fredoka One', cursive;">Setiap stiker membawa petualangan baru dan kesempatan emas!</p>
-            <div class="sticker-grid">
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/FFEC43/8A2BE2?text=SPONGEBOB!" alt="Stiker Spongebob">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Spongebob Ekspresif</h3>
-                        <div class="sticker-price">Rp 5.000</div>
-                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
-                    </div>
-                    <div class="prize-badge">1 TIKET!</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/FF69B4/FFFFFF?text=PATRICK!" alt="Stiker Patrick">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Patrick Bintang Laut</h3>
-                        <div class="sticker-price">Rp 10.000</div>
-                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
-                    </div>
-                    <div class="prize-badge">2 TIKET!</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/8A2BE2/FFFFFF?text=SQUIDWARD!" alt="Stiker Squidward">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Squidward Si Pemarah</h3>
-                        <div class="sticker-price">Rp 15.000</div>
-                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
-                    </div>
-                    <div class="prize-badge">3 TIKET!</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/964B00/FFEC43?text=MR.KRABS!" alt="Stiker Mr. Krabs">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Tuan Krabs Pelit</h3>
-                        <div class="sticker-price">Rp 20.000</div>
-                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
-                    </div>
-                    <div class="prize-badge">4 TIKET!</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/3CB371/FFFFFF?text=PLANKTON!" alt="Stiker Plankton">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Plankton Jahat</h3>
-                        <div class="sticker-price">Rp 50.000</div>
-                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
-                    </div>
-                    <div class="prize-badge">10 TIKET!</div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/200x200/FF4500/FFFFFF?text=GARY!" alt="Stiker Gary">
-                    </div>
-                    <div class="sticker-info">
-                        <h3>Gary Si Siput</h3>
-                        <div class="sticker-price">Rp 100.000</div>
-                        <a href="#" class="sticker-button">BELI SEKARANG!</a>
-                    </div>
-                    <div class="prize-badge">25 TIKET!</div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="section prizes" id="prizes">
-        <div class="container text-center">
-            <h2 class="section-title" style="color: var(--spongebob-yellow);">HADIAH HEBOH DARI BIKINI BOTTOM!</h2>
-            <p style="margin-bottom: 30px; font-size: 1.1rem; opacity: 0.9; color: var(--spongebob-light); font-family: 'Fredoka One', cursive;">Siapa yang siap berpetualang dan membawa pulang harta karun?</p>
-            <div class="prize-grid">
-                <div class="prize-card gold">
-                    <div class="prize-icon">
-                        <i class="fas fa-crown"></i>
-                    </div>
-                    <h3>MAHKOTA NEPTUNE!</h3>
-                    <p>Hadiah utama yang bikin kamu jadi Raja/Ratu Bikini Bottom!</p>
-                    <div class="prize-value">Rp 100.000.000</div> <p style="font-weight: 600; font-size: 0.9rem;">+ Liburan ke Krusty Krab!</p>
-                </div>
-                <div class="prize-card silver">
-                    <div class="prize-icon">
-                        <i class="fas fa-burger-soda"></i> </div>
-                    <h3>RESEP RAHASIA!</h3>
-                    <p>Rasakan kelezatan Krabby Patty setiap hari dengan hadiah ini!</p>
-                    <div class="prize-value">Setahun Krabby Patty Gratis</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Paket Stiker Eksklusif</p>
-                </div>
-                <div class="prize-card bronze">
-                    <div class="prize-icon">
-                        <i class="fas fa-saxophone"></i> </div>
-                    <h3>SAKSOFON SQUIDWARD!</h3>
-                    <p>Mainkan melodi terindah (atau terburuk) dengan hadiah ini!</p>
-                    <div class="prize-value">Saksofon Edisi Terbatas</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Meet & Greet Squidward</p>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-icon">
-                        <i class="fas fa-jellyfish"></i>
-                    </div>
-                    <h3>PEMBURU UBUR-UBUR!</h3>
-                    <p>Perlengkapan lengkap untuk petualangan seru!</p>
-                    <div class="prize-value">Jaring Ubur-ubur Spesial</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Gary</p>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-icon">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <h3>SIM PERAHU PATRICK!</h3>
-                    <p>Belajar menyetir perahu tanpa harus ke sekolah Mrs. Puff!</p>
-                    <div class="prize-value">Kursus Mengemudi Perahu</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Patrick</p>
-                </div>
-                <div class="prize-card">
-                    <div class="prize-icon">
-                        <i class="fas fa-umbrella-beach"></i>
-                    </div>
-                    <h3>LIBURAN DI GOO LAGOON!</h3>
-                    <p>Nikmati santai di pantai terbaik Bikini Bottom!</p>
-                    <div class="prize-value">Paket Liburan 3 Hari 2 Malam</div>
-                    <p style="font-weight: 600; font-size: 0.9rem;">+ Stiker Pantai</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    ```
-
----
-
-**Bagian 4: Testimonials, Footer, dan JavaScript dengan Tema Spongebob**
-
-```html
-    <style>
-        /* Testimonials - Theme Spongebob */
-        .testimonials {
-            background: var(--spongebob-dark);
-            padding: 60px 0;
-        }
-        
-        .testimonial-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .testimonial-card {
-            background: var(--spongebob-blue); /* Background biru */
-            padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            position: relative;
-            border: 3px solid var(--spongebob-green); /* Border hijau */
-            transform: translateY(20px);
-            opacity: 0;
-        }
-
-        .testimonial-card.is-visible {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        .testimonial-card::before {
-            content: "\f0a1"; /* Ikon balon bicara */
-            font-family: "Font Awesome 5 Free";
-            font-weight: 900;
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 3.5rem;
-            color: rgba(255,255,255,0.15); /* Lebih terlihat */
-            line-height: 1;
-            z-index: 0;
-        }
-        
-        .testimonial-content {
-            margin-bottom: 15px;
-            font-style: italic;
-            font-size: 1rem; /* Ukuran font lebih besar */
-            position: relative;
-            z-index: 1;
-            padding-left: 20px;
-            color: var(--spongebob-light);
-        }
-        
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            margin-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 15px;
-        }
-        
-        .testimonial-author img {
-            width: 50px; /* Ukuran gambar lebih besar */
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 12px;
-            object-fit: cover;
-            border: 3px solid var(--spongebob-yellow); /* Border kuning di avatar */
-        }
-        
-        .author-info h4 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.1rem;
-            margin-bottom: 3px;
-            color: var(--spongebob-yellow); /* Kuning */
-        }
-        
-        .author-info p {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            color: var(--spongebob-light);
-        }
-        
-        /* Footer - Theme Spongebob */
-        footer {
-            background: var(--gradient-ocean); /* Gradien laut */
-            padding: 40px 0 20px;
-            color: var(--spongebob-light);
-            border-top: 5px solid var(--spongebob-yellow);
-        }
-        
-        .footer-content {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-        
-        .footer-column {
-            text-align: center;
-        }
-        
-        .footer-column h3 {
-            font-family: 'Bangers', cursive;
-            font-size: 1.6rem; /* Ukuran lebih besar */
-            margin-bottom: 15px;
-            position: relative;
-            display: inline-block;
-            padding-bottom: 8px;
-            color: var(--spongebob-yellow);
-            text-shadow: 2px 2px 0px var(--spongebob-brown);
-        }
-        
-        .footer-column h3::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70px;
-            height: 4px;
-            background: var(--spongebob-pink); /* Pink */
-            border-radius: 2px;
-        }
-        
-        .footer-column p, .footer-column ul {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-
-        .footer-column ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .footer-column ul li {
-            margin-bottom: 8px;
-        }
-        
-        .footer-column ul li a {
-            color: var(--spongebob-light);
-            text-decoration: none;
-            opacity: 0.8;
-            transition: all 0.3s ease;
-        }
-        
-        .footer-column ul li a:hover {
-            opacity: 1;
-            color: var(--spongebob-yellow); /* Kuning saat hover */
-        }
-        
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        
-        .social-links a {
+            background: rgba(0,0,0,0.8);
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px; /* Ukuran ikon lebih besar */
-            height: 40px;
-            background: rgba(255,255,255,0.2); /* Sedikit transparan */
-            border-radius: 50%;
-            color: var(--spongebob-light);
-            font-size: 1.2rem;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            border: 2px solid var(--spongebob-pink); /* Border pink */
         }
         
-        .social-links a:hover {
-            background: var(--spongebob-red); /* Merah saat hover */
-            transform: translateY(-3px) scale(1.1);
-            border-color: var(--spongebob-yellow);
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
         }
         
-        .copyright {
-            text-align: center;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 20px;
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
         }
-
-        /* Responsive - Tablet (min-width: 600px) */
-        @media (min-width: 600px) {
-            .hero h1 { font-size: 3.5rem; }
-            .section-title { font-size: 3rem; }
-            .steps .step { flex: 0 0 calc(50% - 15px); }
-            .prize-grid .prize-card, .testimonial-grid .testimonial-card { flex: 0 0 calc(50% - 15px); }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
         }
-
-        /* Responsive - Desktop (min-width: 992px) */
-        @media (min-width: 992px) {
-            .container { max-width: 1000px; }
-            .section { padding: 90px 0; }
-            .hero h1 { font-size: 5rem; }
-            .section-title { font-size: 4rem; }
-            .steps .step { flex: 0 0 calc(33.333% - 20px); }
-            .sticker-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
-            .prize-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-            .testimonial-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+        
+        .modal-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            opacity: 0;
+            z-index: 1001;
         }
     </style>
-    
-    <section class="section testimonials">
-        <div class="container text-center">
-            <h2 class="section-title">KATA MEREKA YANG SUDAH MENANG!</h2>
-            <p style="margin-bottom: 30px; font-size: 1.1rem; opacity: 0.9; color: var(--spongebob-light); font-family: 'Fredoka One', cursive;">Testimoni jujur dari para Petualang Bikini Bottom!</p>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        "Wah, ini bukan mimpi! Saya beli stiker Patrick, eh dapat Mahkota Neptune! StikerLotere emang paling top di Bikini Bottom!"
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <div>
+                    Stiker<span>Lotere</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="header-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Banner Slider -->
+            <div class="banner-slider swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="banner-content">
+                            <h2 class="banner-title">Beli Stiker, <span>Menang Hadiah!</span></h2>
+                            <p class="banner-text">Dapatkan kesempatan memenangkan hadiah hingga Rp 10 juta setiap minggunya!</p>
+                            <a href="#" class="banner-button">Mulai Sekarang</a>
+                        </div>
                     </div>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Testimonial Sarah W.">
-                        <div class="author-info">
-                            <h4>Sarah Wijaya</h4>
-                            <p>RATU BIKINI BOTTOM!</p>
+                    <div class="swiper-slide">
+                        <div class="banner-content">
+                            <h2 class="banner-title">Stiker <span>Limited Edition!</span></h2>
+                            <p class="banner-text">Koleksi stiker eksklusif hanya untuk minggu ini!</p>
+                            <a href="#" class="banner-button">Lihat Stiker</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="banner-content">
+                            <h2 class="banner-title">Bonus <span>25 Tiket!</span></h2>
+                            <p class="banner-text">Beli paket premium dan dapatkan 25 tiket undian sekaligus!</p>
+                            <a href="#" class="banner-button">Dapatkan</a>
                         </div>
                     </div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        "Stikernya lucu-lucu banget, bikin WhatsApp makin ceria! Bonusnya bisa menang Krabby Patty setahun? Langsung borong semua stiker!"
+                <div class="swiper-pagination"></div>
+            </div>
+            
+            <!-- Countdown Section -->
+            <section class="countdown-section">
+                <h3 class="section-title">
+                    <i class="fas fa-clock"></i> Undian Berikutnya
+                </h3>
+                <div class="countdown-timer">
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="countdown-days">03</div>
+                        <div class="countdown-label">Hari</div>
                     </div>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/men/88.jpg" alt="Testimonial Budi S.">
-                        <div class="author-info">
-                            <h4>Budi Santoso</h4>
-                            <p>Pecinta Krabby Patty</p>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="countdown-hours">12</div>
+                        <div class="countdown-label">Jam</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="countdown-minutes">34</div>
+                        <div class="countdown-label">Menit</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="countdown-seconds">56</div>
+                        <div class="countdown-label">Detik</div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Prize Showcase -->
+            <section class="prize-showcase">
+                <h2 class="prize-showcase-title">Hadiah Utama <span>Minggu Ini</span></h2>
+                <p class="prize-showcase-text">Beli stiker sekarang untuk kesempatan memenangkan:</p>
+                <div class="prize-value">Rp 10.000.000</div>
+                <p class="prize-showcase-text">+ Paket Stiker Premium 1 Tahun</p>
+            </section>
+            
+            <!-- Sticker Packs -->
+            <section class="sticker-packs">
+                <h3 class="section-title">
+                    <i class="fas fa-sticky-note"></i> Pilih Stiker Anda
+                </h3>
+                <div class="sticker-grid">
+                    <div class="sticker-card" onclick="showStickerModal(1)">
+                        <div class="sticker-badge">TERBARU</div>
+                        <div class="sticker-image">
+                            <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+1" alt="Stiker WhatsApp">
+                        </div>
+                        <div class="sticker-info">
+                            <h3 class="sticker-title">Paket Emoji Lucu</h3>
+                            <div class="sticker-price">Rp 5.000</div>
+                            <div class="ticket-badge">1 Tiket Undian</div>
+                            <a href="#" class="sticker-button">Beli Sekarang</a>
+                        </div>
+                    </div>
+                    <div class="sticker-card" onclick="showStickerModal(2)">
+                        <div class="sticker-image">
+                            <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+2" alt="Stiker WhatsApp">
+                        </div>
+                        <div class="sticker-info">
+                            <h3 class="sticker-title">Paket Hewan Menggemaskan</h3>
+                            <div class="sticker-price">Rp 10.000</div>
+                            <div class="ticket-badge">2 Tiket Undian</div>
+                            <a href="#" class="sticker-button">Beli Sekarang</a>
+                        </div>
+                    </div>
+                    <div class="sticker-card" onclick="showStickerModal(3)">
+                        <div class="sticker-badge">POPULER</div>
+                        <div class="sticker-image">
+                            <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+3" alt="Stiker WhatsApp">
+                        </div>
+                        <div class="sticker-info">
+                            <h3 class="sticker-title">Paket Kartun Terbaik</h3>
+                            <div class="sticker-price">Rp 15.000</div>
+                            <div class="ticket-badge">3 Tiket Undian</div>
+                            <a href="#" class="sticker-button">Beli Sekarang</a>
+                        </div>
+                    </div>
+                    <div class="sticker-card" onclick="showStickerModal(4)">
+                        <div class="sticker-image">
+                            <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+4" alt="Stiker WhatsApp">
+                        </div>
+                        <div class="sticker-info">
+                            <h3 class="sticker-title">Paket Hari Raya</h3>
+                            <div class="sticker-price">Rp 20.000</div>
+                            <div class="ticket-badge">4 Tiket Undian</div>
+                            <a href="#" class="sticker-button">Beli Sekarang</a>
+                        </div>
+                    </div>
+                    <div class="sticker-card" onclick="showStickerModal(5)">
+                        <div class="sticker-badge">BEST VALUE</div>
+                        <div class="sticker-image">
+                            <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+5" alt="Stiker WhatsApp">
+                        </div>
+                        <div class="sticker-info">
+                            <h3 class="sticker-title">Paket Super Lengkap</h3>
+                            <div class="sticker-price">Rp 50.000</div>
+                            <div class="ticket-badge">10 Tiket Undian</div>
+                            <a href="#" class="sticker-button">Beli Sekarang</a>
+                        </div>
+                    </div>
+                    <div class="sticker-card" onclick="showStickerModal(6)">
+                        <div class="sticker-badge">PREMIUM</div>
+                        <div class="sticker-image">
+                            <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+6" alt="Stiker WhatsApp">
+                        </div>
+                        <div class="sticker-info">
+                            <h3 class="sticker-title">Paket Limited Edition</h3>
+                            <div class="sticker-price">Rp 100.000</div>
+                            <div class="ticket-badge">25 Tiket Undian</div>
+                            <a href="#" class="sticker-button">Beli Sekarang</a>
                         </div>
                     </div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        "Pelayanan cepat seperti ubur-ubur! Stikernya langsung sampai. Anak-anak saya suka banget stiker Spongebob-nya. Pasti langganan terus!"
-                    </div>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="Testimonial Dewi L.">
-                        <div class="author-info">
-                            <h4>Dewi Lestari</h4>
-                            <p>Ibu Hebat dari Spongebob</p>
+            </section>
+            
+            <!-- How It Works -->
+            <section class="how-it-works">
+                <h3 class="section-title">
+                    <i class="fas fa-question-circle"></i> Cara Bermain
+                </h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Beli Stiker</h3>
+                            <p>Pilih paket stiker favorit Anda dan selesaikan pembelian</p>
                         </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Dapatkan Tiket</h3>
+                            <p>Setiap pembelian memberikan tiket untuk undian mingguan</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Menangkan Hadiah</h3>
+                            <p>Tunggu pengundian setiap Minggu malam pukul 20.00 WIB</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Winners Section -->
+            <section class="winners-section">
+                <h3 class="section-title">
+                    <i class="fas fa-trophy"></i> Pemenang Terkini
+                </h3>
+                <div class="winner-card">
+                    <div class="winner-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Winner">
+                    </div>
+                    <div class="winner-info">
+                        <h4>Sarah Wijaya</h4>
+                        <p>12 Mei 2023</p>
+                        <div class="winner-prize">Rp 5.000.000</div>
+                    </div>
+                </div>
+                <div class="winner-card">
+                    <div class="winner-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Winner">
+                    </div>
+                    <div class="winner-info">
+                        <h4>Budi Santoso</h4>
+                        <p>5 Mei 2023</p>
+                        <div class="winner-prize">Paket Premium 6 Bulan</div>
+                    </div>
+                </div>
+                <div class="winner-card">
+                    <div class="winner-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Winner">
+                    </div>
+                    <div class="winner-info">
+                        <h4>Dewi Lestari</h4>
+                        <p>28 April 2023</p>
+                        <div class="winner-prize">Rp 2.500.000</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Beranda</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-sticky-note"></i>
+                <span>Stiker</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Hadiah</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Akun</span>
+            </a>
+        </nav>
+        
+        <!-- Floating Action Button -->
+        <a href="#" class="fab floating">
+            <i class="fas fa-shopping-cart"></i>
+        </a>
+        
+        <!-- Sticker Modal -->
+        <div class="modal" id="sticker-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Detail Stiker</h3>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-sticker-content">
+                        <!-- Content will be inserted here by JavaScript -->
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
     
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>TENTANG PETUALANGAN KAMI</h3>
-                    <p>StikerLotere adalah gerbangmu menuju keseruan di Bikini Bottom, tempat stiker lucu bertemu dengan hadiah impian!</p>
-                    <div class="social-links">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h3>JALUR CEPAT</h3>
-                    <ul>
-                        <li><a href="#">Rumah Nanas</a></li>
-                        <li><a href="#stickers">Krusty Komersial</a></li>
-                        <li><a href="#prizes">Gudang Harta</a></li>
-                        <li><a href="#">Dinding Pemenang</a></li>
-                        <li><a href="#">Pertanyaan Patrick</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>PUSAT BANTUAN</h3>
-                    <ul>
-                        <li><a href="#">Aturan Permaianan</a></li>
-                        <li><a href="#">Rahasia Pribadi</a></li>
-                        <li><a href="#">Kontak Krusty</a></li>
-                        <li><a href="#">Jadi Karyawan</a></li>
-                        <li><a href="#">Berita Terbaru</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>HUBUNGI BIKINI BOTTOM</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> help@stikerlotere.com</li>
-                        <li><i class="fas fa-phone"></i> +62 8XX XXXX XXXX</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Bikini Bottom, Laut Pasifik</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; 2023 StikerLotere. Dibuat dengan keceriaan dari Spongebob Squarepants!
-            </div>
-        </div>
-    </footer>
+    <!-- Confetti Container -->
+    <div id="confetti-container"></div>
     
+    <!-- JavaScript -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script>
-        // Simple countdown timer (unchanged, but adjusted icon)
+        // Initialize Swiper
+        const swiper = new Swiper('.swiper-container', {
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
+        
+        // Countdown Timer
         function updateCountdown() {
             const now = new Date();
             const nextSunday = new Date();
             
+            // Set to next Sunday at 20:00
             nextSunday.setDate(now.getDate() + (7 - now.getDay()));
             nextSunday.setHours(20, 0, 0, 0);
-
+            
+            // If today is Sunday and past 20:00, set to next Sunday
             if (now.getDay() === 0 && now.getHours() >= 20) {
                 nextSunday.setDate(nextSunday.getDate() + 7);
             }
             
             const diff = nextSunday - now;
             
-            if (diff < 0) {
-                document.querySelector('.countdown span').textContent = 'UNDIAN TELAH USAI!';
-                return;
-            }
-
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
-            document.querySelector('.countdown span').textContent = 
-                `${days > 0 ? days + 'h ' : ''}${hours < 10 ? '0' : ''}${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            document.getElementById('countdown-days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('countdown-minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('countdown-seconds').textContent = seconds.toString().padStart(2, '0');
         }
         
         setInterval(updateCountdown, 1000);
         updateCountdown();
-
-        // Animate elements on scroll with Intersection Observer (unchanged logic, adjusted classes)
-        const animateOnScroll = () => {
-            const elements = document.querySelectorAll('.step, .sticker-card, .prize-card, .testimonial-card');
-            
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, {
-                threshold: 0.3,
-                rootMargin: '0px 0px -50px 0px'
-            });
-
-            elements.forEach(element => {
-                observer.observe(element);
-            });
-        };
         
-        window.addEventListener('load', animateOnScroll);
+        // Modal Functions
+        function showStickerModal(stickerId) {
+            const modal = document.getElementById('sticker-modal');
+            const content = document.getElementById('modal-sticker-content');
+            
+            // In a real app, you would fetch this data from an API
+            const stickers = [
+                {
+                    id: 1,
+                    title: "Paket Emoji Lucu",
+                    price: "Rp 5.000",
+                    tickets: "1 Tiket Undian",
+                    image: "https://via.placeholder.com/300/25D366/FFFFFF?text=STIKER+1",
+                    description: "Paket stiker emoji lucu dengan berbagai ekspresi menggemaskan untuk percakapan WhatsApp Anda."
+                },
+                {
+                    id: 2,
+                    title: "Paket Hewan Menggemaskan",
+                    price: "Rp 10.000",
+                    tickets: "2 Tiket Undian",
+                    image: "https://via.placeholder.com/300/075E54/FFFFFF?text=STIKER+2",
+                    description: "Koleksi stiker hewan-hewan menggemaskan yang akan membuat percakapan Anda lebih hidup."
+                },
+                {
+                    id: 3,
+                    title: "Paket Kartun Terbaik",
+                    price: "Rp 15.000",
+                    tickets: "3 Tiket Undian",
+                    image: "https://via.placeholder.com/300/128C7E/FFFFFF?text=STIKER+3",
+                    description: "Stiker karakter kartun populer yang pasti disukai oleh semua usia."
+                },
+                {
+                    id: 4,
+                    title: "Paket Hari Raya",
+                    price: "Rp 20.000",
+                    tickets: "4 Tiket Undian",
+                    image: "https://via.placeholder.com/300/25D366/FFFFFF?text=STIKER+4",
+                    description: "Stiker khusus untuk merayakan hari raya dan momen spesial bersama keluarga."
+                },
+                {
+                    id: 5,
+                    title: "Paket Super Lengkap",
+                    price: "Rp 50.000",
+                    tickets: "10 Tiket Undian",
+                    image: "https://via.placeholder.com/300/075E54/FFFFFF?text=STIKER+5",
+                    description: "Paket lengkap berisi semua stiker premium kami dengan harga spesial."
+                },
+                {
+                    id: 6,
+                    title: "Paket Limited Edition",
+                    price: "Rp 100.000",
+                    tickets: "25 Tiket Undian",
+                    image: "https://via.placeholder.com/300/128C7E/FFFFFF?text=STIKER+6",
+                    description: "Koleksi stiker edisi terbatas dengan desain eksklusif hanya untuk Anda."
+                }
+            ];
+            
+            const sticker = stickers.find(s => s.id === stickerId);
+            
+            content.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${sticker.image}" alt="${sticker.title}" style="max-width: 100%; border-radius: 10px; margin-bottom: 15px;">
+                    <h3 style="margin-bottom: 5px;">${sticker.title}</h3>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #25D366; margin-bottom: 10px;">${sticker.price}</div>
+                    <div style="background: rgba(255,215,0,0.2); color: #FFD700; display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: 700; margin-bottom: 15px;">${sticker.tickets}</div>
+                    <p style="margin-bottom: 20px;">${sticker.description}</p>
+                    <button onclick="purchaseSticker(${sticker.id});" style="background: #25D366; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-weight: 700; width: 100%; font-size: 1rem;">Beli Sekarang</button>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('sticker-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        function purchaseSticker(stickerId) {
+            // In a real app, this would process the purchase
+            closeModal();
+            createConfetti();
+            setTimeout(() => {
+                alert('Pembelian berhasil! Stiker telah ditambahkan ke akun Anda dan tiket undian telah tercatat.');
+            }, 500);
+        }
+        
+        // Confetti Effect
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            
+            const colors = ['#FFD700', '#FF5252', '#40C4FF', '#69F0AE', '#E040FB'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -10 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                
+                container.appendChild(confetti);
+                
+                const animationDuration = Math.random() * 3 + 2;
+                
+                confetti.style.animation = `fall ${animationDuration}s linear forwards`;
+                confetti.style.opacity = '1';
+                
+                // Create keyframes for falling animation
+                const keyframes = `
+                    @keyframes fall {
+                        to {
+                            top: 100vh;
+                            transform: rotate(${Math.random() * 360}deg);
+                            left: ${Math.random() * 100}vw;
+                        }
+                    }
+                `;
+                
+                // Add the keyframes to the head
+                const style = document.createElement('style');
+                style.innerHTML = keyframes;
+                document.head.appendChild(style);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                    style.remove();
+                }, animationDuration * 1000);
+            }
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('sticker-modal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
