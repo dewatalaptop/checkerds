@@ -2,66 +2,52 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StikerLotere - Beli Stiker, Menangkan Hadiah!</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #25D366;
             --primary-dark: #075E54;
             --accent: #FFD700;
-            --dark: #1A1A1A;
-            --light: #FFFFFF;
             --red: #FF5252;
             --yellow: #FFD740;
-            --green: #69F0AE;
             --blue: #40C4FF;
             --purple: #E040FB;
+            --dark: #1A1A1A;
+            --light: #FFFFFF;
             --gray: #F5F5F5;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
             font-family: 'Poppins', sans-serif;
+        }
+
+        body {
             background-color: var(--gray);
             color: var(--dark);
             overflow-x: hidden;
-            line-height: 1.6;
         }
-        
-        /* App-like container */
-        .app-container {
-            max-width: 100%;
-            width: 100%;
-            margin: 0 auto;
-            position: relative;
-            background: var(--light);
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            overflow-x: hidden;
-        }
-        
+
         /* Header */
-        .app-header {
+        header {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            padding: 15px;
+            padding: 15px 20px;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
@@ -69,28 +55,27 @@
             display: flex;
             align-items: center;
         }
-        
+
         .logo span {
             color: var(--accent);
         }
-        
+
         .logo-icon {
             font-size: 1.8rem;
-            margin-right: 8px;
+            margin-right: 10px;
         }
-        
+
         .header-actions {
             display: flex;
-            align-items: center;
+            gap: 15px;
         }
-        
+
         .header-icon {
-            font-size: 1.3rem;
             color: var(--light);
-            margin-left: 15px;
+            font-size: 1.2rem;
             position: relative;
         }
-        
+
         .notification-badge {
             position: absolute;
             top: -5px;
@@ -106,25 +91,25 @@
             justify-content: center;
             font-weight: bold;
         }
-        
+
         /* Main Content */
         .main-content {
-            padding: 80px 0 70px;
+            padding: 80px 0 100px;
         }
-        
-        /* Banner */
-        .banner {
+
+        /* Hero Banner */
+        .hero-banner {
             background: linear-gradient(135deg, var(--purple), var(--blue));
-            padding: 20px;
-            margin: 15px;
-            border-radius: 15px;
             color: white;
+            padding: 30px 20px;
+            margin: 20px;
+            border-radius: 15px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-        
-        .banner::before {
+
+        .hero-banner::before {
             content: "";
             position: absolute;
             top: -50%;
@@ -134,55 +119,73 @@
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
             animation: pulse 8s infinite linear;
         }
-        
+
         @keyframes pulse {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .banner-content {
+
+        .hero-content {
             position: relative;
             z-index: 2;
         }
-        
-        .banner-title {
+
+        .hero-title {
             font-size: 1.8rem;
             font-weight: 800;
             margin-bottom: 10px;
             line-height: 1.3;
         }
-        
-        .banner-title span {
+
+        .hero-title span {
             color: var(--accent);
+            position: relative;
         }
-        
-        .banner-text {
+
+        .hero-title span::after {
+            content: "";
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--red);
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .hero-text {
             font-size: 0.9rem;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             opacity: 0.9;
         }
-        
-        .banner-button {
+
+        .cta-button {
             display: inline-block;
             background: var(--accent);
             color: var(--dark);
             font-weight: 700;
-            font-size: 0.9rem;
-            padding: 10px 20px;
+            padding: 12px 30px;
             border-radius: 50px;
             text-decoration: none;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
-        
-        /* Countdown */
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Countdown Section */
         .countdown-section {
-            background: var(--light);
-            margin: 15px;
-            padding: 15px;
+            background: white;
+            margin: 20px;
+            padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        
+
         .section-title {
             font-size: 1.2rem;
             font-weight: 700;
@@ -190,22 +193,23 @@
             display: flex;
             align-items: center;
         }
-        
+
         .section-title i {
             margin-right: 10px;
             color: var(--primary);
         }
-        
+
         .countdown-timer {
             display: flex;
             justify-content: space-between;
             text-align: center;
+            gap: 10px;
         }
-        
+
         .countdown-item {
             flex: 1;
         }
-        
+
         .countdown-number {
             font-size: 1.8rem;
             font-weight: 800;
@@ -215,23 +219,23 @@
             border-radius: 10px;
             margin-bottom: 5px;
         }
-        
+
         .countdown-label {
             font-size: 0.7rem;
             color: #666;
             text-transform: uppercase;
         }
-        
+
         /* Prize Showcase */
         .prize-showcase {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             color: white;
-            padding: 20px 15px;
-            margin: 15px 0;
+            padding: 25px 20px;
+            margin: 20px 0;
             position: relative;
             overflow: hidden;
         }
-        
+
         .prize-showcase::after {
             content: "";
             position: absolute;
@@ -243,7 +247,7 @@
             background-size: contain;
             opacity: 0.1;
         }
-        
+
         .prize-showcase-title {
             font-size: 1.5rem;
             font-weight: 800;
@@ -251,11 +255,11 @@
             position: relative;
             z-index: 2;
         }
-        
+
         .prize-showcase-title span {
             color: var(--accent);
         }
-        
+
         .prize-showcase-text {
             font-size: 0.9rem;
             opacity: 0.9;
@@ -263,40 +267,41 @@
             position: relative;
             z-index: 2;
         }
-        
+
         .prize-value {
             font-size: 2rem;
             font-weight: 800;
             color: var(--accent);
             position: relative;
             z-index: 2;
+            margin-bottom: 10px;
         }
-        
+
         /* Sticker Packs */
         .sticker-packs {
-            padding: 0 15px;
+            padding: 0 20px;
         }
-        
+
         .sticker-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-top: 15px;
         }
-        
+
         .sticker-card {
-            background: var(--light);
+            background: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             position: relative;
             transition: all 0.3s ease;
         }
-        
+
         .sticker-card:active {
             transform: scale(0.98);
         }
-        
+
         .sticker-badge {
             position: absolute;
             top: 10px;
@@ -309,7 +314,7 @@
             font-weight: 700;
             z-index: 2;
         }
-        
+
         .sticker-image {
             height: 120px;
             background: #f0f0f0;
@@ -319,17 +324,17 @@
             padding: 15px;
             position: relative;
         }
-        
+
         .sticker-image img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
         }
-        
+
         .sticker-info {
-            padding: 12px;
+            padding: 15px;
         }
-        
+
         .sticker-title {
             font-size: 0.9rem;
             font-weight: 600;
@@ -338,31 +343,31 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .sticker-price {
             font-size: 1.1rem;
             font-weight: 800;
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
-        
+
         .sticker-button {
             display: block;
             text-align: center;
             background: var(--primary);
-            color: var(--light);
-            padding: 8px;
+            color: white;
+            padding: 10px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.8rem;
             transition: all 0.3s ease;
         }
-        
+
         .sticker-button:active {
             background: var(--primary-dark);
         }
-        
+
         .ticket-badge {
             display: inline-block;
             background: rgba(255,215,0,0.2);
@@ -373,28 +378,28 @@
             margin-top: 5px;
             font-weight: 700;
         }
-        
+
         /* How It Works */
         .how-it-works {
-            padding: 20px 15px;
+            padding: 20px;
         }
-        
+
         .steps {
             display: flex;
             flex-direction: column;
             gap: 15px;
             margin-top: 20px;
         }
-        
+
         .step {
             display: flex;
-            background: var(--light);
+            background: white;
             border-radius: 15px;
             padding: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             align-items: center;
         }
-        
+
         .step-number {
             font-size: 1.5rem;
             font-weight: 800;
@@ -403,34 +408,34 @@
             min-width: 40px;
             text-align: center;
         }
-        
+
         .step-content h3 {
             font-size: 1rem;
             margin-bottom: 5px;
         }
-        
+
         .step-content p {
             font-size: 0.8rem;
             color: #666;
         }
-        
-        /* Winners */
+
+        /* Winners Section */
         .winners-section {
-            padding: 20px 15px;
+            padding: 20px;
             background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
-            margin: 15px 0;
+            margin: 20px 0;
         }
-        
+
         .winner-card {
-            background: var(--light);
+            background: white;
             border-radius: 15px;
             padding: 15px;
             margin-top: 15px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
         }
-        
+
         .winner-avatar {
             width: 50px;
             height: 50px;
@@ -439,44 +444,44 @@
             margin-right: 15px;
             overflow: hidden;
         }
-        
+
         .winner-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
+
         .winner-info h4 {
             font-size: 0.9rem;
             margin-bottom: 3px;
         }
-        
+
         .winner-info p {
             font-size: 0.8rem;
             color: #666;
             margin-bottom: 5px;
         }
-        
+
         .winner-prize {
             font-size: 0.9rem;
             font-weight: 700;
             color: var(--primary);
         }
-        
+
         /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: var(--light);
+            background: white;
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
         }
-        
+
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -485,16 +490,16 @@
             color: #666;
             font-size: 0.7rem;
         }
-        
+
         .nav-item i {
             font-size: 1.3rem;
             margin-bottom: 3px;
         }
-        
+
         .nav-item.active {
             color: var(--primary);
         }
-        
+
         /* Floating Action Button */
         .fab {
             position: fixed;
@@ -509,413 +514,307 @@
             justify-content: center;
             color: white;
             font-size: 1.5rem;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             z-index: 1000;
             transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
         }
-        
+
         .fab:active {
             transform: scale(0.95);
         }
-        
-        /* Swiper for banners */
-        .banner-slider {
-            margin: 15px;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        
-        .swiper-slide {
-            background: linear-gradient(135deg, var(--purple), var(--blue));
-            padding: 20px;
-            color: white;
-            border-radius: 15px;
-        }
-        
-        .swiper-pagination-bullet {
-            background: white;
-            opacity: 0.5;
-        }
-        
-        .swiper-pagination-bullet-active {
-            background: var(--accent);
-            opacity: 1;
-        }
-        
-        /* Animation */
+
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
             100% { transform: translateY(0px); }
         }
-        
-        .floating {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-        
-        .modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 400px;
-            border-radius: 15px;
-            overflow: hidden;
-            transform: scale(0.9);
-            transition: all 0.3s ease;
-        }
-        
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-        
-        .modal-header {
-            background: var(--primary);
+
+        /* Flash Sale Banner */
+        .flash-sale {
+            background: var(--red);
             color: white;
-            padding: 15px;
+            padding: 10px;
+            text-align: center;
             font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            animation: blink 1s infinite;
         }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
+
+        @keyframes blink {
+            0% { background: var(--red); }
+            50% { background: var(--yellow); }
         }
-        
-        .modal-body {
-            padding: 20px;
+
+        /* Counter Animation */
+        .counter {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: 600;
+            color: var(--dark);
         }
-        
-        /* Confetti */
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: var(--accent);
-            opacity: 0;
-            z-index: 1001;
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .sticker-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .hero-title {
+                font-size: 2.2rem;
+            }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- App Header -->
-        <header class="app-header">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-sticky-note"></i>
-                </div>
-                <div>
-                    Stiker<span>Lotere</span>
-                </div>
-            </div>
-            <div class="header-actions">
-                <div class="header-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <div class="header-icon">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </div>
-            </div>
-        </header>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Banner Slider -->
-            <div class="banner-slider swiper-container">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <div class="banner-content">
-                            <h2 class="banner-title">Beli Stiker, <span>Menang Hadiah!</span></h2>
-                            <p class="banner-text">Dapatkan kesempatan memenangkan hadiah hingga Rp 10 juta setiap minggunya!</p>
-                            <a href="#" class="banner-button">Mulai Sekarang</a>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="banner-content">
-                            <h2 class="banner-title">Stiker <span>Limited Edition!</span></h2>
-                            <p class="banner-text">Koleksi stiker eksklusif hanya untuk minggu ini!</p>
-                            <a href="#" class="banner-button">Lihat Stiker</a>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="banner-content">
-                            <h2 class="banner-title">Bonus <span>25 Tiket!</span></h2>
-                            <p class="banner-text">Beli paket premium dan dapatkan 25 tiket undian sekaligus!</p>
-                            <a href="#" class="banner-button">Dapatkan</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-pagination"></div>
-            </div>
-            
-            <!-- Countdown Section -->
-            <section class="countdown-section">
-                <h3 class="section-title">
-                    <i class="fas fa-clock"></i> Undian Berikutnya
-                </h3>
-                <div class="countdown-timer">
-                    <div class="countdown-item">
-                        <div class="countdown-number" id="countdown-days">03</div>
-                        <div class="countdown-label">Hari</div>
-                    </div>
-                    <div class="countdown-item">
-                        <div class="countdown-number" id="countdown-hours">12</div>
-                        <div class="countdown-label">Jam</div>
-                    </div>
-                    <div class="countdown-item">
-                        <div class="countdown-number" id="countdown-minutes">34</div>
-                        <div class="countdown-label">Menit</div>
-                    </div>
-                    <div class="countdown-item">
-                        <div class="countdown-number" id="countdown-seconds">56</div>
-                        <div class="countdown-label">Detik</div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Prize Showcase -->
-            <section class="prize-showcase">
-                <h2 class="prize-showcase-title">Hadiah Utama <span>Minggu Ini</span></h2>
-                <p class="prize-showcase-text">Beli stiker sekarang untuk kesempatan memenangkan:</p>
-                <div class="prize-value">Rp 10.000.000</div>
-                <p class="prize-showcase-text">+ Paket Stiker Premium 1 Tahun</p>
-            </section>
-            
-            <!-- Sticker Packs -->
-            <section class="sticker-packs">
-                <h3 class="section-title">
-                    <i class="fas fa-sticky-note"></i> Pilih Stiker Anda
-                </h3>
-                <div class="sticker-grid">
-                    <div class="sticker-card" onclick="showStickerModal(1)">
-                        <div class="sticker-badge">TERBARU</div>
-                        <div class="sticker-image">
-                            <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+1" alt="Stiker WhatsApp">
-                        </div>
-                        <div class="sticker-info">
-                            <h3 class="sticker-title">Paket Emoji Lucu</h3>
-                            <div class="sticker-price">Rp 5.000</div>
-                            <div class="ticket-badge">1 Tiket Undian</div>
-                            <a href="#" class="sticker-button">Beli Sekarang</a>
-                        </div>
-                    </div>
-                    <div class="sticker-card" onclick="showStickerModal(2)">
-                        <div class="sticker-image">
-                            <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+2" alt="Stiker WhatsApp">
-                        </div>
-                        <div class="sticker-info">
-                            <h3 class="sticker-title">Paket Hewan Menggemaskan</h3>
-                            <div class="sticker-price">Rp 10.000</div>
-                            <div class="ticket-badge">2 Tiket Undian</div>
-                            <a href="#" class="sticker-button">Beli Sekarang</a>
-                        </div>
-                    </div>
-                    <div class="sticker-card" onclick="showStickerModal(3)">
-                        <div class="sticker-badge">POPULER</div>
-                        <div class="sticker-image">
-                            <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+3" alt="Stiker WhatsApp">
-                        </div>
-                        <div class="sticker-info">
-                            <h3 class="sticker-title">Paket Kartun Terbaik</h3>
-                            <div class="sticker-price">Rp 15.000</div>
-                            <div class="ticket-badge">3 Tiket Undian</div>
-                            <a href="#" class="sticker-button">Beli Sekarang</a>
-                        </div>
-                    </div>
-                    <div class="sticker-card" onclick="showStickerModal(4)">
-                        <div class="sticker-image">
-                            <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+4" alt="Stiker WhatsApp">
-                        </div>
-                        <div class="sticker-info">
-                            <h3 class="sticker-title">Paket Hari Raya</h3>
-                            <div class="sticker-price">Rp 20.000</div>
-                            <div class="ticket-badge">4 Tiket Undian</div>
-                            <a href="#" class="sticker-button">Beli Sekarang</a>
-                        </div>
-                    </div>
-                    <div class="sticker-card" onclick="showStickerModal(5)">
-                        <div class="sticker-badge">BEST VALUE</div>
-                        <div class="sticker-image">
-                            <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+5" alt="Stiker WhatsApp">
-                        </div>
-                        <div class="sticker-info">
-                            <h3 class="sticker-title">Paket Super Lengkap</h3>
-                            <div class="sticker-price">Rp 50.000</div>
-                            <div class="ticket-badge">10 Tiket Undian</div>
-                            <a href="#" class="sticker-button">Beli Sekarang</a>
-                        </div>
-                    </div>
-                    <div class="sticker-card" onclick="showStickerModal(6)">
-                        <div class="sticker-badge">PREMIUM</div>
-                        <div class="sticker-image">
-                            <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+6" alt="Stiker WhatsApp">
-                        </div>
-                        <div class="sticker-info">
-                            <h3 class="sticker-title">Paket Limited Edition</h3>
-                            <div class="sticker-price">Rp 100.000</div>
-                            <div class="ticket-badge">25 Tiket Undian</div>
-                            <a href="#" class="sticker-button">Beli Sekarang</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- How It Works -->
-            <section class="how-it-works">
-                <h3 class="section-title">
-                    <i class="fas fa-question-circle"></i> Cara Bermain
-                </h3>
-                <div class="steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h3>Beli Stiker</h3>
-                            <p>Pilih paket stiker favorit Anda dan selesaikan pembelian</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h3>Dapatkan Tiket</h3>
-                            <p>Setiap pembelian memberikan tiket untuk undian mingguan</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h3>Menangkan Hadiah</h3>
-                            <p>Tunggu pengundian setiap Minggu malam pukul 20.00 WIB</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Winners Section -->
-            <section class="winners-section">
-                <h3 class="section-title">
-                    <i class="fas fa-trophy"></i> Pemenang Terkini
-                </h3>
-                <div class="winner-card">
-                    <div class="winner-avatar">
-                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Winner">
-                    </div>
-                    <div class="winner-info">
-                        <h4>Sarah Wijaya</h4>
-                        <p>12 Mei 2023</p>
-                        <div class="winner-prize">Rp 5.000.000</div>
-                    </div>
-                </div>
-                <div class="winner-card">
-                    <div class="winner-avatar">
-                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Winner">
-                    </div>
-                    <div class="winner-info">
-                        <h4>Budi Santoso</h4>
-                        <p>5 Mei 2023</p>
-                        <div class="winner-prize">Paket Premium 6 Bulan</div>
-                    </div>
-                </div>
-                <div class="winner-card">
-                    <div class="winner-avatar">
-                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Winner">
-                    </div>
-                    <div class="winner-info">
-                        <h4>Dewi Lestari</h4>
-                        <p>28 April 2023</p>
-                        <div class="winner-prize">Rp 2.500.000</div>
-                    </div>
-                </div>
-            </section>
-        </main>
-        
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
-                <i class="fas fa-home"></i>
-                <span>Beranda</span>
-            </a>
-            <a href="#" class="nav-item">
+    <!-- Flash Sale Banner -->
+    <div class="flash-sale">
+        🔥 FLASH SALE: 1 Stiker = 3 Tiket (Hari Ini Saja!)
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
                 <i class="fas fa-sticky-note"></i>
-                <span>Stiker</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-trophy"></i>
-                <span>Hadiah</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-user"></i>
-                <span>Akun</span>
-            </a>
-        </nav>
-        
-        <!-- Floating Action Button -->
-        <a href="#" class="fab floating">
-            <i class="fas fa-shopping-cart"></i>
-        </a>
-        
-        <!-- Sticker Modal -->
-        <div class="modal" id="sticker-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Detail Stiker</h3>
-                    <button class="modal-close" onclick="closeModal()">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="modal-sticker-content">
-                        <!-- Content will be inserted here by JavaScript -->
-                    </div>
-                </div>
+            </div>
+            <div>
+                Stiker<span>Lotere</span>
             </div>
         </div>
-    </div>
-    
-    <!-- Confetti Container -->
-    <div id="confetti-container"></div>
-    
+        <div class="header-actions">
+            <div class="header-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Banner -->
+        <section class="hero-banner">
+            <div class="hero-content">
+                <h1 class="hero-title">Beli <span>Stiker</span>, Menangkan <span>Hadiah!</span></h1>
+                <p class="hero-text">Dapatkan stiker WhatsApp eksklusif dan kesempatan memenangkan hadiah hingga Rp 10.000.000 setiap minggu!</p>
+                <a href="#stickers" class="cta-button">Lihat Stiker</a>
+            </div>
+        </section>
+
+        <!-- Counter -->
+        <div class="counter">
+            ⏳ <span id="sale-counter">1,234</span> stiker terjual hari ini!
+        </div>
+
+        <!-- Countdown Section -->
+        <section class="countdown-section">
+            <h3 class="section-title">
+                <i class="fas fa-clock"></i> Undian Berikutnya
+            </h3>
+            <div class="countdown-timer">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-days">03</div>
+                    <div class="countdown-label">Hari</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-hours">12</div>
+                    <div class="countdown-label">Jam</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-minutes">34</div>
+                    <div class="countdown-label">Menit</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-seconds">56</div>
+                    <div class="countdown-label">Detik</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prize Showcase -->
+        <section class="prize-showcase">
+            <h2 class="prize-showcase-title">Hadiah Utama <span>Minggu Ini</span></h2>
+            <p class="prize-showcase-text">Beli stiker sekarang untuk kesempatan memenangkan:</p>
+            <div class="prize-value">Rp 10.000.000</div>
+            <p class="prize-showcase-text">+ Paket Stiker Premium 1 Tahun</p>
+        </section>
+
+        <!-- Sticker Packs -->
+        <section class="sticker-packs" id="stickers">
+            <h3 class="section-title">
+                <i class="fas fa-sticky-note"></i> Pilih Stiker Anda
+            </h3>
+            <div class="sticker-grid">
+                <div class="sticker-card">
+                    <div class="sticker-badge">TERBARU</div>
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+1" alt="Stiker WhatsApp">
+                    </div>
+                    <div class="sticker-info">
+                        <h3 class="sticker-title">Paket Emoji Lucu</h3>
+                        <div class="sticker-price">Rp 5.000</div>
+                        <div class="ticket-badge">1 Tiket Undian</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+2" alt="Stiker WhatsApp">
+                    </div>
+                    <div class="sticker-info">
+                        <h3 class="sticker-title">Paket Hewan Menggemaskan</h3>
+                        <div class="sticker-price">Rp 10.000</div>
+                        <div class="ticket-badge">2 Tiket Undian</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-badge">POPULER</div>
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+3" alt="Stiker WhatsApp">
+                    </div>
+                    <div class="sticker-info">
+                        <h3 class="sticker-title">Paket Kartun Terbaik</h3>
+                        <div class="sticker-price">Rp 15.000</div>
+                        <div class="ticket-badge">3 Tiket Undian</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+4" alt="Stiker WhatsApp">
+                    </div>
+                    <div class="sticker-info">
+                        <h3 class="sticker-title">Paket Hari Raya</h3>
+                        <div class="sticker-price">Rp 20.000</div>
+                        <div class="ticket-badge">4 Tiket Undian</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-badge">BEST VALUE</div>
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+5" alt="Stiker WhatsApp">
+                    </div>
+                    <div class="sticker-info">
+                        <h3 class="sticker-title">Paket Super Lengkap</h3>
+                        <div class="sticker-price">Rp 50.000</div>
+                        <div class="ticket-badge">10 Tiket Undian</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                </div>
+                <div class="sticker-card">
+                    <div class="sticker-badge">PREMIUM</div>
+                    <div class="sticker-image">
+                        <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+6" alt="Stiker WhatsApp">
+                    </div>
+                    <div class="sticker-info">
+                        <h3 class="sticker-title">Paket Limited Edition</h3>
+                        <div class="sticker-price">Rp 100.000</div>
+                        <div class="ticket-badge">25 Tiket Undian</div>
+                        <a href="#" class="sticker-button">Beli Sekarang</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works">
+            <h3 class="section-title">
+                <i class="fas fa-question-circle"></i> Cara Bermain
+            </h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Beli Stiker</h3>
+                        <p>Pilih paket stiker favorit Anda dan selesaikan pembelian</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Dapatkan Tiket</h3>
+                        <p>Setiap pembelian memberikan tiket untuk undian mingguan</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Menangkan Hadiah</h3>
+                        <p>Tunggu pengundian setiap Minggu malam pukul 20.00 WIB</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Winners Section -->
+        <section class="winners-section">
+            <h3 class="section-title">
+                <i class="fas fa-trophy"></i> Pemenang Terkini
+            </h3>
+            <div class="winner-card">
+                <div class="winner-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Winner">
+                </div>
+                <div class="winner-info">
+                    <h4>Sarah Wijaya</h4>
+                    <p>12 Mei 2023</p>
+                    <div class="winner-prize">Rp 5.000.000</div>
+                </div>
+            </div>
+            <div class="winner-card">
+                <div class="winner-avatar">
+                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Winner">
+                </div>
+                <div class="winner-info">
+                    <h4>Budi Santoso</h4>
+                    <p>5 Mei 2023</p>
+                    <div class="winner-prize">Paket Premium 6 Bulan</div>
+                </div>
+            </div>
+            <div class="winner-card">
+                <div class="winner-avatar">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Winner">
+                </div>
+                <div class="winner-info">
+                    <h4>Dewi Lestari</h4>
+                    <p>28 April 2023</p>
+                    <div class="winner-prize">Rp 2.500.000</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-sticky-note"></i>
+            <span>Stiker</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>Hadiah</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Akun</span>
+        </a>
+    </nav>
+
+    <!-- Floating Action Button -->
+    <a href="#" class="fab">
+        <i class="fas fa-shopping-cart"></i>
+    </a>
+
     <!-- JavaScript -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script>
-        // Initialize Swiper
-        const swiper = new Swiper('.swiper-container', {
-            loop: true,
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-        });
-        
         // Countdown Timer
         function updateCountdown() {
             const now = new Date();
@@ -935,7 +834,7 @@
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000;
             
             document.getElementById('countdown-days').textContent = days.toString().padStart(2, '0');
             document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
@@ -945,149 +844,29 @@
         
         setInterval(updateCountdown, 1000);
         updateCountdown();
-        
-        // Modal Functions
-        function showStickerModal(stickerId) {
-            const modal = document.getElementById('sticker-modal');
-            const content = document.getElementById('modal-sticker-content');
-            
-            // In a real app, you would fetch this data from an API
-            const stickers = [
-                {
-                    id: 1,
-                    title: "Paket Emoji Lucu",
-                    price: "Rp 5.000",
-                    tickets: "1 Tiket Undian",
-                    image: "https://via.placeholder.com/300/25D366/FFFFFF?text=STIKER+1",
-                    description: "Paket stiker emoji lucu dengan berbagai ekspresi menggemaskan untuk percakapan WhatsApp Anda."
-                },
-                {
-                    id: 2,
-                    title: "Paket Hewan Menggemaskan",
-                    price: "Rp 10.000",
-                    tickets: "2 Tiket Undian",
-                    image: "https://via.placeholder.com/300/075E54/FFFFFF?text=STIKER+2",
-                    description: "Koleksi stiker hewan-hewan menggemaskan yang akan membuat percakapan Anda lebih hidup."
-                },
-                {
-                    id: 3,
-                    title: "Paket Kartun Terbaik",
-                    price: "Rp 15.000",
-                    tickets: "3 Tiket Undian",
-                    image: "https://via.placeholder.com/300/128C7E/FFFFFF?text=STIKER+3",
-                    description: "Stiker karakter kartun populer yang pasti disukai oleh semua usia."
-                },
-                {
-                    id: 4,
-                    title: "Paket Hari Raya",
-                    price: "Rp 20.000",
-                    tickets: "4 Tiket Undian",
-                    image: "https://via.placeholder.com/300/25D366/FFFFFF?text=STIKER+4",
-                    description: "Stiker khusus untuk merayakan hari raya dan momen spesial bersama keluarga."
-                },
-                {
-                    id: 5,
-                    title: "Paket Super Lengkap",
-                    price: "Rp 50.000",
-                    tickets: "10 Tiket Undian",
-                    image: "https://via.placeholder.com/300/075E54/FFFFFF?text=STIKER+5",
-                    description: "Paket lengkap berisi semua stiker premium kami dengan harga spesial."
-                },
-                {
-                    id: 6,
-                    title: "Paket Limited Edition",
-                    price: "Rp 100.000",
-                    tickets: "25 Tiket Undian",
-                    image: "https://via.placeholder.com/300/128C7E/FFFFFF?text=STIKER+6",
-                    description: "Koleksi stiker edisi terbatas dengan desain eksklusif hanya untuk Anda."
-                }
-            ];
-            
-            const sticker = stickers.find(s => s.id === stickerId);
-            
-            content.innerHTML = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="${sticker.image}" alt="${sticker.title}" style="max-width: 100%; border-radius: 10px; margin-bottom: 15px;">
-                    <h3 style="margin-bottom: 5px;">${sticker.title}</h3>
-                    <div style="font-size: 1.5rem; font-weight: 800; color: #25D366; margin-bottom: 10px;">${sticker.price}</div>
-                    <div style="background: rgba(255,215,0,0.2); color: #FFD700; display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: 700; margin-bottom: 15px;">${sticker.tickets}</div>
-                    <p style="margin-bottom: 20px;">${sticker.description}</p>
-                    <button onclick="purchaseSticker(${sticker.id});" style="background: #25D366; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-weight: 700; width: 100%; font-size: 1rem;">Beli Sekarang</button>
-                </div>
-            `;
-            
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeModal() {
-            const modal = document.getElementById('sticker-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function purchaseSticker(stickerId) {
-            // In a real app, this would process the purchase
-            closeModal();
-            createConfetti();
-            setTimeout(() => {
-                alert('Pembelian berhasil! Stiker telah ditambahkan ke akun Anda dan tiket undian telah tercatat.');
-            }, 500);
-        }
-        
-        // Confetti Effect
-        function createConfetti() {
-            const container = document.getElementById('confetti-container');
-            container.innerHTML = '';
-            
-            const colors = ['#FFD700', '#FF5252', '#40C4FF', '#69F0AE', '#E040FB'];
-            
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.top = -10 + 'px';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
-                
-                container.appendChild(confetti);
-                
-                const animationDuration = Math.random() * 3 + 2;
-                
-                confetti.style.animation = `fall ${animationDuration}s linear forwards`;
-                confetti.style.opacity = '1';
-                
-                // Create keyframes for falling animation
-                const keyframes = `
-                    @keyframes fall {
-                        to {
-                            top: 100vh;
-                            transform: rotate(${Math.random() * 360}deg);
-                            left: ${Math.random() * 100}vw;
-                        }
-                    }
-                `;
-                
-                // Add the keyframes to the head
-                const style = document.createElement('style');
-                style.innerHTML = keyframes;
-                document.head.appendChild(style);
-                
-                // Remove confetti after animation
+
+        // Animated Counter
+        let counter = 1234;
+        setInterval(() => {
+            counter += Math.floor(Math.random() * 3);
+            document.getElementById('sale-counter').textContent = counter.toLocaleString();
+        }, 3000);
+
+        // Sticker Card Click Effect
+        document.querySelectorAll('.sticker-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
                 setTimeout(() => {
-                    confetti.remove();
-                    style.remove();
-                }, animationDuration * 1000);
-            }
-        }
-        
-        // Close modal when clicking outside
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('sticker-modal');
-            if (e.target === modal) {
-                closeModal();
-            }
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
         });
+
+        // Simulate notification
+        setInterval(() => {
+            const notif = document.querySelector('.notification-badge');
+            notif.textContent = Math.floor(Math.random() * 5) + 1;
+        }, 10000);
     </script>
 </body>
 </html>
