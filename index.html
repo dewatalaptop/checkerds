@@ -3,870 +3,494 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StikerLotere - Beli Stiker, Menangkan Hadiah!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Stiker WhatsApp Premium & Undian Menarik - Stickerverse!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
     <style>
+        /* General Styles & Reset */
         :root {
-            --primary: #25D366;
-            --primary-dark: #075E54;
-            --accent: #FFD700;
-            --red: #FF5252;
-            --yellow: #FFD740;
-            --blue: #40C4FF;
-            --purple: #E040FB;
-            --dark: #1A1A1A;
-            --light: #FFFFFF;
-            --gray: #F5F5F5;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            --primary-color: #6a0dad; /* Deep Purple */
+            --secondary-color: #ff2d55; /* Bright Pink/Red */
+            --accent-color: #ffc107; /* Amber Yellow */
+            --background-dark: #1a1a2e; /* Dark Blue-Purple */
+            --background-light: #2c2c4e; /* Lighter Blue-Purple */
+            --text-light: #f0f0f0;
+            --text-dark: #333;
         }
 
         body {
-            background-color: var(--gray);
-            color: var(--dark);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--background-dark), var(--background-light));
+            color: var(--text-light);
+            line-height: 1.6;
             overflow-x: hidden;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
 
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            padding: 15px 20px;
-            position: fixed;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 1.5rem 0;
+            text-align: center;
+            border-bottom: 2px solid var(--secondary-color);
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
             z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--light);
+            font-family: 'Permanent Marker', cursive;
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            text-shadow: 3px 3px var(--secondary-color);
+            margin: 0;
+            animation: bounceIn 1s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0;
             display: flex;
-            align-items: center;
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .logo-icon {
-            font-size: 1.8rem;
-            margin-right: 10px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .header-icon {
-            color: var(--light);
-            font-size: 1.2rem;
-            position: relative;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--red);
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-weight: bold;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
 
-        /* Main Content */
-        .main-content {
-            padding: 80px 0 100px;
-        }
-
-        /* Hero Banner */
-        .hero-banner {
-            background: linear-gradient(135deg, var(--purple), var(--blue));
-            color: white;
-            padding: 30px 20px;
-            margin: 20px;
-            border-radius: 15px;
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        .hero-banner::before {
-            content: "";
+        nav a::before {
+            content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            animation: pulse 8s infinite linear;
-        }
-
-        @keyframes pulse {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .hero-title span {
-            color: var(--accent);
-            position: relative;
-        }
-
-        .hero-title span::after {
-            content: "";
-            position: absolute;
-            bottom: 2px;
-            left: 0;
+            top: 0;
+            left: -100%;
             width: 100%;
-            height: 8px;
-            background: var(--red);
+            height: 100%;
+            background: var(--secondary-color);
+            transition: left 0.3s ease;
             z-index: -1;
-            opacity: 0.7;
+            border-radius: 25px;
         }
 
-        .hero-text {
-            font-size: 0.9rem;
-            margin-bottom: 20px;
+        nav a:hover::before {
+            left: 0;
+        }
+
+        nav a:hover {
+            color: var(--background-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 45, 85, 0.5);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 5rem 1rem;
+            background: radial-gradient(circle at top center, rgba(106, 0, 173, 0.4) 0%, transparent 70%);
+            animation: fadeIn 1.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            text-shadow: 4px 4px var(--primary-color);
+            animation: scaleIn 1s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto 2.5rem;
+            color: var(--text-light);
             opacity: 0.9;
+            animation: slideUp 1.2s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .cta-button {
             display: inline-block;
-            background: var(--accent);
-            color: var(--dark);
-            font-weight: 700;
-            padding: 12px 30px;
+            background: linear-gradient(45deg, var(--secondary-color), #ff6f61);
+            color: white;
+            padding: 1.2rem 2.5rem;
             border-radius: 50px;
             text-decoration: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(255, 45, 85, 0.4);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            margin-bottom: 2rem; /* Added margin for visual separation */
+        }
+
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+            z-index: -1;
         }
 
         .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(255, 45, 85, 0.6);
+            background: linear-gradient(45deg, #ff6f61, var(--secondary-color));
         }
 
-        /* Countdown Section */
-        .countdown-section {
-            background: white;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        .cta-button:hover::after {
+            width: 200%;
+            height: 200%;
+            opacity: 1;
         }
 
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
+        .stiker-showcase {
             display: flex;
-            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            perspective: 1000px; /* For 3D effect */
         }
 
-        .section-title i {
-            margin-right: 10px;
-            color: var(--primary);
-        }
-
-        .countdown-timer {
-            display: flex;
-            justify-content: space-between;
-            text-align: center;
-            gap: 10px;
-        }
-
-        .countdown-item {
-            flex: 1;
-        }
-
-        .countdown-number {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary);
-            background: rgba(37,211,102,0.1);
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 5px;
-        }
-
-        .countdown-label {
-            font-size: 0.7rem;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        /* Prize Showcase */
-        .prize-showcase {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            color: white;
-            padding: 25px 20px;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .prize-showcase::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100%;
-            background: url('https://cdn-icons-png.flaticon.com/512/3132/3132693.png') no-repeat right center;
-            background-size: contain;
-            opacity: 0.1;
-        }
-
-        .prize-showcase-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .prize-showcase-title span {
-            color: var(--accent);
-        }
-
-        .prize-showcase-text {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .prize-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--accent);
-            position: relative;
-            z-index: 2;
-            margin-bottom: 10px;
-        }
-
-        /* Sticker Packs */
-        .sticker-packs {
-            padding: 0 20px;
-        }
-
-        .sticker-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .sticker-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .sticker-card:active {
-            transform: scale(0.98);
-        }
-
-        .sticker-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--red);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            z-index: 2;
-        }
-
-        .sticker-image {
+        .stiker-item {
+            width: 120px;
             height: 120px;
-            background: #f0f0f0;
+            border-radius: 20px;
+            background-color: var(--background-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+            transform: rotateY(15deg) rotateX(10deg); /* Initial 3D tilt */
+            transition: transform 0.5s ease, box-shadow 0.3s ease;
+            animation: floatEffect 3s ease-in-out infinite;
             position: relative;
         }
 
-        .sticker-image img {
-            max-width: 100%;
-            max-height: 100%;
+        .stiker-item:nth-child(2) { transform: rotateY(-15deg) rotateX(-10deg); animation-delay: 0.5s; }
+        .stiker-item:nth-child(3) { transform: rotateY(5deg) rotateX(20deg); animation-delay: 1s; }
+
+        .stiker-item img {
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
+            border-radius: 10px;
         }
 
-        .sticker-info {
-            padding: 15px;
+        .stiker-item:hover {
+            transform: rotateY(0deg) rotateX(0deg) scale(1.1);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+            z-index: 10;
         }
 
-        .sticker-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        @keyframes floatEffect {
+            0% { transform: translateY(0px) rotateY(15deg) rotateX(10deg); }
+            50% { transform: translateY(-10px) rotateY(10deg) rotateX(5deg); }
+            100% { transform: translateY(0px) rotateY(15deg) rotateX(10deg); }
         }
 
-        .sticker-price {
+        .stiker-item:nth-child(2) {
+            animation-delay: 0.5s;
+            animation-name: floatEffect2;
+        }
+        @keyframes floatEffect2 {
+            0% { transform: translateY(0px) rotateY(-15deg) rotateX(-10deg); }
+            50% { transform: translateY(-10px) rotateY(-10deg) rotateX(-5deg); }
+            100% { transform: translateY(0px) rotateY(-15deg) rotateX(-10deg); }
+        }
+
+        .stiker-item:nth-child(3) {
+            animation-delay: 1s;
+            animation-name: floatEffect3;
+        }
+        @keyframes floatEffect3 {
+            0% { transform: translateY(0px) rotateY(5deg) rotateX(20deg); }
+            50% { transform: translateY(-10px) rotateY(0deg) rotateX(15deg); }
+            100% { transform: translateY(0px) rotateY(5deg) rotateX(20deg); }
+        }
+
+        /* Section for Unique Selling Points / Features */
+        .features-section {
+            padding: 4rem 1rem;
+            text-align: center;
+            background: var(--background-light);
+            border-top: 2px solid var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .features-section h2 {
+            font-size: 2.8rem;
+            color: var(--accent-color);
+            margin-bottom: 3rem;
+            text-shadow: 2px 2px var(--secondary-color);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background-color: var(--background-dark);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--primary-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px var(--secondary-color);
+        }
+
+        .feature-card .icon {
+            font-size: 3.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.8rem;
+            color: var(--text-light);
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-card p {
             font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        .sticker-button {
-            display: block;
+        /* Call to Action for Rewards/Undian */
+        .rewards-cta {
+            padding: 5rem 1rem;
             text-align: center;
-            background: var(--primary);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
+            background: radial-gradient(circle at bottom center, rgba(255, 45, 85, 0.3) 0%, transparent 70%);
         }
 
-        .sticker-button:active {
-            background: var(--primary-dark);
+        .rewards-cta h2 {
+            font-size: 3rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            text-shadow: 3px 3px var(--primary-color);
         }
 
-        .ticket-badge {
-            display: inline-block;
-            background: rgba(255,215,0,0.2);
-            color: var(--accent);
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 5px;
-            margin-top: 5px;
-            font-weight: 700;
+        .rewards-cta p {
+            font-size: 1.6rem;
+            max-width: 900px;
+            margin: 0 auto 3rem;
+            color: var(--text-light);
+            opacity: 0.9;
         }
 
-        /* How It Works */
-        .how-it-works {
-            padding: 20px;
-        }
-
-        .steps {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .step {
-            display: flex;
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            align-items: center;
-        }
-
-        .step-number {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            margin-right: 15px;
-            min-width: 40px;
+        /* Footer */
+        footer {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 2rem 1rem;
             text-align: center;
-        }
-
-        .step-content h3 {
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-
-        .step-content p {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        /* Winners Section */
-        .winners-section {
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
-            margin: 20px 0;
-        }
-
-        .winner-card {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-        }
-
-        .winner-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #f0f0f0;
-            margin-right: 15px;
-            overflow: hidden;
-        }
-
-        .winner-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .winner-info h4 {
+            border-top: 2px solid var(--secondary-color);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
-            margin-bottom: 3px;
         }
 
-        .winner-info p {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .winner-prize {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #666;
-            font-size: 0.7rem;
-        }
-
-        .nav-item i {
-            font-size: 1.3rem;
-            margin-bottom: 3px;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 70px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .fab:active {
-            transform: scale(0.95);
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Flash Sale Banner */
-        .flash-sale {
-            background: var(--red);
-            color: white;
-            padding: 10px;
-            text-align: center;
-            font-weight: 700;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0% { background: var(--red); }
-            50% { background: var(--yellow); }
-        }
-
-        /* Counter Animation */
-        .counter {
-            text-align: center;
-            margin: 10px 0;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        /* Responsive */
-        @media (min-width: 768px) {
-            .sticker-grid {
-                grid-template-columns: repeat(3, 1fr);
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
             }
-            
-            .hero-title {
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            nav a {
+                font-size: 1rem;
+                padding: 0.5rem 0.8rem;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.2rem;
+            }
+            .cta-button {
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+            }
+            .stiker-showcase {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.5rem;
+            }
+            .stiker-item {
+                width: 100px;
+                height: 100px;
+                transform: none !important; /* Remove initial 3D for small screens */
+                animation: none !important; /* Remove animation for small screens */
+            }
+            .stiker-item:hover {
+                transform: scale(1.05) !important;
+            }
+
+            .features-section h2 {
                 font-size: 2.2rem;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .feature-card h3 {
+                font-size: 1.6rem;
+            }
+            .feature-card p {
+                font-size: 1rem;
+            }
+            .rewards-cta h2 {
+                font-size: 2.5rem;
+            }
+            .rewards-cta p {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .cta-button {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            .features-section h2 {
+                font-size: 1.8rem;
+            }
+            .rewards-cta h2 {
+                font-size: 2rem;
+            }
+            .rewards-cta p {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Flash Sale Banner -->
-    <div class="flash-sale">
-        🔥 FLASH SALE: 1 Stiker = 3 Tiket (Hari Ini Saja!)
-    </div>
 
-    <!-- Header -->
     <header>
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fas fa-sticky-note"></i>
-            </div>
-            <div>
-                Stiker<span>Lotere</span>
-            </div>
-        </div>
-        <div class="header-actions">
-            <div class="header-icon">
-                <i class="fas fa-search"></i>
-            </div>
-            <div class="header-icon">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge">3</span>
-            </div>
-        </div>
+        <h1 class="logo">Stickerverse!</h1>
+        <nav>
+            <ul>
+                <li><a href="#stiker-unggulan">Stiker Unggulan</a></li>
+                <li><a href="#undian-hadiah">Undian Hadiah</a></li>
+                <li><a href="#pola-reward">Pola Reward</a></li>
+                <li><a href="#tentang-kami">Tentang Kami</a></li>
+                <li><a href="#kontak">Kontak</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Hero Banner -->
-        <section class="hero-banner">
-            <div class="hero-content">
-                <h1 class="hero-title">Beli <span>Stiker</span>, Menangkan <span>Hadiah!</span></h1>
-                <p class="hero-text">Dapatkan stiker WhatsApp eksklusif dan kesempatan memenangkan hadiah hingga Rp 10.000.000 setiap minggu!</p>
-                <a href="#stickers" class="cta-button">Lihat Stiker</a>
-            </div>
-        </section>
-
-        <!-- Counter -->
-        <div class="counter">
-            ⏳ <span id="sale-counter">1,234</span> stiker terjual hari ini!
-        </div>
-
-        <!-- Countdown Section -->
-        <section class="countdown-section">
-            <h3 class="section-title">
-                <i class="fas fa-clock"></i> Undian Berikutnya
-            </h3>
-            <div class="countdown-timer">
-                <div class="countdown-item">
-                    <div class="countdown-number" id="countdown-days">03</div>
-                    <div class="countdown-label">Hari</div>
+    <main>
+        <section class="hero">
+            <h1>Buka Level Keseruan Baru WhatsApp Anda dengan Stiker Eksklusif!</h1>
+            <p>Dapatkan stiker premium paling unik dan ikuti undian berhadiah spektakuler serta pola reward yang bikin ketagihan. Hanya di Stickerverse!</p>
+            <a href="#stiker-unggulan" class="cta-button">Lihat Stiker Sekarang!</a>
+            <div class="stiker-showcase">
+                <div class="stiker-item">
+                    <img src="https://via.placeholder.com/100x100/FF5733/FFFFFF?text=Sticker1" alt="Stiker 1">
                 </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="countdown-hours">12</div>
-                    <div class="countdown-label">Jam</div>
+                <div class="stiker-item">
+                    <img src="https://via.placeholder.com/100x100/33FF57/FFFFFF?text=Sticker2" alt="Stiker 2">
                 </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="countdown-minutes">34</div>
-                    <div class="countdown-label">Menit</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="countdown-seconds">56</div>
-                    <div class="countdown-label">Detik</div>
+                <div class="stiker-item">
+                    <img src="https://via.placeholder.com/100x100/3357FF/FFFFFF?text=Sticker3" alt="Stiker 3">
                 </div>
             </div>
         </section>
 
-        <!-- Prize Showcase -->
-        <section class="prize-showcase">
-            <h2 class="prize-showcase-title">Hadiah Utama <span>Minggu Ini</span></h2>
-            <p class="prize-showcase-text">Beli stiker sekarang untuk kesempatan memenangkan:</p>
-            <div class="prize-value">Rp 10.000.000</div>
-            <p class="prize-showcase-text">+ Paket Stiker Premium 1 Tahun</p>
-        </section>
-
-        <!-- Sticker Packs -->
-        <section class="sticker-packs" id="stickers">
-            <h3 class="section-title">
-                <i class="fas fa-sticky-note"></i> Pilih Stiker Anda
-            </h3>
-            <div class="sticker-grid">
-                <div class="sticker-card">
-                    <div class="sticker-badge">TERBARU</div>
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+1" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3 class="sticker-title">Paket Emoji Lucu</h3>
-                        <div class="sticker-price">Rp 5.000</div>
-                        <div class="ticket-badge">1 Tiket Undian</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
+        <section class="features-section">
+            <h2>Mengapa Stickerverse Wajib Anda Jelajahi?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">✨</div>
+                    <h3>Stiker Eksklusif & Anti-Mainstream</h3>
+                    <p>Temukan koleksi stiker unik yang tidak akan Anda temukan di tempat lain. Desain orisinal, ekspresi tak terbatas!</p>
                 </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+2" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3 class="sticker-title">Paket Hewan Menggemaskan</h3>
-                        <div class="sticker-price">Rp 10.000</div>
-                        <div class="ticket-badge">2 Tiket Undian</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
+                <div class="feature-card">
+                    <div class="icon">🎁</div>
+                    <h3>Undian Berhadiah Spektakuler</h3>
+                    <p>Setiap pembelian membawa Anda selangkah lebih dekat ke hadiah impian! Gadget, liburan, atau bahkan uang tunai menanti.</p>
                 </div>
-                <div class="sticker-card">
-                    <div class="sticker-badge">POPULER</div>
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+3" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3 class="sticker-title">Paket Kartun Terbaik</h3>
-                        <div class="sticker-price">Rp 15.000</div>
-                        <div class="ticket-badge">3 Tiket Undian</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/150/25D366/FFFFFF?text=STIKER+4" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3 class="sticker-title">Paket Hari Raya</h3>
-                        <div class="sticker-price">Rp 20.000</div>
-                        <div class="ticket-badge">4 Tiket Undian</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-badge">BEST VALUE</div>
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/150/075E54/FFFFFF?text=STIKER+5" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3 class="sticker-title">Paket Super Lengkap</h3>
-                        <div class="sticker-price">Rp 50.000</div>
-                        <div class="ticket-badge">10 Tiket Undian</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
-                </div>
-                <div class="sticker-card">
-                    <div class="sticker-badge">PREMIUM</div>
-                    <div class="sticker-image">
-                        <img src="https://via.placeholder.com/150/128C7E/FFFFFF?text=STIKER+6" alt="Stiker WhatsApp">
-                    </div>
-                    <div class="sticker-info">
-                        <h3 class="sticker-title">Paket Limited Edition</h3>
-                        <div class="sticker-price">Rp 100.000</div>
-                        <div class="ticket-badge">25 Tiket Undian</div>
-                        <a href="#" class="sticker-button">Beli Sekarang</a>
-                    </div>
+                <div class="feature-card">
+                    <div class="icon">🏆</div>
+                    <h3>Sistem Reward Adiktif</h3>
+                    <p>Kumpulkan poin, naik level, dan dapatkan bonus stiker, diskon spesial, hingga akses ke undian rahasia!</p>
                 </div>
             </div>
         </section>
 
-        <!-- How It Works -->
-        <section class="how-it-works">
-            <h3 class="section-title">
-                <i class="fas fa-question-circle"></i> Cara Bermain
-            </h3>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3>Beli Stiker</h3>
-                        <p>Pilih paket stiker favorit Anda dan selesaikan pembelian</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3>Dapatkan Tiket</h3>
-                        <p>Setiap pembelian memberikan tiket untuk undian mingguan</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3>Menangkan Hadiah</h3>
-                        <p>Tunggu pengundian setiap Minggu malam pukul 20.00 WIB</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Winners Section -->
-        <section class="winners-section">
-            <h3 class="section-title">
-                <i class="fas fa-trophy"></i> Pemenang Terkini
-            </h3>
-            <div class="winner-card">
-                <div class="winner-avatar">
-                    <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Winner">
-                </div>
-                <div class="winner-info">
-                    <h4>Sarah Wijaya</h4>
-                    <p>12 Mei 2023</p>
-                    <div class="winner-prize">Rp 5.000.000</div>
-                </div>
-            </div>
-            <div class="winner-card">
-                <div class="winner-avatar">
-                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Winner">
-                </div>
-                <div class="winner-info">
-                    <h4>Budi Santoso</h4>
-                    <p>5 Mei 2023</p>
-                    <div class="winner-prize">Paket Premium 6 Bulan</div>
-                </div>
-            </div>
-            <div class="winner-card">
-                <div class="winner-avatar">
-                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Winner">
-                </div>
-                <div class="winner-info">
-                    <h4>Dewi Lestari</h4>
-                    <p>28 April 2023</p>
-                    <div class="winner-prize">Rp 2.500.000</div>
-                </div>
-            </div>
+        <section class="rewards-cta">
+            <h2>Jangan Lewatkan Kesempatan Emas!</h2>
+            <p>Semakin banyak stiker yang Anda kumpulkan, semakin besar peluang Anda memenangkan hadiah luar biasa. Mulai petualangan Anda sekarang!</p>
+            <a href="#undian-hadiah" class="cta-button">Ikuti Undian Sekarang!</a>
         </section>
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item active">
-            <i class="fas fa-home"></i>
-            <span>Beranda</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fas fa-sticky-note"></i>
-            <span>Stiker</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>Hadiah</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Akun</span>
-        </a>
-    </nav>
+    <footer>
+        <p>&copy; 2025 Stickerverse. Hak Cipta Dilindungi Undang-Undang.</p>
+        <p>Desain oleh AI untuk pengalaman visual maksimal.</p>
+    </footer>
 
-    <!-- Floating Action Button -->
-    <a href="#" class="fab">
-        <i class="fas fa-shopping-cart"></i>
-    </a>
-
-    <!-- JavaScript -->
-    <script>
-        // Countdown Timer
-        function updateCountdown() {
-            const now = new Date();
-            const nextSunday = new Date();
-            
-            // Set to next Sunday at 20:00
-            nextSunday.setDate(now.getDate() + (7 - now.getDay()));
-            nextSunday.setHours(20, 0, 0, 0);
-            
-            // If today is Sunday and past 20:00, set to next Sunday
-            if (now.getDay() === 0 && now.getHours() >= 20) {
-                nextSunday.setDate(nextSunday.getDate() + 7);
-            }
-            
-            const diff = nextSunday - now;
-            
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000;
-            
-            document.getElementById('countdown-days').textContent = days.toString().padStart(2, '0');
-            document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('countdown-minutes').textContent = minutes.toString().padStart(2, '0');
-            document.getElementById('countdown-seconds').textContent = seconds.toString().padStart(2, '0');
-        }
-        
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
-
-        // Animated Counter
-        let counter = 1234;
-        setInterval(() => {
-            counter += Math.floor(Math.random() * 3);
-            document.getElementById('sale-counter').textContent = counter.toLocaleString();
-        }, 3000);
-
-        // Sticker Card Click Effect
-        document.querySelectorAll('.sticker-card').forEach(card => {
-            card.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 200);
-            });
-        });
-
-        // Simulate notification
-        setInterval(() => {
-            const notif = document.querySelector('.notification-badge');
-            notif.textContent = Math.floor(Math.random() * 5) + 1;
-        }, 10000);
-    </script>
 </body>
 </html>
