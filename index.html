@@ -1,496 +1,145 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stiker WhatsApp Premium & Undian Menarik - Stickerverse!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
-    <style>
-        /* General Styles & Reset */
-        :root {
-            --primary-color: #6a0dad; /* Deep Purple */
-            --secondary-color: #ff2d55; /* Bright Pink/Red */
-            --accent-color: #ffc107; /* Amber Yellow */
-            --background-dark: #1a1a2e; /* Dark Blue-Purple */
-            --background-light: #2c2c4e; /* Lighter Blue-Purple */
-            --text-light: #f0f0f0;
-            --text-dark: #333;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, var(--background-dark), var(--background-light));
-            color: var(--text-light);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        /* Header */
-        header {
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 1.5rem 0;
-            text-align: center;
-            border-bottom: 2px solid var(--secondary-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
-        }
-
-        .logo {
-            font-family: 'Permanent Marker', cursive;
-            font-size: 2.5rem;
-            color: var(--accent-color);
-            text-shadow: 3px 3px var(--secondary-color);
-            margin: 0;
-            animation: bounceIn 1s ease-out;
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 1; }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); }
-        }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 1rem 0 0;
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        nav a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        nav a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--secondary-color);
-            transition: left 0.3s ease;
-            z-index: -1;
-            border-radius: 25px;
-        }
-
-        nav a:hover::before {
-            left: 0;
-        }
-
-        nav a:hover {
-            color: var(--background-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 45, 85, 0.5);
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 5rem 1rem;
-            background: radial-gradient(circle at top center, rgba(106, 0, 173, 0.4) 0%, transparent 70%);
-            animation: fadeIn 1.5s ease-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            color: var(--accent-color);
-            margin-bottom: 1rem;
-            line-height: 1.2;
-            text-shadow: 4px 4px var(--primary-color);
-            animation: scaleIn 1s ease-out;
-        }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .hero p {
-            font-size: 1.5rem;
-            max-width: 800px;
-            margin: 0 auto 2.5rem;
-            color: var(--text-light);
-            opacity: 0.9;
-            animation: slideUp 1.2s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(45deg, var(--secondary-color), #ff6f61);
-            color: white;
-            padding: 1.2rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 1.5rem;
-            font-weight: 700;
-            box-shadow: 0 8px 20px rgba(255, 45, 85, 0.4);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            margin-bottom: 2rem; /* Added margin for visual separation */
-        }
-
-        .cta-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            opacity: 0;
-            transform: translate(-50%, -50%);
-            transition: all 0.5s ease;
-            z-index: -1;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 12px 25px rgba(255, 45, 85, 0.6);
-            background: linear-gradient(45deg, #ff6f61, var(--secondary-color));
-        }
-
-        .cta-button:hover::after {
-            width: 200%;
-            height: 200%;
-            opacity: 1;
-        }
-
-        .stiker-showcase {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-            perspective: 1000px; /* For 3D effect */
-        }
-
-        .stiker-item {
-            width: 120px;
-            height: 120px;
-            border-radius: 20px;
-            background-color: var(--background-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
-            transform: rotateY(15deg) rotateX(10deg); /* Initial 3D tilt */
-            transition: transform 0.5s ease, box-shadow 0.3s ease;
-            animation: floatEffect 3s ease-in-out infinite;
-            position: relative;
-        }
-
-        .stiker-item:nth-child(2) { transform: rotateY(-15deg) rotateX(-10deg); animation-delay: 0.5s; }
-        .stiker-item:nth-child(3) { transform: rotateY(5deg) rotateX(20deg); animation-delay: 1s; }
-
-        .stiker-item img {
-            max-width: 80%;
-            max-height: 80%;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-
-        .stiker-item:hover {
-            transform: rotateY(0deg) rotateX(0deg) scale(1.1);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
-            z-index: 10;
-        }
-
-        @keyframes floatEffect {
-            0% { transform: translateY(0px) rotateY(15deg) rotateX(10deg); }
-            50% { transform: translateY(-10px) rotateY(10deg) rotateX(5deg); }
-            100% { transform: translateY(0px) rotateY(15deg) rotateX(10deg); }
-        }
-
-        .stiker-item:nth-child(2) {
-            animation-delay: 0.5s;
-            animation-name: floatEffect2;
-        }
-        @keyframes floatEffect2 {
-            0% { transform: translateY(0px) rotateY(-15deg) rotateX(-10deg); }
-            50% { transform: translateY(-10px) rotateY(-10deg) rotateX(-5deg); }
-            100% { transform: translateY(0px) rotateY(-15deg) rotateX(-10deg); }
-        }
-
-        .stiker-item:nth-child(3) {
-            animation-delay: 1s;
-            animation-name: floatEffect3;
-        }
-        @keyframes floatEffect3 {
-            0% { transform: translateY(0px) rotateY(5deg) rotateX(20deg); }
-            50% { transform: translateY(-10px) rotateY(0deg) rotateX(15deg); }
-            100% { transform: translateY(0px) rotateY(5deg) rotateX(20deg); }
-        }
-
-        /* Section for Unique Selling Points / Features */
-        .features-section {
-            padding: 4rem 1rem;
-            text-align: center;
-            background: var(--background-light);
-            border-top: 2px solid var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-        }
-
-        .features-section h2 {
-            font-size: 2.8rem;
-            color: var(--accent-color);
-            margin-bottom: 3rem;
-            text-shadow: 2px 2px var(--secondary-color);
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background-color: var(--background-dark);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid var(--primary-color);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px var(--secondary-color);
-        }
-
-        .feature-card .icon {
-            font-size: 3.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.8rem;
-            color: var(--text-light);
-            margin-bottom: 0.8rem;
-        }
-
-        .feature-card p {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Call to Action for Rewards/Undian */
-        .rewards-cta {
-            padding: 5rem 1rem;
-            text-align: center;
-            background: radial-gradient(circle at bottom center, rgba(255, 45, 85, 0.3) 0%, transparent 70%);
-        }
-
-        .rewards-cta h2 {
-            font-size: 3rem;
-            color: var(--accent-color);
-            margin-bottom: 1.5rem;
-            text-shadow: 3px 3px var(--primary-color);
-        }
-
-        .rewards-cta p {
-            font-size: 1.6rem;
-            max-width: 900px;
-            margin: 0 auto 3rem;
-            color: var(--text-light);
-            opacity: 0.9;
-        }
-
-        /* Footer */
-        footer {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 2rem 1rem;
-            text-align: center;
-            border-top: 2px solid var(--secondary-color);
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .logo {
-                font-size: 2rem;
-            }
-            nav ul {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            nav a {
-                font-size: 1rem;
-                padding: 0.5rem 0.8rem;
-            }
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            .hero p {
-                font-size: 1.2rem;
-            }
-            .cta-button {
-                padding: 1rem 2rem;
-                font-size: 1.2rem;
-            }
-            .stiker-showcase {
-                flex-direction: column;
-                align-items: center;
-                gap: 1.5rem;
-            }
-            .stiker-item {
-                width: 100px;
-                height: 100px;
-                transform: none !important; /* Remove initial 3D for small screens */
-                animation: none !important; /* Remove animation for small screens */
-            }
-            .stiker-item:hover {
-                transform: scale(1.05) !important;
-            }
-
-            .features-section h2 {
-                font-size: 2.2rem;
-            }
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-            .feature-card h3 {
-                font-size: 1.6rem;
-            }
-            .feature-card p {
-                font-size: 1rem;
-            }
-            .rewards-cta h2 {
-                font-size: 2.5rem;
-            }
-            .rewards-cta p {
-                font-size: 1.3rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .hero p {
-                font-size: 1rem;
-                margin-bottom: 1.5rem;
-            }
-            .cta-button {
-                padding: 0.8rem 1.5rem;
-                font-size: 1rem;
-            }
-            .features-section h2 {
-                font-size: 1.8rem;
-            }
-            .rewards-cta h2 {
-                font-size: 2rem;
-            }
-            .rewards-cta p {
-                font-size: 1.1rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ArisanKita - Arisan Online Terpercaya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fb;
+      color: #333;
+    }
+    header {
+      background-color: #2e86de;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+      background-color: #dff0ff;
+    }
+    nav a {
+      text-decoration: none;
+      color: #2e86de;
+      font-weight: 600;
+    }
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      background-color: #ffffff;
+    }
+    .hero h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      font-size: 18px;
+      color: #555;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+    .btn {
+      padding: 12px 24px;
+      background-color: #2e86de;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background-color: #1b4f9c;
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 40px 20px;
+      gap: 20px;
+    }
+    .feature-box {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      max-width: 300px;
+      text-align: center;
+    }
+    .feature-box h3 {
+      color: #2e86de;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #2e86de;
+      color: white;
+    }
+    @media (max-width: 600px) {
+      .hero h2 {
+        font-size: 24px;
+      }
+      .features {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1 class="logo">Stickerverse!</h1>
-        <nav>
-            <ul>
-                <li><a href="#stiker-unggulan">Stiker Unggulan</a></li>
-                <li><a href="#undian-hadiah">Undian Hadiah</a></li>
-                <li><a href="#pola-reward">Pola Reward</a></li>
-                <li><a href="#tentang-kami">Tentang Kami</a></li>
-                <li><a href="#kontak">Kontak</a></li>
-            </ul>
-        </nav>
-    </header>
+<header>
+  <h1>ArisanKita.id</h1>
+  <p>Platform Arisan Online Mudah dan Terpercaya</p>
+</header>
 
-    <main>
-        <section class="hero">
-            <h1>Buka Level Keseruan Baru WhatsApp Anda dengan Stiker Eksklusif!</h1>
-            <p>Dapatkan stiker premium paling unik dan ikuti undian berhadiah spektakuler serta pola reward yang bikin ketagihan. Hanya di Stickerverse!</p>
-            <a href="#stiker-unggulan" class="cta-button">Lihat Stiker Sekarang!</a>
-            <div class="stiker-showcase">
-                <div class="stiker-item">
-                    <img src="https://via.placeholder.com/100x100/FF5733/FFFFFF?text=Sticker1" alt="Stiker 1">
-                </div>
-                <div class="stiker-item">
-                    <img src="https://via.placeholder.com/100x100/33FF57/FFFFFF?text=Sticker2" alt="Stiker 2">
-                </div>
-                <div class="stiker-item">
-                    <img src="https://via.placeholder.com/100x100/3357FF/FFFFFF?text=Sticker3" alt="Stiker 3">
-                </div>
-            </div>
-        </section>
+<nav>
+  <a href="#fitur">Fitur</a>
+  <a href="#daftar">Daftar</a>
+  <a href="#kontak">Kontak</a>
+</nav>
 
-        <section class="features-section">
-            <h2>Mengapa Stickerverse Wajib Anda Jelajahi?</h2>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="icon">✨</div>
-                    <h3>Stiker Eksklusif & Anti-Mainstream</h3>
-                    <p>Temukan koleksi stiker unik yang tidak akan Anda temukan di tempat lain. Desain orisinal, ekspresi tak terbatas!</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">🎁</div>
-                    <h3>Undian Berhadiah Spektakuler</h3>
-                    <p>Setiap pembelian membawa Anda selangkah lebih dekat ke hadiah impian! Gadget, liburan, atau bahkan uang tunai menanti.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon">🏆</div>
-                    <h3>Sistem Reward Adiktif</h3>
-                    <p>Kumpulkan poin, naik level, dan dapatkan bonus stiker, diskon spesial, hingga akses ke undian rahasia!</p>
-                </div>
-            </div>
-        </section>
+<section class="hero">
+  <h2>Gabung Arisan Online Tanpa Ribet</h2>
+  <p>Kumpulkan teman, atur jadwal, dan kelola iuran dengan aman hanya dari HP Anda!</p>
+  <a href="#daftar"><button class="btn">Buat Arisan Sekarang</button></a>
+</section>
 
-        <section class="rewards-cta">
-            <h2>Jangan Lewatkan Kesempatan Emas!</h2>
-            <p>Semakin banyak stiker yang Anda kumpulkan, semakin besar peluang Anda memenangkan hadiah luar biasa. Mulai petualangan Anda sekarang!</p>
-            <a href="#undian-hadiah" class="cta-button">Ikuti Undian Sekarang!</a>
-        </section>
-    </main>
+<section id="fitur" class="features">
+  <div class="feature-box">
+    <h3>Undian Otomatis</h3>
+    <p>Arisan diundi otomatis dengan sistem acak yang transparan dan adil.</p>
+  </div>
+  <div class="feature-box">
+    <h3>Pembayaran Mudah</h3>
+    <p>Terima pembayaran via transfer bank atau e-wallet seperti OVO, Dana, dan GoPay.</p>
+  </div>
+  <div class="feature-box">
+    <h3>Akses 24/7</h3>
+    <p>Cek status pembayaran, urutan undian, dan chat grup kapan saja.</p>
+  </div>
+</section>
 
-    <footer>
-        <p>&copy; 2025 Stickerverse. Hak Cipta Dilindungi Undang-Undang.</p>
-        <p>Desain oleh AI untuk pengalaman visual maksimal.</p>
-    </footer>
+<section id="daftar" class="hero" style="background:#eef6ff;">
+  <h2>Mulai Arisan Sekarang</h2>
+  <p>Buat grup arisan baru atau bergabung dengan arisan yang sudah ada.</p>
+  <button class="btn">Daftar Gratis</button>
+</section>
+
+<footer id="kontak">
+  <p>&copy; 2025 ArisanKita.id | Hubungi kami di WhatsApp: 08xxxxxxxxxx</p>
+</footer>
 
 </body>
 </html>
