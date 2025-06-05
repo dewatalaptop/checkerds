@@ -2,188 +2,112 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ArisanKu - Platform Arisan Online Terpercaya</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profil Peserta - ArisanKu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0; padding: 0;
-      font-family: 'Poppins', sans-serif;
-    }
-
     body {
-      background: #f5f7fa;
-      color: #333;
+      font-family: 'Inter', sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 0;
     }
-
-    header {
-      background: #0f62fe;
-      color: white;
-      padding: 20px 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 {
-      font-size: 1.8em;
-    }
-
-    nav a {
-      color: white;
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .hero {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 60px 5%;
-      align-items: center;
-      background: linear-gradient(to right, #e0eafc, #cfdef3);
-    }
-
-    .hero-text {
-      flex: 1;
-      min-width: 300px;
-    }
-
-    .hero-text h2 {
-      font-size: 2.2em;
-      margin-bottom: 10px;
-      color: #0f62fe;
-    }
-
-    .hero-text p {
-      font-size: 1.1em;
-      margin-bottom: 20px;
-    }
-
-    .cta-button {
-      background: #0f62fe;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .cta-button:hover {
-      background: #054ada;
-    }
-
-    .hero-image {
-      flex: 1;
-      min-width: 300px;
-      text-align: center;
-    }
-
-    .hero-image img {
-      max-width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .features {
-      padding: 60px 5%;
+    .profile-card {
+      max-width: 420px;
+      margin: 40px auto;
       background: #ffffff;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
     }
-
-    .features h3 {
+    .profile-header {
+      background: linear-gradient(135deg, #2f80ed, #56ccf2);
+      padding: 30px 20px;
       text-align: center;
-      font-size: 1.8em;
-      margin-bottom: 40px;
-    }
-
-    .feature-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
-      justify-content: center;
-    }
-
-    .feature {
-      background: #f0f4f8;
-      padding: 20px;
-      border-radius: 10px;
-      flex: 1;
-      min-width: 260px;
-      max-width: 300px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .feature h4 {
-      margin-bottom: 10px;
-      color: #0f62fe;
-    }
-
-    .footer {
-      background: #0f62fe;
       color: white;
-      padding: 20px 5%;
-      text-align: center;
-      font-size: 0.9em;
     }
-
-    @media (max-width: 768px) {
-      .hero {
-        flex-direction: column-reverse;
-      }
+    .profile-header img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 4px solid white;
+      margin-bottom: 10px;
+    }
+    .profile-header h2 {
+      margin: 10px 0 5px;
+    }
+    .badge {
+      display: inline-block;
+      background: gold;
+      color: #333;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+    .profile-body {
+      padding: 20px;
+    }
+    .info-box {
+      margin-bottom: 16px;
+    }
+    .info-title {
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+    .progress-bar {
+      background: #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .progress-bar-inner {
+      height: 12px;
+      width: 70%;
+      background: #27ae60;
+    }
+    .footer-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #aaa;
+      padding: 10px 0;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>ArisanKu</h1>
-    <nav>
-      <a href="#fitur">Fitur</a>
-      <a href="#tentang">Tentang</a>
-      <a href="#gabung">Gabung</a>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div class="hero-text">
-      <h2>Gabung Arisan Online Paling Terpercaya!</h2>
-      <p>Bangun komunitas dan raih keuntungan bersama. Mulai arisan digital yang transparan, mudah, dan aman bersama ArisanKu.</p>
-      <button class="cta-button" onclick="alert('Fitur pendaftaran akan segera tersedia.')">Gabung Sekarang</button>
+  <div class="profile-card">
+    <div class="profile-header">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwKr8U1YJjySEfOp_2XKy55e_IJv0W3xvj4VhaV9uPG7ClHQNRlOLSPCzU&s=10" alt="Foto User">
+      <h2>Ayu Maulida</h2>
+      <div class="badge">👑 Royal Member</div>
     </div>
-    <div class="hero-image">
-      <img src="https://images.unsplash.com/photo-1600880292089-90f61d796e7f?auto=format&fit=crop&w=900&q=80" alt="Ilustrasi Arisan Online" />
-    </div>
-  </section>
-
-  <section class="features" id="fitur">
-    <h3>Kenapa Memilih ArisanKu?</h3>
-    <div class="feature-grid">
-      <div class="feature">
-        <h4>✔️ Aman & Transparan</h4>
-        <p>Setiap transaksi dicatat otomatis & bisa diakses seluruh peserta.</p>
+    <div class="profile-body">
+      <div class="info-box">
+        <div class="info-title">Total Kontribusi Bulanan</div>
+        <div class="info-value">Rp1.250.000</div>
       </div>
-      <div class="feature">
-        <h4>📱 WhatsApp Notifikasi</h4>
-        <p>Dapatkan notifikasi otomatis via WhatsApp setiap saat.</p>
+      <div class="info-box">
+        <div class="info-title">Grup Arisan yang Diikuti</div>
+        <div class="info-value">3 Grup Aktif</div>
       </div>
-      <div class="feature">
-        <h4>⭐ Badge & Profil Premium</h4>
-        <p>Dapatkan badge khusus untuk peserta aktif & kontribusi besar.</p>
-      </div>
-      <div class="feature">
-        <h4>👥 Grup Arisan Fleksibel</h4>
-        <p>Buat grup sendiri, atur jadwal, jumlah peserta & nominal sendiri.</p>
+      <div class="info-box">
+        <div class="info-title">Level Loyalitas</div>
+        <div class="progress-bar">
+          <div class="progress-bar-inner" style="width: 70%;"></div>
+        </div>
+        <div class="info-title">7 dari 10 arisan tercapai</div>
       </div>
     </div>
-  </section>
-
-  <footer class="footer">
-    &copy; 2025 ArisanKu. Semua hak dilindungi. | Platform Arisan Online Indonesia
-  </footer>
+    <div class="footer-note">
+      ArisanKu © 2025 – Versi Beta
+    </div>
+  </div>
 
 </body>
 </html>
