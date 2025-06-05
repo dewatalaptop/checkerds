@@ -1,1056 +1,189 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArisanKu - Arisan Online Mudah, Aman, dan Transparan</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --secondary: #10b981;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --gray: #94a3b8;
-            --gray-light: #e2e8f0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--dark);
-            background-color: #f5f7fa;
-            line-height: 1.6;
-        }
-
-        /* Header Styles */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .navbar {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-            color: #fbbf24;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: #fbbf24;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background-color: #fbbf24;
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1.5rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background-color: white;
-            color: var(--primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--gray-light);
-            transform: translateY(-2px);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: white;
-            border: 1px solid white;
-        }
-
-        .btn-outline:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(rgba(79, 70, 229, 0.9), rgba(67, 56, 202, 0.9)), url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center/cover;
-            color: white;
-            padding: 5rem 2rem;
-            text-align: center;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .tagline {
-            display: inline-block;
-            background-color: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-            border: 1px solid rgba(251, 191, 36, 0.3);
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-
-        .btn-lg {
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
-        }
-
-        .btn-accent {
-            background-color: #fbbf24;
-            color: #78350f;
-        }
-
-        .btn-accent:hover {
-            background-color: #f59e0b;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Features Section */
-        .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .section-title p {
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
-            background-color: white;
-            border-radius: 0.5rem;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border-top: 4px solid var(--primary);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card p {
-            color: var(--gray);
-        }
-
-        /* How It Works Section */
-        .steps {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .steps::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 2.5rem;
-            height: 100%;
-            width: 2px;
-            background-color: var(--gray-light);
-            z-index: 1;
-        }
-
-        .step {
-            display: flex;
-            gap: 1.5rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        .step-number {
-            background-color: var(--primary);
-            color: white;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-weight: 700;
-        }
-
-        .step-content {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            flex-grow: 1;
-        }
-
-        .step-content h3 {
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-
-        /* Testimonials Section */
-        .testimonials {
-            background-color: var(--primary);
-            color: white;
-            padding: 5rem 2rem;
-        }
-
-        .testimonials .section-title h2 {
-            color: white;
-        }
-
-        .testimonials .section-title p {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .testimonial-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 0.5rem;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .testimonial-text {
-            font-style: italic;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .testimonial-text::before {
-            content: '"';
-            font-size: 3rem;
-            color: rgba(255, 255, 255, 0.2);
-            position: absolute;
-            top: -1rem;
-            left: -1rem;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid white;
-        }
-
-        .author-info h4 {
-            margin-bottom: 0.2rem;
-        }
-
-        .author-info p {
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .rating {
-            color: #fbbf24;
-            margin-top: 0.3rem;
-        }
-
-        /* Pricing Section */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .pricing-card {
-            background-color: white;
-            border-radius: 0.5rem;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid var(--gray-light);
-        }
-
-        .pricing-card.popular {
-            border: 2px solid var(--primary);
-            position: relative;
-            transform: scale(1.05);
-        }
-
-        .popular-badge {
-            position: absolute;
-            top: -0.75rem;
-            right: 2rem;
-            background-color: var(--primary);
-            color: white;
-            padding: 0.25rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .pricing-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: var(--dark);
-        }
-
-        .price span {
-            font-size: 1rem;
-            color: var(--gray);
-            font-weight: 400;
-        }
-
-        .pricing-features {
-            margin-bottom: 2rem;
-            text-align: left;
-        }
-
-        .pricing-features li {
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .pricing-features li i {
-            color: var(--success);
-        }
-
-        /* FAQ Section */
-        .faq-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .faq-item {
-            margin-bottom: 1rem;
-            border: 1px solid var(--gray-light);
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-
-        .faq-question {
-            padding: 1.5rem;
-            background-color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .faq-question:hover {
-            background-color: #f8fafc;
-        }
-
-        .faq-answer {
-            padding: 0 1.5rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background-color: white;
-        }
-
-        .faq-answer.active {
-            padding: 0 1.5rem 1.5rem;
-            max-height: 500px;
-        }
-
-        .faq-toggle {
-            transition: transform 0.3s ease;
-        }
-
-        .faq-toggle.active {
-            transform: rotate(180deg);
-        }
-
-        /* CTA Section */
-        .cta {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            text-align: center;
-            padding: 5rem 2rem;
-            border-radius: 0.5rem;
-            margin: 5rem auto;
-            max-width: 1200px;
-        }
-
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .cta p {
-            max-width: 700px;
-            margin: 0 auto 2rem;
-            opacity: 0.9;
-        }
-
-        /* Footer */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 4rem 2rem 2rem;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 3rem;
-        }
-
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .footer-logo .logo-icon {
-            font-size: 2rem;
-            color: #fbbf24;
-        }
-
-        .footer-about p {
-            opacity: 0.8;
-            margin-bottom: 1.5rem;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background-color: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        .footer-links h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-        .footer-links h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background-color: var(--primary);
-        }
-
-        .footer-links ul {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: white;
-            padding-left: 5px;
-        }
-
-        .footer-contact p {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            opacity: 0.8;
-        }
-
-        .footer-contact i {
-            color: var(--primary);
-        }
-
-        .copyright {
-            text-align: center;
-            padding-top: 3rem;
-            margin-top: 3rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
-            }
-
-            .nav-links {
-                gap: 1rem;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-            }
-
-            .steps::before {
-                left: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .section-title h2 {
-                font-size: 2rem;
-            }
-
-            .feature-card, .testimonial-card, .pricing-card {
-                padding: 1.5rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArisanKu - Platform Arisan Online Terpercaya</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f5f7fa;
+      color: #333;
+    }
+
+    header {
+      background: #0f62fe;
+      color: white;
+      padding: 20px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.8em;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 60px 5%;
+      align-items: center;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+    }
+
+    .hero-text {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .hero-text h2 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+      color: #0f62fe;
+    }
+
+    .hero-text p {
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+
+    .cta-button {
+      background: #0f62fe;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .cta-button:hover {
+      background: #054ada;
+    }
+
+    .hero-image {
+      flex: 1;
+      min-width: 300px;
+      text-align: center;
+    }
+
+    .hero-image img {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .features {
+      padding: 60px 5%;
+      background: #ffffff;
+    }
+
+    .features h3 {
+      text-align: center;
+      font-size: 1.8em;
+      margin-bottom: 40px;
+    }
+
+    .feature-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .feature {
+      background: #f0f4f8;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 260px;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .feature h4 {
+      margin-bottom: 10px;
+      color: #0f62fe;
+    }
+
+    .footer {
+      background: #0f62fe;
+      color: white;
+      padding: 20px 5%;
+      text-align: center;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column-reverse;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="navbar">
-            <div class="logo">
-                <span class="logo-icon"><i class="fas fa-hand-holding-usd"></i></span>
-                <span>ArisanKu</span>
-            </div>
-            <nav class="nav-links">
-                <a href="#features">Fitur</a>
-                <a href="#how-it-works">Cara Kerja</a>
-                <a href="#testimonials">Testimoni</a>
-                <a href="#pricing">Harga</a>
-                <a href="#faq">FAQ</a>
-            </nav>
-            <div class="auth-buttons">
-                <button class="btn btn-outline">Masuk</button>
-                <button class="btn btn-primary">Daftar</button>
-            </div>
-        </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <span class="tagline">Arisan Online Mudah, Aman, dan Transparan</span>
-            <h1>Kelola Arisan Digital dengan Lebih Praktis</h1>
-            <p>ArisanKu adalah platform arisan digital terpercaya yang menggabungkan fitur arisan online dengan sistem transparan, notifikasi otomatis, dan nuansa media sosial.</p>
-            <div class="cta-buttons">
-                <button class="btn btn-accent btn-lg">Mulai Arisan Gratis</button>
-                <button class="btn btn-outline btn-lg">Pelajari Lebih Lanjut</button>
-            </div>
-        </div>
-    </section>
+  <header>
+    <h1>ArisanKu</h1>
+    <nav>
+      <a href="#fitur">Fitur</a>
+      <a href="#tentang">Tentang</a>
+      <a href="#gabung">Gabung</a>
+    </nav>
+  </header>
 
-    <!-- Features Section -->
-    <section class="section" id="features">
-        <div class="section-title">
-            <h2>Fitur Unggulan ArisanKu</h2>
-            <p>Platform arisan digital dengan segala kemudahan dan keamanan untuk pengalaman arisan yang lebih menyenangkan</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-user-tie"></i>
-                </div>
-                <h3>Profil Peserta Eksklusif</h3>
-                <p>Setiap pengguna memiliki halaman profil dengan badge eksklusif untuk peserta aktif. Riwayat partisipasi dan jumlah setoran tercatat rapi.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3>Grup Arisan Digital</h3>
-                <p>Buat grup arisan sendiri atau bergabung dengan grup publik/privat. Pemilik grup dapat menunjuk admin dari peserta untuk manajemen lebih mudah.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3>Transparansi & Keamanan</h3>
-                <p>Data peserta, setoran, pemenang, dan status disimpan dengan aman di Firebase. Dashboard publik menampilkan status real-time untuk transparansi penuh.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-credit-card"></i>
-                </div>
-                <h3>Pembayaran Otomatis</h3>
-                <p>Terintegrasi dengan Payment Gateway (Midtrans/Xendit). Dapatkan link VA/QRIS unik, status otomatis berubah jadi "LUNAS" setelah transfer.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <h3>Notifikasi WhatsApp</h3>
-                <p>Pengingat setoran, konfirmasi pembayaran, jadwal undian, dan pengumuman pemenang dikirim otomatis via WhatsApp API.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-tachometer-alt"></i>
-                </div>
-                <h3>Dashboard Admin</h3>
-                <p>Pantau seluruh peserta & status pembayaran secara real-time. Data tersimpan di Firebase dan bisa dibagikan ke peserta dengan mudah.</p>
-            </div>
-        </div>
-    </section>
+  <section class="hero">
+    <div class="hero-text">
+      <h2>Gabung Arisan Online Paling Terpercaya!</h2>
+      <p>Bangun komunitas dan raih keuntungan bersama. Mulai arisan digital yang transparan, mudah, dan aman bersama ArisanKu.</p>
+      <button class="cta-button" onclick="alert('Fitur pendaftaran akan segera tersedia.')">Gabung Sekarang</button>
+    </div>
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1600880292089-90f61d796e7f?auto=format&fit=crop&w=900&q=80" alt="Ilustrasi Arisan Online" />
+    </div>
+  </section>
 
-    <!-- How It Works Section -->
-    <section class="section" id="how-it-works">
-        <div class="section-title">
-            <h2>Cara Menggunakan ArisanKu</h2>
-            <p>Hanya perlu 4 langkah mudah untuk memulai arisan digital Anda</p>
-        </div>
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-content">
-                    <h3>Daftar Akun</h3>
-                    <p>Buat akun ArisanKu secara gratis dengan email atau nomor WhatsApp Anda. Verifikasi data dan siap untuk memulai.</p>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-content">
-                    <h3>Buat atau Gabung Grup</h3>
-                    <p>Buat grup arisan baru atau bergabung dengan grup yang sudah ada. Atur nominal, jadwal, dan anggota sesuai kebutuhan.</p>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <h3>Lakukan Pembayaran</h3>
-                    <p>Setor arisan melalui link VA atau QRIS yang diberikan. Status otomatis berubah menjadi "LUNAS" setelah pembayaran dikonfirmasi.</p>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-content">
-                    <h3>Ikuti Undian & Nikmati Hasilnya</h3>
-                    <p>Sistem akan melakukan undian otomatis di waktu yang ditentukan. Pemenang akan mendapatkan notifikasi langsung.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <section class="features" id="fitur">
+    <h3>Kenapa Memilih ArisanKu?</h3>
+    <div class="feature-grid">
+      <div class="feature">
+        <h4>✔️ Aman & Transparan</h4>
+        <p>Setiap transaksi dicatat otomatis & bisa diakses seluruh peserta.</p>
+      </div>
+      <div class="feature">
+        <h4>📱 WhatsApp Notifikasi</h4>
+        <p>Dapatkan notifikasi otomatis via WhatsApp setiap saat.</p>
+      </div>
+      <div class="feature">
+        <h4>⭐ Badge & Profil Premium</h4>
+        <p>Dapatkan badge khusus untuk peserta aktif & kontribusi besar.</p>
+      </div>
+      <div class="feature">
+        <h4>👥 Grup Arisan Fleksibel</h4>
+        <p>Buat grup sendiri, atur jadwal, jumlah peserta & nominal sendiri.</p>
+      </div>
+    </div>
+  </section>
 
-    <!-- Testimonials Section -->
-    <section class="testimonials" id="testimonials">
-        <div class="section-title">
-            <h2>Apa Kata Mereka?</h2>
-            <p>Pengalaman nyata dari ribuan pengguna ArisanKu di seluruh Indonesia</p>
-        </div>
-        <div class="testimonial-grid">
-            <div class="testimonial-card">
-                <div class="testimonial-text">
-                    Sejak pakai ArisanKu, ngelola arisan RT jadi gampang banget. Notifikasi otomatis ke WhatsApp bikin gak ada lagi yang lupa bayar. Transparansi sistemnya juga bikin peserta percaya.
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="User" class="author-avatar">
-                    <div class="author-info">
-                        <h4>Ibu Siti</h4>
-                        <p>Ketua Arisan RT</p>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-text">
-                    Arisan kantor kami pindah ke ArisanKu dan semua jadi lebih terorganisir. Fitur dashboard adminnya sangat membantu, bisa liat siapa saja yang sudah bayar secara real-time.
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="author-avatar">
-                    <div class="author-info">
-                        <h4>Budi Santoso</h4>
-                        <p>Admin Arisan Kantor</p>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-card">
-                <div class="testimonial-text">
-                    Saya suka sistem pembayarannya yang praktis. Cuma scan QRIS langsung lunas, gak perlu konfirmasi manual. Badge di profil juga bikin semangat nyetor rutin.
-                </div>
-                <div class="testimonial-author">
-                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User" class="author-avatar">
-                    <div class="author-info">
-                        <h4>Dewi Lestari</h4>
-                        <p>Peserta Arisan</p>
-                        <div class="rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <footer class="footer">
+    &copy; 2025 ArisanKu. Semua hak dilindungi. | Platform Arisan Online Indonesia
+  </footer>
 
-    <!-- Pricing Section -->
-    <section class="section" id="pricing">
-        <div class="section-title">
-            <h2>Paket Harga</h2>
-            <p>Pilih paket yang sesuai dengan kebutuhan arisan Anda</p>
-        </div>
-        <div class="pricing-grid">
-            <div class="pricing-card">
-                <h3>Gratis</h3>
-                <div class="price">Rp0 <span>/bulan</span></div>
-                <ul class="pricing-features">
-                    <li><i class="fas fa-check"></i> Maksimal 10 peserta per grup</li>
-                    <li><i class="fas fa-check"></i> Notifikasi WhatsApp dasar</li>
-                    <li><i class="fas fa-check"></i> Pembayaran manual verifikasi</li>
-                    <li><i class="fas fa-check"></i> Dashboard peserta sederhana</li>
-                    <li><i class="fas fa-check"></i> Dukungan email</li>
-                </ul>
-                <button class="btn btn-outline">Mulai Sekarang</button>
-            </div>
-            <div class="pricing-card popular">
-                <div class="popular-badge">Paling Populer</div>
-                <h3>Premium</h3>
-                <div class="price">Rp25.000 <span>/bulan</span></div>
-                <ul class="pricing-features">
-                    <li><i class="fas fa-check"></i> Maksimal 50 peserta per grup</li>
-                    <li><i class="fas fa-check"></i> Notifikasi WhatsApp otomatis</li>
-                    <li><i class="fas fa-check"></i> Pembayaran otomatis via VA/QRIS</li>
-                    <li><i class="fas fa-check"></i> Dashboard admin lengkap</li>
-                    <li><i class="fas fa-check"></i> Prioritas dukungan WhatsApp</li>
-                    <li><i class="fas fa-check"></i> Laporan keuangan otomatis</li>
-                </ul>
-                <button class="btn btn-primary">Pilih Paket Ini</button>
-            </div>
-            <div class="pricing-card">
-                <h3>Enterprise</h3>
-                <div class="price">Rp75.000 <span>/bulan</span></div>
-                <ul class="pricing-features">
-                    <li><i class="fas fa-check"></i> Peserta tidak terbatas</li>
-                    <li><i class="fas fa-check"></i> Multi-admin dalam satu grup</li>
-                    <li><i class="fas fa-check"></i> Fitur premium semua</li>
-                    <li><i class="fas fa-check"></i> API integrasi</li>
-                    <li><i class="fas fa-check"></i> Dukungan prioritas 24/7</li>
-                    <li><i class="fas fa-check"></i> Branding khusus</li>
-                </ul>
-                <button class="btn btn-outline">Hubungi Kami</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="section" id="faq">
-        <div class="section-title">
-            <h2>Pertanyaan yang Sering Diajukan</h2>
-            <p>Temukan jawaban untuk pertanyaan umum tentang ArisanKu</p>
-        </div>
-        <div class="faq-container">
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>Apakah ArisanKu benar-benar aman untuk menyimpan data dan uang arisan?</span>
-                    <i class="fas fa-chevron-down faq-toggle"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Ya, ArisanKu menggunakan sistem keamanan tingkat tinggi. Data disimpan di Firebase Realtime Database dengan enkripsi. Untuk pembayaran, kami bekerja sama dengan payment gateway terpercaya seperti Midtrans dan Xendit yang sudah bersertifikasi PCI DSS. Uang arisan langsung masuk ke rekening admin grup, bukan melalui kami, sehingga lebih aman.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>Bagaimana cara verifikasi pemenang arisan agar adil?</span>
-                    <i class="fas fa-chevron-down faq-toggle"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>ArisanKu menggunakan sistem undian otomatis dengan algoritma random yang diawasi oleh sistem. Proses undian bisa disaksikan oleh semua anggota grup melalui live dashboard. Setelah pemenang terpilih, sistem akan mengirimkan bukti undian berupa screenshot dan detail pemenang ke semua anggota.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>Apakah ada biaya tersembunyi selain biaya berlangganan?</span>
-                    <i class="fas fa-chevron-down faq-toggle"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Tidak ada biaya tersembunyi. Untuk paket Premium dan Enterprise, semua fitur sudah termasuk dalam biaya berlangganan. Mungkin ada biaya transaksi dari payment gateway (sekitar 1-2% tergantung metode pembayaran), tetapi ini bukan biaya dari kami melainkan dari penyedia jasa pembayaran.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>Bagaimana jika ada peserta yang tidak membayar tepat waktu?</span>
-                    <i class="fas fa-chevron-down faq-toggle"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Sistem akan mengirimkan notifikasi otomatis 3 hari sebelum jatuh tempo, saat jatuh tempo, dan 1 hari setelah lewat tempo. Admin juga bisa melihat siapa saja yang belum membayar di dashboard. Untuk peserta yang terus menerus tidak membayar, admin bisa mengeluarkan mereka dari grup.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question">
-                    <span>Bisakah saya mengundang peserta yang belum punya akun ArisanKu?</span>
-                    <i class="fas fa-chevron-down faq-toggle"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Ya, Anda bisa mengundang peserta melalui link khusus. Peserta yang diundang akan mendapatkan panduan pendaftaran sederhana via WhatsApp. Proses pendaftaran hanya membutuhkan nomor WhatsApp dan verifikasi OTP, sangat mudah bahkan untuk yang kurang melek teknologi.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta">
-        <h2>Siap Memulai Arisan Digital Anda?</h2>
-        <p>Bergabunglah dengan ribuan pengguna yang telah merasakan kemudahan mengelola arisan secara online dengan ArisanKu. Gratis untuk memulai!</p>
-        <div class="cta-buttons">
-            <button class="btn btn-accent btn-lg">Daftar Sekarang</button>
-            <button class="btn btn-outline btn-lg">Demo Produk</button>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-about">
-                <div class="footer-logo">
-                    <span class="logo-icon"><i class="fas fa-hand-holding-usd"></i></span>
-                    <span>ArisanKu</span>
-                </div>
-                <p>ArisanKu adalah platform arisan digital terpercaya yang menggabungkan fitur arisan online dengan sistem transparan, notifikasi otomatis, dan nuansa media sosial.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-            <div class="footer-links">
-                <h3>Perusahaan</h3>
-                <ul>
-                    <li><a href="#">Tentang Kami</a></li>
-                    <li><a href="#">Karir</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Partner Kami</a></li>
-                    <li><a href="#">Kebijakan Privasi</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h3>Produk</h3>
-                <ul>
-                    <li><a href="#">Fitur</a></li>
-                    <li><a href="#">Harga</a></li>
-                    <li><a href="#">Panduan</a></li>
-                    <li><a href="#">Status</a></li>
-                    <li><a href="#">Pembaruan</a></li>
-                </ul>
-            </div>
-            <div class="footer-contact">
-                <h3>Hubungi Kami</h3>
-                <p><i class="fas fa-map-marker-alt"></i> Jl. Digital No. 123, Jakarta Selatan, Indonesia</p>
-                <p><i class="fas fa-phone-alt"></i> +62 21 1234 5678</p>
-                <p><i class="fas fa-envelope"></i> hello@arisanku.id</p>
-                <p><i class="fab fa-whatsapp"></i> +62 812 3456 7890</p>
-            </div>
-        </div>
-        <div class="copyright">
-            <p>&copy; 2023 ArisanKu. Seluruh hak cipta dilindungi undang-undang.</p>
-        </div>
-    </footer>
-
-    <script>
-        // FAQ Toggle
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', () => {
-                const answer = question.nextElementSibling;
-                const toggle = question.querySelector('.faq-toggle');
-                
-                answer.classList.toggle('active');
-                toggle.classList.toggle('active');
-            });
-        });
-
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-    </script>
 </body>
 </html>
