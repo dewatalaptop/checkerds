@@ -1,509 +1,73 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ArisanPro - Aplikasi Arisan Online</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
-    <style>
-        :root {
-            --primary: #4A90E2; /* Vibrant Blue */
-            --secondary: #6FCF97; /* Fresh Green */
-            --accent: #FFDA61; /* Sunny Yellow */
-            --text-dark: #222;
-            --text-light: #666;
-            --bg-light: #F7F9FC; /* Off-white / light gray */
-            --bg-white: #FFF;
-            --border-color: #EEE;
-            --shadow-light: rgba(0,0,0,0.08);
-            --shadow-medium: rgba(0,0,0,0.12);
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Simulate Mobile Container */
-        .mobile-app-container {
-            max-width: 450px; /* Typical phone width */
-            margin: 0 auto; /* Center on larger screens */
-            background-color: var(--bg-white);
-            box-shadow: 0 0 20px var(--shadow-medium);
-            min-height: 100vh; /* Full height on smaller screens */
-            position: relative; /* For fixed bottom nav */
-            overflow: hidden; /* Prevent horizontal scroll */
-        }
-
-        /* App Header/App Bar */
-        .app-bar {
-            background-color: var(--primary);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px var(--shadow-light);
-            z-index: 10;
-        }
-
-        .app-bar .logo {
-            font-size: 24px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-        }
-
-        .app-bar .logo iconify-icon {
-            font-size: 28px;
-            margin-right: 8px;
-            color: var(--accent); /* Logo icon color */
-        }
-
-        .app-bar .icons iconify-icon {
-            font-size: 24px;
-            margin-left: 15px;
-            cursor: pointer;
-        }
-
-        /* Section Styling */
-        .app-section {
-            padding: 25px 20px;
-            margin-bottom: 8px; /* Spacing between sections */
-            background-color: var(--bg-white);
-        }
-        .app-section:not(:last-of-type) {
-             border-bottom: 1px solid var(--border-color);
-        }
-
-        .app-section-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        /* Hero Section */
-        .hero-app {
-            text-align: center;
-            padding-top: 30px;
-            padding-bottom: 30px;
-            background: linear-gradient(to bottom, #EBF5FF, var(--bg-white)); /* Soft gradient */
-        }
-
-        .hero-app h2 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .hero-app p {
-            font-size: 16px;
-            color: var(--text-light);
-            line-height: 1.5;
-            margin-bottom: 30px;
-        }
-
-        .hero-illustration {
-            width: 80%;
-            max-width: 300px;
-            height: auto;
-            margin: 20px auto 30px;
-            display: block;
-        }
-
-        .hero-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 0 20px; /* Add padding to buttons within hero */
-        }
-
-        .btn-app {
-            display: block;
-            width: 100%;
-            padding: 16px 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-        }
-
-        .btn-primary:active {
-            background-color: #5bbd82; /* Darker green on tap */
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-outline:active {
-            background-color: rgba(74, 144, 226, 0.1); /* Light blue background on tap */
-        }
-
-        /* Feature Cards */
-        .feature-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .feature-card {
-            background-color: var(--bg-light);
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 4px 10px var(--shadow-light);
-        }
-
-        .feature-card iconify-icon {
-            font-size: 30px;
-            color: var(--primary);
-        }
-
-        .feature-card-content h4 {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 0 5px;
-        }
-
-        .feature-card-content p {
-            font-size: 14px;
-            color: var(--text-light);
-            margin: 0;
-        }
-
-        /* Leaderboard Cards */
-        .leaderboard-grid {
-            display: flex;
-            flex-direction: column; /* Stack for mobile */
-            gap: 20px;
-        }
-
-        .leader-card {
-            background-color: var(--bg-light);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 10px var(--shadow-light);
-            border-top: 5px solid var(--accent); /* Gold accent for top */
-        }
-        .leader-card.member {
-            border-top-color: var(--secondary); /* Green accent for member */
-        }
-
-        .leader-card h4 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .leader-profile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .leader-profile .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--secondary);
-            margin-bottom: 10px;
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.1); /* Subtle ring */
-        }
-        .leader-card.member .leader-profile .avatar {
-            border-color: var(--primary);
-        }
-
-        .leader-profile strong {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .leader-profile p {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
-
-        .leader-badge {
-            background-color: var(--accent);
-            color: var(--text-dark);
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .leader-badge iconify-icon {
-            font-size: 16px;
-            color: var(--text-dark);
-        }
-        .leader-card.member .leader-badge {
-            background-color: var(--primary);
-            color: white;
-        }
-        .leader-card.member .leader-badge iconify-icon {
-            color: white;
-        }
-
-        .view-all-button {
-            display: block;
-            text-align: center;
-            margin-top: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        /* How It Works Steps */
-        .steps-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .step-card {
-            background-color: var(--bg-light);
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            box-shadow: 0 4px 10px var(--shadow-light);
-        }
-
-        .step-number {
-            min-width: 40px;
-            height: 40px;
-            background-color: var(--secondary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: 700;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .step-content h4 {
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0 0 5px;
-        }
-
-        .step-content p {
-            font-size: 14px;
-            color: var(--text-light);
-            margin: 0;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            background-color: var(--bg-white);
-            border-top: 1px solid var(--border-color);
-            position: sticky; /* Keep at bottom of container */
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px var(--shadow-light);
-            z-index: 10;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-light);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 5px 0;
-            flex: 1; /* Distribute items evenly */
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-item iconify-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saran Pola Unlock HP</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fefefe;
+      color: #333;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #0e7c7b;
+    }
+    .pattern-box {
+      background: #e0f7f6;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+    button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: #0e7c7b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #095957;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="mobile-app-container">
+  <h1>🔐 Saran Pola Kunci HP</h1>
+  <p>Berikut pola yang mudah diingat untuk membuka HP Anda.</p>
 
-        <header class="app-bar">
-            <div class="logo">
-                <iconify-icon icon="solar:handshake-bold-duotone"></iconify-icon>
-                ArisanPro
-            </div>
-            <div class="icons">
-                <iconify-icon icon="solar:bell-bing-bold-duotone"></iconify-icon>
-                <iconify-icon icon="solar:user-circle-bold-duotone"></iconify-icon>
-            </div>
-        </header>
+  <div class="pattern-box" id="patternDisplay">
+    👉 Pola: <strong>1 → 4 → 7 → 8 → 9</strong><br>(Huruf L Panjang)
+  </div>
 
-        <section class="app-section hero-app">
-            <h2>Kelola Arisan, Lebih Mudah & Aman</h2>
-            <p>Bergabung dan kelola arisan dengan komunitas terpercaya. Raih keuntungan bersama!</p>
-            <img src="https://assets.website-files.com/6249e08394e75d04ae10ecb2/62573215918c50e41f01c778_hero-image-banking-x-webflow-template.png" alt="Arisan Illustration" class="hero-illustration">
-            <div class="hero-buttons">
-                <a href="#" class="btn-app btn-primary">Daftar Sekarang</a>
-                <a href="#" class="btn-app btn-outline">Masuk</a>
-            </div>
-        </section>
+  <button onclick="nextPattern()">Gagal? Coba Pola Berikutnya</button>
 
-        <section class="app-section">
-            <h3 class="app-section-title">Fitur Unggulan Kami</h3>
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <iconify-icon icon="solar:shield-bold-duotone"></iconify-icon>
-                    <div class="feature-card-content">
-                        <h4>Keamanan Terjamin</h4>
-                        <p>Sistem enkripsi canggih melindungi setiap transaksi Anda.</p>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <iconify-icon icon="solar:chart-square-bold-duotone"></iconify-icon>
-                    <div class="feature-card-content">
-                        <h4>Leaderboard Terpercaya</h4>
-                        <p>Pantau performa admin & member secara real-time.</p>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <iconify-icon icon="solar:wallet-bold-duotone"></iconify-icon>
-                    <div class="feature-card-content">
-                        <h4>Transaksi Transparan</h4>
-                        <p>Catatan keuangan yang jelas dan mudah diakses setiap saat.</p>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <iconify-icon icon="solar:users-group-rounded-bold-duotone"></iconify-icon>
-                    <div class="feature-card-content">
-                        <h4>Komunitas Solid</h4>
-                        <p>Bergabung dengan ribuan pengguna terpercaya dari seluruh Indonesia.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+  <script>
+    const patterns = [
+      { pola: "1 → 4 → 7 → 8 → 9", nama: "Huruf L Panjang" },
+      { pola: "2 → 5 → 8 → 4 → 6", nama: "Tanda Plus (+)" },
+      { pola: "1 → 2 → 3 → 6 → 9 → 8 → 7 → 4", nama: "Pola Cincin (O)" },
+      { pola: "1 → 2 → 3 → 6 → 5 → 4 → 7", nama: "Zigzag Jahitan" },
+      { pola: "5 → 2 → 1 → 4 → 7 → 8 → 9 → 6 → 3", nama: "Putar Arah Jarum Jam" },
+      { pola: "1 → 5 → 9 → 3 → 7", nama: "Huruf Z Sederhana" },
+      { pola: "3 → 6 → 9 → 8 → 5 → 2", nama: "Pola Spiral Miring" }
+    ];
 
-        <section class="app-section">
-            <h3 class="app-section-title">Top Performers Bulan Ini</h3>
-            <div class="leaderboard-grid">
-                <div class="leader-card">
-                    <h4>Admin Terbaik</h4>
-                    <div class="leader-profile">
-                        <img src="https://api.dicebear.com/8.x/initials/svg?seed=BS&backgroundColor=2196F3&backgroundType=circle&fontFamily=Poppins" alt="Budi Santoso" class="avatar">
-                        <strong>Budi Santoso</strong>
-                        <p>5 Grup Aktif | Performa ⭐️⭐️⭐️⭐️⭐️</p>
-                        <span class="leader-badge">
-                            <iconify-icon icon="solar:crown-minimalistic-bold-duotone"></iconify-icon>
-                            Admin Terpilih
-                        </span>
-                    </div>
-                </div>
-                <div class="leader-card member">
-                    <h4>Member Aktif</h4>
-                    <div class="leader-profile">
-                        <img src="https://api.dicebear.com/8.x/initials/svg?seed=FD&backgroundColor=4CAF50&backgroundType=circle&fontFamily=Poppins" alt="Fitriana Dewi" class="avatar">
-                        <strong>Fitriana Dewi</strong>
-                        <p>Mengikuti 7 Arisan</p>
-                        <span class="leader-badge">
-                            <iconify-icon icon="solar:medal-star-bold-duotone"></iconify-icon>
-                            Loyal Participant
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <a href="#" class="view-all-button">Lihat Semua Leaderboard</a>
-        </section>
-
-        <section class="app-section">
-            <h3 class="app-section-title">Langkah Mudah Bergabung</h3>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h4>Daftar Akun Anda</h4>
-                        <p>Buat akun dengan mudah dan aman dalam hitungan menit.</p>
-                    </div>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h4>Pilih Arisan</h4>
-                        <p>Temukan grup arisan yang cocok atau buat grup Anda sendiri.</p>
-                    </div>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h4>Mulai Menabung & Nikmati</h4>
-                        <p>Ikuti jadwal, pantau progres, dan raih dana Anda tepat waktu.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="app-section" style="text-align: center; padding-top: 30px; padding-bottom: 80px; font-size: 13px; color: var(--text-light);">
-            <p>&copy; 2025 ArisanPro. All rights reserved.</p>
-        </section>
-
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
-                <iconify-icon icon="solar:home-smile-bold-duotone"></iconify-icon>
-                Beranda
-            </a>
-            <a href="#" class="nav-item">
-                <iconify-icon icon="solar:gallery-bold-duotone"></iconify-icon>
-                Arisan
-            </a>
-            <a href="#" class="nav-item">
-                <iconify-icon icon="solar:medal-star-bold-duotone"></iconify-icon>
-                Leaderboard
-            </a>
-            <a href="#" class="nav-item">
-                <iconify-icon icon="solar:user-circle-bold-duotone"></iconify-icon>
-                Akun
-            </a>
-        </nav>
-    </div>
+    let current = 0;
+    function nextPattern() {
+      current = (current + 1) % patterns.length;
+      const pola = patterns[current];
+      document.getElementById("patternDisplay").innerHTML =
+        `👉 Pola: <strong>${pola.pola}</strong><br>(${pola.nama})`;
+    }
+  </script>
 
 </body>
 </html>
