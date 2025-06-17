@@ -1,73 +1,168 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Saran Pola Unlock HP</title>
+  <title>ArisanKu</title>
   <style>
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #fefefe;
+      background: linear-gradient(to bottom, #e8ebfd, #fef9f5);
       color: #333;
+    }
+    .container {
       padding: 20px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+    .leaderboard {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 15px;
+      padding: 15px;
+      min-width: 180px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
     }
-    h1 {
-      color: #0e7c7b;
+    .card img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 10px;
     }
-    .pattern-box {
-      background: #e0f7f6;
-      padding: 20px;
-      border-radius: 10px;
-      display: inline-block;
-      font-size: 1.2em;
-      margin-top: 20px;
+    .label {
+      font-size: 14px;
+      color: #888;
     }
-    button {
-      margin-top: 30px;
-      padding: 12px 24px;
-      background: #0e7c7b;
-      color: white;
-      border: none;
-      border-radius: 8px;
+    .name {
       font-size: 16px;
-      cursor: pointer;
+      font-weight: 600;
     }
-    button:hover {
-      background: #095957;
+    .tag {
+      display: inline-block;
+      background: #ffd95c;
+      color: #444;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      margin-top: 5px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+    .nav-item {
+      text-align: center;
+      color: #888;
+      font-size: 12px;
+    }
+    .nav-icon {
+      font-size: 22px;
+      margin-bottom: 3px;
+    }
+    .nav-middle {
+      background: #7f62f2;
+      color: white;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -30px;
+      font-size: 26px;
+      box-shadow: 0 0 12px rgba(127, 98, 242, 0.6);
     }
   </style>
 </head>
 <body>
 
-  <h1>🔐 Saran Pola Kunci HP</h1>
-  <p>Berikut pola yang mudah diingat untuk membuka HP Anda.</p>
-
-  <div class="pattern-box" id="patternDisplay">
-    👉 Pola: <strong>1 → 4 → 7 → 8 → 9</strong><br>(Huruf L Panjang)
+<div class="container">
+  <div class="section-title">Top 3 Most Trusted Arisan Administrators</div>
+  <div class="leaderboard">
+    <div class="card">
+      <img src="https://i.pravatar.cc/60?img=12" alt="Admin 1">
+      <div class="name">Maya</div>
+      <div class="label">3 kelompok</div>
+      <div class="tag">Trust</div>
+    </div>
+    <div class="card">
+      <img src="https://i.pravatar.cc/60?img=15" alt="Admin 2">
+      <div class="name">Dian</div>
+      <div class="label">3 kelompok</div>
+      <div class="tag">Popular</div>
+    </div>
+    <div class="card">
+      <img src="https://i.pravatar.cc/60?img=17" alt="Admin 3">
+      <div class="name">Rafi</div>
+      <div class="label">3 kelompok</div>
+      <div class="tag">Active</div>
+    </div>
   </div>
 
-  <button onclick="nextPattern()">Gagal? Coba Pola Berikutnya</button>
+  <div style="height: 30px;"></div>
 
-  <script>
-    const patterns = [
-      { pola: "1 → 4 → 7 → 8 → 9", nama: "Huruf L Panjang" },
-      { pola: "2 → 5 → 8 → 4 → 6", nama: "Tanda Plus (+)" },
-      { pola: "1 → 2 → 3 → 6 → 9 → 8 → 7 → 4", nama: "Pola Cincin (O)" },
-      { pola: "1 → 2 → 3 → 6 → 5 → 4 → 7", nama: "Zigzag Jahitan" },
-      { pola: "5 → 2 → 1 → 4 → 7 → 8 → 9 → 6 → 3", nama: "Putar Arah Jarum Jam" },
-      { pola: "1 → 5 → 9 → 3 → 7", nama: "Huruf Z Sederhana" },
-      { pola: "3 → 6 → 9 → 8 → 5 → 2", nama: "Pola Spiral Miring" }
-    ];
+  <div class="section-title">Top 3 Most Generous Arisan Participants</div>
+  <div class="leaderboard">
+    <div class="card">
+      <img src="https://i.pravatar.cc/60?img=19" alt="User 1">
+      <div class="name">Anisa</div>
+      <div class="label">Rp 2.000.000</div>
+      <div class="tag">Royal</div>
+    </div>
+    <div class="card">
+      <img src="https://i.pravatar.cc/60?img=23" alt="User 2">
+      <div class="name">Dina</div>
+      <div class="label">Rp 1.900.000</div>
+      <div class="tag">Team</div>
+    </div>
+    <div class="card">
+      <img src="https://i.pravatar.cc/60?img=26" alt="User 3">
+      <div class="name">Yusuf</div>
+      <div class="label">Rp 1.800.000</div>
+      <div class="tag">Support</div>
+    </div>
+  </div>
+</div>
 
-    let current = 0;
-    function nextPattern() {
-      current = (current + 1) % patterns.length;
-      const pola = patterns[current];
-      document.getElementById("patternDisplay").innerHTML =
-        `👉 Pola: <strong>${pola.pola}</strong><br>(${pola.nama})`;
-    }
-  </script>
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <div class="nav-item">
+    <div class="nav-icon">🏠</div>
+    <div>Beranda</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">👥</div>
+    <div>Grup</div>
+  </div>
+  <div class="nav-middle">⚡</div>
+  <div class="nav-item">
+    <div class="nav-icon">💬</div>
+    <div>Chat</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">👤</div>
+    <div>Profil</div>
+  </div>
+</div>
 
 </body>
 </html>
