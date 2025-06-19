@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QR Scanner Web</title>
+  <title>QR Code Scanner Redirect</title>
   <style>
+    body { font-family: sans-serif; text-align: center; margin: 20px; }
     video { width: 100%; max-width: 400px; border: 1px solid #ccc; }
     #result { margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h2>Scan QR Code</h2>
-  <button onclick="startScanner()">Buka Kamera</button>
-  <video id="preview" autoplay></video>
-  <div id="result">Hasil scan akan muncul di sini</div>
+  <h2>Scan QR Code untuk Membuka Link</h2>
+  <button onclick="startScanner()">Buka Kamera</button><br><br>
+  <video id="preview" autoplay muted playsinline></video>
+  <div id="result">Scan QR untuk mengunjungi link</div>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <script>
@@ -19,15 +20,16 @@
     let resultDiv = document.getElementById('result');
     let canvas = document.createElement('canvas');
     let ctx = canvas.getContext('2d');
+    let alreadyScanned = false;
 
     async function startScanner() {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
       video.srcObject = stream;
-      video.setAttribute("playsinline", true); // iOS
       scanLoop();
     }
 
     function scanLoop() {
+      if (alreadyScanned) return;
       requestAnimationFrame(scanLoop);
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         canvas.width = video.videoWidth;
@@ -35,8 +37,12 @@
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         let code = jsQR(imageData.data, canvas.width, canvas.height);
-        if (code) {
-          resultDiv.innerText = "Hasil Scan: " + code.data;
+        if (code && code.data.startsWith("http")) {
+          alreadyScanned = true;
+          resultDiv.innerText = "Membuka: " + code.data;
+          setTimeout(() => {
+            window.location.href = code.data;
+          }, 1000);
         }
       }
     }
