@@ -1,168 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ArisanKu</title>
+  <title>QR Scanner Web</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #e8ebfd, #fef9f5);
-      color: #333;
-    }
-    .container {
-      padding: 20px;
-    }
-    .section-title {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-    .leaderboard {
-      display: flex;
-      gap: 15px;
-      overflow-x: auto;
-    }
-    .card {
-      background: #fff;
-      border-radius: 15px;
-      padding: 15px;
-      min-width: 180px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .card img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      margin-bottom: 10px;
-    }
-    .label {
-      font-size: 14px;
-      color: #888;
-    }
-    .name {
-      font-size: 16px;
-      font-weight: 600;
-    }
-    .tag {
-      display: inline-block;
-      background: #ffd95c;
-      color: #444;
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 8px;
-      margin-top: 5px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 0;
-      border-top-left-radius: 15px;
-      border-top-right-radius: 15px;
-    }
-    .nav-item {
-      text-align: center;
-      color: #888;
-      font-size: 12px;
-    }
-    .nav-icon {
-      font-size: 22px;
-      margin-bottom: 3px;
-    }
-    .nav-middle {
-      background: #7f62f2;
-      color: white;
-      width: 55px;
-      height: 55px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: -30px;
-      font-size: 26px;
-      box-shadow: 0 0 12px rgba(127, 98, 242, 0.6);
-    }
+    video { width: 100%; max-width: 400px; border: 1px solid #ccc; }
+    #result { margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
+  <h2>Scan QR Code</h2>
+  <button onclick="startScanner()">Buka Kamera</button>
+  <video id="preview" autoplay></video>
+  <div id="result">Hasil scan akan muncul di sini</div>
 
-<div class="container">
-  <div class="section-title">Top 3 Most Trusted Arisan Administrators</div>
-  <div class="leaderboard">
-    <div class="card">
-      <img src="https://i.pravatar.cc/60?img=12" alt="Admin 1">
-      <div class="name">Maya</div>
-      <div class="label">3 kelompok</div>
-      <div class="tag">Trust</div>
-    </div>
-    <div class="card">
-      <img src="https://i.pravatar.cc/60?img=15" alt="Admin 2">
-      <div class="name">Dian</div>
-      <div class="label">3 kelompok</div>
-      <div class="tag">Popular</div>
-    </div>
-    <div class="card">
-      <img src="https://i.pravatar.cc/60?img=17" alt="Admin 3">
-      <div class="name">Rafi</div>
-      <div class="label">3 kelompok</div>
-      <div class="tag">Active</div>
-    </div>
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script>
+    let video = document.getElementById('preview');
+    let resultDiv = document.getElementById('result');
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
 
-  <div style="height: 30px;"></div>
+    async function startScanner() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      video.srcObject = stream;
+      video.setAttribute("playsinline", true); // iOS
+      scanLoop();
+    }
 
-  <div class="section-title">Top 3 Most Generous Arisan Participants</div>
-  <div class="leaderboard">
-    <div class="card">
-      <img src="https://i.pravatar.cc/60?img=19" alt="User 1">
-      <div class="name">Anisa</div>
-      <div class="label">Rp 2.000.000</div>
-      <div class="tag">Royal</div>
-    </div>
-    <div class="card">
-      <img src="https://i.pravatar.cc/60?img=23" alt="User 2">
-      <div class="name">Dina</div>
-      <div class="label">Rp 1.900.000</div>
-      <div class="tag">Team</div>
-    </div>
-    <div class="card">
-      <img src="https://i.pravatar.cc/60?img=26" alt="User 3">
-      <div class="name">Yusuf</div>
-      <div class="label">Rp 1.800.000</div>
-      <div class="tag">Support</div>
-    </div>
-  </div>
-</div>
-
-<!-- Bottom Navigation -->
-<div class="bottom-nav">
-  <div class="nav-item">
-    <div class="nav-icon">🏠</div>
-    <div>Beranda</div>
-  </div>
-  <div class="nav-item">
-    <div class="nav-icon">👥</div>
-    <div>Grup</div>
-  </div>
-  <div class="nav-middle">⚡</div>
-  <div class="nav-item">
-    <div class="nav-icon">💬</div>
-    <div>Chat</div>
-  </div>
-  <div class="nav-item">
-    <div class="nav-icon">👤</div>
-    <div>Profil</div>
-  </div>
-</div>
-
+    function scanLoop() {
+      requestAnimationFrame(scanLoop);
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code) {
+          resultDiv.innerText = "Hasil Scan: " + code.data;
+        }
+      }
+    }
+  </script>
 </body>
 </html>
