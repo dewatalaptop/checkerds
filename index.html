@@ -163,12 +163,22 @@
             overflow: hidden; /* Penting untuk video feed */
             position: relative;
         }
-        #qr-scanner-container video, #qr-scanner-container-view video {
+        /* HTML5-QRCode uses a div inside, not direct video element */
+        #qr-scanner-container > div, #qr-scanner-container-view > div {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: var(--border-radius);
+            display: flex; /* For centering the internal video */
+            justify-content: center;
+            align-items: center;
         }
+        #qr-scanner-container > div video, #qr-scanner-container-view > div video {
+             width: 100%; /* Ensure video fills its container */
+             height: 100%;
+             object-fit: cover;
+        }
+
 
         #qr-scanner-container:empty::before, #qr-scanner-container-view:empty::before {
             content: 'Nyalakan kamera untuk scan QR';
@@ -488,7 +498,7 @@
     </div>
 
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@ericblade/quagga2@1.8.0/dist/quagga.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 
     <script>
         const ADMIN_PASSWORD = "dolan_sawah_admin"; // Ganti dengan password yang lebih kuat
@@ -504,7 +514,6 @@
             document.querySelectorAll('nav button').forEach(button => {
                 button.classList.remove('active');
             });
-            // Add active class to the clicked navigation button
             const navButtonId = `nav-${sectionId.replace('-section', '')}`;
             const navButton = document.getElementById(navButtonId);
             if (navButton) {
@@ -521,7 +530,6 @@
         };
 
         const showAlert = (message, type = 'success') => {
-            // Implementasi sederhana untuk notifikasi, bisa dipercantik dengan library toast/snackbar
             alert(message);
         };
 
@@ -612,7 +620,6 @@
             if (adminPasswordInput.value === ADMIN_PASSWORD) {
                 adminPasswordModal.style.display = 'none';
                 if (currentAdminAction === 'add') {
-                    // Trigger form submission for add member
                     document.getElementById('add-member-form').dispatchEvent(new Event('submit', { cancelable: true }));
                 } else if (currentAdminAction === 'edit' && adminModalTargetId) {
                     openEditMemberModal(adminModalTargetId);
@@ -699,12 +706,10 @@
         // --- Event Listeners for Navigation ---
         document.getElementById('nav-add-member').addEventListener('click', () => {
             showSection('add-member-section');
-            // Only initialize scanner here, not on page load
             initQrScanner('qr-scanner-container', 'add');
         });
         document.getElementById('nav-scan-member').addEventListener('click', () => {
             showSection('scan-member-section');
-            // Only initialize scanner here, not on page load
             initQrScanner('qr-scanner-container-view', 'view');
         });
         document.getElementById('nav-all-members').addEventListener('click', () => {
@@ -712,105 +717,79 @@
             renderMemberList();
         });
 
-        // --- QR Scanner Functions ---
-        let scannerInstanceAdd = null;
-        let scannerInstanceView = null;
+        // --- QR Scanner Functions (using HTML5-QRCode) ---
+        let html5QrCodeAdd = null;
+        let html5QrCodeView = null;
 
-        const initQrScanner = (containerId, mode) => {
-            const targetContainer = document.getElementById(containerId);
-            // Stop any existing scanner in this container first
-            stopQrScanner('qr-scanner-container');
-            stopQrScanner('qr-scanner-container-view');
+        const initQrScanner = async (containerId, mode) => {
+            const targetContainerId = containerId;
+            // Stop any existing scanner instances before starting a new one
+            await stopQrScanner('qr-scanner-container');
+            await stopQrScanner('qr-scanner-container-view');
 
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: targetContainer,
-                    constraints: {
-                        facingMode: "environment" // Or "user" for front camera
-                    },
-                },
-                decoder: {
-                    readers: ["ean_reader", "code_128_reader", "qrcode_reader"] // Add qrcode_reader for QR codes
-                },
-                locate: true, // Enable detection of the barcode location
-            }, function(err) {
-                if (err) {
-                    console.error(err);
-                    targetContainer.innerHTML = `<p style="color:red; text-align:center;">Gagal menginisialisasi kamera: ${err.message}. Pastikan Anda memberikan izin kamera.</p>`;
-                    return;
-                }
-                console.log("Initialization finished. Ready to start");
-                Quagga.start();
-
-                if (containerId === 'qr-scanner-container') {
-                    scannerInstanceAdd = Quagga;
-                } else if (containerId === 'qr-scanner-container-view') {
-                    scannerInstanceView = Quagga;
-                }
-            });
-
-            Quagga.onDetected(function(result) {
-                const code = result.codeResult.code;
-                console.log("Barcode detected and processed: ", code);
-                // Handle the detected code based on mode
+            try {
                 if (mode === 'add') {
-                    document.getElementById('member-id').value = code;
-                    showAlert(`ID Member terdeteksi: ${code}. Silakan lengkapi data.`);
-                    stopQrScanner(containerId); // Stop scanner once ID is detected
+                    html5QrCodeAdd = new Html5Qrcode(targetContainerId);
+                    await html5QrCodeAdd.start(
+                        { facingMode: "environment" }, // Prefer rear camera
+                        { fps: 10, qrbox: { width: 250, height: 250 } }, // Scan region size
+                        (decodedText, decodedResult) => {
+                            console.log("QR detected for add mode: ", decodedText);
+                            document.getElementById('member-id').value = decodedText;
+                            showAlert(`ID Member terdeteksi: ${decodedText}. Silakan lengkapi data.`);
+                            stopQrScanner(targetContainerId); // Stop scanner once ID is detected
+                        },
+                        (errorMessage) => {
+                            // This callback is called frequently, keep console logs minimal here
+                            // console.log(`QR scan error (add mode): ${errorMessage}`);
+                        }
+                    );
                 } else if (mode === 'view') {
-                    displayMemberDetail(code);
-                    // No need to stop scanner immediately here, it will be stopped by displayMemberDetail if found,
-                    // or user might need to scan again if not found.
-                    // If you want to stop immediately after any scan attempt (found or not), uncomment next line:
-                    // stopQrScanner(containerId);
+                    html5QrCodeView = new Html5Qrcode(targetContainerId);
+                    await html5QrCodeView.start(
+                        { facingMode: "environment" }, // Prefer rear camera
+                        { fps: 10, qrbox: { width: 250, height: 250 } }, // Scan region size
+                        (decodedText, decodedResult) => {
+                            console.log("QR detected for view mode: ", decodedText);
+                            displayMemberDetail(decodedText);
+                            // Scanner will be stopped by displayMemberDetail if member is found
+                        },
+                        (errorMessage) => {
+                            // console.log(`QR scan error (view mode): ${errorMessage}`);
+                        }
+                    );
                 }
-            });
-
-            Quagga.onProcessed(function(result) {
-                var drawingCtx = Quagga.canvas.ctx.overlay,
-                    drawingCanvas = Quagga.canvas.dom.overlay;
-
-                if (result) {
-                    if (result.boxes) {
-                        drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.width), parseInt(drawingCanvas.height));
-                        result.boxes.filter(function (box) {
-                            return box !== result.box;
-                        }).forEach(function (box) {
-                            Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
-                        });
-                    }
-
-                    if (result.box) {
-                        Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
-                    }
-
-                    if (result.codeResult && result.codeResult.code) {
-                        Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: "red", lineWidth: 3});
-                    }
-                }
-            });
+                console.log(`HTML5-QRCode for ${mode} mode initialized in ${targetContainerId}.`);
+            } catch (err) {
+                console.error(`Gagal menginisialisasi kamera (${mode} mode) di ${targetContainerId}:`, err);
+                document.getElementById(targetContainerId).innerHTML = `<p style="color:red; text-align:center;">Gagal menginisialisasi kamera: ${err.message}. Pastikan Anda memberikan izin kamera.</p>`;
+            }
         };
 
-        const stopQrScanner = (containerId) => {
-            if (containerId === 'qr-scanner-container' && scannerInstanceAdd) {
-                scannerInstanceAdd.stop();
-                scannerInstanceAdd = null;
-                document.getElementById(containerId).innerHTML = ''; // Clear video element
-            }
-            if (containerId === 'qr-scanner-container-view' && scannerInstanceView) {
-                scannerInstanceView.stop();
-                scannerInstanceView = null;
-                document.getElementById(containerId).innerHTML = ''; // Clear video element
+        const stopQrScanner = async (containerId) => {
+            try {
+                if (containerId === 'qr-scanner-container' && html5QrCodeAdd && html5QrCodeAdd.is==true) { // Check if scanner is active
+                    await html5QrCodeAdd.stop();
+                    html5QrCodeAdd = null;
+                    document.getElementById(containerId).innerHTML = ''; // Clear video element
+                    console.log(`HTML5-QRCode for add mode stopped.`);
+                }
+                if (containerId === 'qr-scanner-container-view' && html5QrCodeView && html5QrCodeView.is==true) { // Check if scanner is active
+                    await html5QrCodeView.stop();
+                    html5QrCodeView = null;
+                    document.getElementById(containerId).innerHTML = ''; // Clear video element
+                    console.log(`HTML5-QRCode for view mode stopped.`);
+                }
+            } catch (err) {
+                console.warn(`Gagal menghentikan scanner di ${containerId}:`, err);
+                // Clear the container even if stop fails to avoid stale video
+                document.getElementById(containerId).innerHTML = '';
             }
         };
 
         // --- Add Member Form Submission ---
-        // This event listener now only handles form data, not admin password check directly
         document.getElementById('add-member-form').addEventListener('submit', (e) => {
-            e.preventDefault(); // Prevent default submission initially
-            // If the currentAdminAction is 'add', it means password was already checked and approved
+            e.preventDefault();
             if (currentAdminAction === 'add') {
                 const id = document.getElementById('member-id').value.trim();
                 const name = document.getElementById('member-name').value.trim();
@@ -843,14 +822,12 @@
                 saveMembers(members);
                 showAlert("Member baru berhasil ditambahkan!");
 
-                // Clear form
                 document.getElementById('add-member-form').reset();
                 document.getElementById('member-id').value = '';
-                // Restart scanner for next input only if user remains on this section
-                // initQrScanner('qr-scanner-container', 'add'); // This caused immediate camera access
+                // Optional: Re-init scanner if user is expected to add another member immediately
+                // initQrScanner('qr-scanner-container', 'add');
             } else {
-                // If currentAdminAction is not 'add', prompt for password
-                currentAdminAction = 'add'; // Set action before opening modal
+                currentAdminAction = 'add';
                 openAdminPasswordModal();
             }
         });
@@ -869,14 +846,13 @@
                 document.getElementById('detail-member-phone').textContent = member.phone;
                 document.getElementById('detail-member-points').textContent = member.points;
 
-                // Store current member ID for transaction form
                 document.getElementById('transaction-form').dataset.memberId = member.id;
-                memberDetailDisplay.style.display = 'block'; // Show the detail section
+                memberDetailDisplay.style.display = 'block';
                 showAlert(`Detail member ${member.name} ditemukan.`);
                 stopQrScanner('qr-scanner-container-view'); // Stop scanner after finding member
             } else {
                 showAlert("Member tidak ditemukan. Pastikan ID kartu benar.", "error");
-                memberDetailDisplay.style.display = 'none'; // Hide if not found
+                memberDetailDisplay.style.display = 'none';
             }
         };
 
@@ -913,9 +889,8 @@
                 saveMembers(members);
                 showAlert(`Transaksi sebesar Rp${transactionAmount.toLocaleString('id-ID')} berhasil ditambahkan! Member ${member.name} mendapatkan ${pointsEarned} poin. Total poin: ${member.points}.`);
 
-                // Update displayed details
                 document.getElementById('detail-member-points').textContent = member.points;
-                document.getElementById('transaction-amount').value = ''; // Clear transaction input
+                document.getElementById('transaction-amount').value = '';
             } else {
                 showAlert("Gagal menambahkan transaksi: Member tidak ditemukan.", "error");
             }
@@ -924,7 +899,7 @@
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             showSection('add-member-section'); // Show add member section by default
-            // Do NOT initialize QR scanner here
+            // QR scanner will ONLY be initialized when the user clicks the "Tambah Member Baru" or "Scan Member" button
         });
     </script>
 </body>
