@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP Member Dolan Sawah</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/dist/html5-qrcode.min.js"></script>
     <style>
         :root {
             --primary-color: #4CAF50; /* Hijau Dolah Sawah */
@@ -14,6 +16,8 @@
             --card-background: #FFFFFF;
             --border-radius: 10px;
             --shadow: 0 4px 8px rgba(0,0,0,0.1);
+            --success-color: #4CAF50;
+            --error-color: #f44336;
         }
 
         body {
@@ -26,16 +30,18 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
         }
 
         header {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #388E3C 100%);
             color: white;
             padding: 20px;
             text-align: center;
             box-shadow: var(--shadow);
             position: relative;
             z-index: 1000;
+            border-bottom: 5px solid var(--secondary-color);
         }
 
         header h1 {
@@ -43,6 +49,21 @@
             font-size: 2.2em;
             letter-spacing: 1px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            font-size: 1.5em;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .container {
@@ -53,6 +74,32 @@
             background-color: var(--card-background);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .container::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 193, 7, 0.1);
+            border-radius: 50%;
+            z-index: 0;
         }
 
         nav {
@@ -61,41 +108,75 @@
             gap: 15px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
 
         nav button {
-            background-color: var(--secondary-color);
+            background: linear-gradient(to bottom, var(--secondary-color), #FFB300);
             color: var(--text-color);
             border: none;
             padding: 12px 25px;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
             font-size: 1em;
             font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             gap: 8px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        nav button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #FFD740, #FFB300);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        nav button:hover::after {
+            opacity: 1;
         }
 
         nav button:hover {
-            background-color: #FFD740;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        nav button:active {
+            transform: translateY(1px);
         }
 
         nav button.active {
-            background-color: var(--primary-color);
+            background: linear-gradient(to bottom, var(--primary-color), #388E3C);
             color: white;
         }
 
         .section {
             display: none;
             padding: 20px 0;
+            position: relative;
+            z-index: 1;
         }
 
         .section.active {
             display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
@@ -105,85 +186,144 @@
             margin-bottom: 25px;
             font-size: 1.8em;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         form {
             display: grid;
             gap: 15px;
             grid-template-columns: 1fr;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         form label {
             font-weight: 600;
             margin-bottom: 5px;
             display: block;
+            color: #444;
         }
 
         form input[type="text"],
         form input[type="number"],
         form textarea,
         form input[type="password"] {
-            width: calc(100% - 20px);
-            padding: 10px;
+            width: 100%;
+            padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1em;
             box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        form input[type="text"]:focus,
+        form input[type="number"]:focus,
+        form textarea:focus,
+        form input[type="password"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+            outline: none;
         }
 
         form button {
-            background-color: var(--primary-color);
+            background: linear-gradient(to bottom, var(--primary-color), #388E3C);
             color: white;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1.1em;
             font-weight: 600;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        form button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #66BB6A, #43A047);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        form button:hover::after {
+            opacity: 1;
         }
 
         form button:hover {
-            background-color: #43A047;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        form button:active {
+            transform: translateY(1px);
         }
 
         #qr-scanner-container, #qr-scanner-container-view {
             width: 100%;
             height: 300px;
-            background-color: #eee;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: var(--border-radius);
             margin-bottom: 20px;
-            overflow: hidden; /* Penting untuk video feed */
+            overflow: hidden;
             position: relative;
+            box-shadow: var(--shadow);
+            border: 2px dashed #ccc;
         }
-        /* HTML5-QRCode uses a div inside, not direct video element */
+
         #qr-scanner-container > div, #qr-scanner-container-view > div {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: var(--border-radius);
-            display: flex; /* For centering the internal video */
+            display: flex;
             justify-content: center;
             align-items: center;
         }
+        
         #qr-scanner-container > div video, #qr-scanner-container-view > div video {
-             width: 100%; /* Ensure video fills its container */
+             width: 100%;
              height: 100%;
              object-fit: cover;
         }
-
 
         #qr-scanner-container:empty::before, #qr-scanner-container-view:empty::before {
             content: 'Nyalakan kamera untuk scan QR';
             color: #666;
             font-style: italic;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         #member-list-container {
@@ -199,13 +339,25 @@
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--shadow);
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            z-index: 1;
+        }
+
+        .member-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--primary-color);
         }
 
         .member-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
 
         .member-card h3 {
@@ -213,11 +365,24 @@
             margin-top: 0;
             margin-bottom: 10px;
             font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .member-card p {
             margin: 5px 0;
             color: #555;
+        }
+
+        .member-card .points-badge {
+            background-color: var(--secondary-color);
+            color: #333;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
         }
 
         .member-card .card-actions {
@@ -234,26 +399,27 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .member-card .card-actions .edit-btn {
-            background-color: var(--secondary-color);
+            background: linear-gradient(to bottom, #FFD740, #FFB300);
             color: var(--text-color);
         }
         .member-card .card-actions .edit-btn:hover {
-            background-color: #FFD740;
+            background: linear-gradient(to bottom, #FFE082, #FFD54F);
         }
 
         .member-card .card-actions .delete-btn {
-            background-color: #F44336;
+            background: linear-gradient(to bottom, #EF5350, #E53935);
             color: white;
         }
         .member-card .card-actions .delete-btn:hover {
-            background-color: #E53935;
+            background: linear-gradient(to bottom, #F44336, #D32F2F);
         }
 
         .member-detail-view {
@@ -263,6 +429,14 @@
             padding: 25px;
             box-shadow: var(--shadow);
             margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .member-detail-view h3 {
@@ -270,6 +444,9 @@
             font-size: 1.6em;
             margin-top: 0;
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .member-detail-view p {
@@ -279,6 +456,8 @@
 
         .member-detail-view p strong {
             color: var(--text-color);
+            min-width: 120px;
+            display: inline-block;
         }
 
         .transaction-input {
@@ -291,32 +470,47 @@
             color: var(--primary-color);
             margin-bottom: 15px;
             font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1001; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1001;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
             justify-content: center;
             align-items: center;
+            animation: fadeInModal 0.3s ease;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
             background-color: var(--card-background);
             margin: auto;
             padding: 30px;
-            border: 1px solid #888;
+            border: none;
             border-radius: var(--border-radius);
             width: 90%;
             max-width: 500px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             position: relative;
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .close-button {
@@ -343,6 +537,35 @@
             color: var(--primary-color);
         }
 
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 2000;
+            transform: translateX(200%);
+            transition: transform 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(to right, var(--success-color), #66BB6A);
+        }
+
+        .notification.error {
+            background: linear-gradient(to right, var(--error-color), #EF5350);
+        }
+
         /* Responsive Styles */
         @media (max-width: 768px) {
             header h1 {
@@ -365,6 +588,7 @@
 
             form {
                 grid-template-columns: 1fr;
+                padding: 20px;
             }
 
             .member-card {
@@ -389,6 +613,8 @@
             }
             header h1 {
                 font-size: 1.5em;
+                flex-direction: column;
+                gap: 5px;
             }
             .container {
                 padding: 10px;
@@ -401,7 +627,10 @@
 </head>
 <body>
     <header>
-        <h1>VIP Member Dolan Sawah</h1>
+        <h1>
+            <i class="fas fa-leaf header-icon"></i>
+            VIP Member Dolan Sawah
+        </h1>
     </header>
 
     <div class="container">
@@ -413,21 +642,28 @@
 
         <div id="add-member-section" class="section active">
             <h2><i class="fas fa-user-plus"></i> Tambah Member Baru</h2>
-            <div id="qr-scanner-container">
-                </div>
+            <div id="qr-scanner-container"></div>
             <p style="text-align: center; margin-bottom: 20px;">Scan QR Kartu Member untuk mendapatkan ID:</p>
             <form id="add-member-form">
-                <label for="member-id">ID Member (Otomatis dari QR):</label>
-                <input type="text" id="member-id" required readonly>
-
-                <label for="member-name">Nama Member:</label>
-                <input type="text" id="member-name" required>
-
-                <label for="member-address">Alamat:</label>
-                <textarea id="member-address" rows="3"></textarea>
-
-                <label for="member-phone">Nomor HP Aktif:</label>
-                <input type="text" id="member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka).">
+                <div class="form-group">
+                    <label for="member-id">ID Member (Otomatis dari QR):</label>
+                    <input type="text" id="member-id" required readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="member-name">Nama Member:</label>
+                    <input type="text" id="member-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="member-address">Alamat:</label>
+                    <textarea id="member-address" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="member-phone">Nomor HP Aktif:</label>
+                    <input type="text" id="member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka).">
+                </div>
 
                 <button type="submit"><i class="fas fa-save"></i> Simpan Member</button>
             </form>
@@ -435,22 +671,23 @@
 
         <div id="scan-member-section" class="section">
             <h2><i class="fas fa-qrcode"></i> Scan Member & Transaksi</h2>
-            <div id="qr-scanner-container-view">
-                </div>
+            <div id="qr-scanner-container-view"></div>
             <p style="text-align: center; margin-bottom: 20px;">Scan QR Kartu Member untuk melihat detail:</p>
             <div id="member-detail-display" class="member-detail-view" style="display: none;">
-                <h3>Detail Member <span id="detail-member-name"></span></h3>
+                <h3><i class="fas fa-user"></i> Detail Member <span id="detail-member-name"></span></h3>
                 <p><strong>ID Member:</strong> <span id="detail-member-id"></span></p>
                 <p><strong>Nama:</strong> <span id="detail-member-name-full"></span></p>
                 <p><strong>Alamat:</strong> <span id="detail-member-address"></span></p>
                 <p><strong>Nomor HP:</strong> <span id="detail-member-phone"></span></p>
-                <p><strong>Total Poin:</strong> <span id="detail-member-points"></span> poin</p>
+                <p><strong>Total Poin:</strong> <span id="detail-member-points" class="points-badge"></span></p>
 
                 <div class="transaction-input">
                     <h4><i class="fas fa-cash-register"></i> Input Transaksi</h4>
                     <form id="transaction-form">
-                        <label for="transaction-amount">Nominal Transaksi (Rupiah):</label>
-                        <input type="number" id="transaction-amount" min="0" step="10000" required>
+                        <div class="form-group">
+                            <label for="transaction-amount">Nominal Transaksi (Rupiah):</label>
+                            <input type="number" id="transaction-amount" min="0" step="10000" required>
+                        </div>
                         <button type="submit"><i class="fas fa-coins"></i> Tambah Transaksi</button>
                     </form>
                 </div>
@@ -470,8 +707,10 @@
             <span class="close-button">&times;</span>
             <h2><i class="fas fa-lock"></i> Masukkan Password Admin</h2>
             <form id="admin-password-form">
-                <label for="admin-password-input">Password:</label>
-                <input type="password" id="admin-password-input" required>
+                <div class="form-group">
+                    <label for="admin-password-input">Password:</label>
+                    <input type="password" id="admin-password-input" required>
+                </div>
                 <button type="submit"><i class="fas fa-check-circle"></i> Submit</button>
             </form>
         </div>
@@ -483,26 +722,33 @@
             <h2><i class="fas fa-edit"></i> Edit Data Member</h2>
             <form id="edit-member-form">
                 <input type="hidden" id="edit-member-id">
-                <label for="edit-member-name">Nama Member:</label>
-                <input type="text" id="edit-member-name" required>
-
-                <label for="edit-member-address">Alamat:</label>
-                <textarea id="edit-member-address" rows="3"></textarea>
-
-                <label for="edit-member-phone">Nomor HP Aktif:</label>
-                <input type="text" id="edit-member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka).">
+                <div class="form-group">
+                    <label for="edit-member-name">Nama Member:</label>
+                    <input type="text" id="edit-member-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-member-address">Alamat:</label>
+                    <textarea id="edit-member-address" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-member-phone">Nomor HP Aktif:</label>
+                    <input type="text" id="edit-member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka).">
+                </div>
 
                 <button type="submit"><i class="fas fa-save"></i> Update Member</button>
             </form>
         </div>
     </div>
 
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <div id="notification" class="notification"></div>
 
     <script>
-        const ADMIN_PASSWORD = "dolan_sawah_admin"; // Ganti dengan password yang lebih kuat
-        let currentAdminAction = ''; // To store which action triggered the admin password modal
+        const ADMIN_PASSWORD = "dolan_sawah_admin";
+        let currentAdminAction = '';
+        let html5QrCodeAdd = null;
+        let html5QrCodeView = null;
 
         // --- Utility Functions ---
         const showSection = (sectionId) => {
@@ -523,6 +769,7 @@
             // Stop all active QR scanners when switching sections
             stopQrScanner('qr-scanner-container');
             stopQrScanner('qr-scanner-container-view');
+            
             // Reset member detail display when not in scan-member section
             if (sectionId !== 'scan-member-section') {
                 document.getElementById('member-detail-display').style.display = 'none';
@@ -530,7 +777,14 @@
         };
 
         const showAlert = (message, type = 'success') => {
-            alert(message);
+            const notification = document.getElementById('notification');
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         };
 
         // --- Local Storage Management ---
@@ -546,7 +800,7 @@
         // --- Member Rendering ---
         const renderMemberList = () => {
             const memberListContainer = document.getElementById('member-list-container');
-            memberListContainer.innerHTML = ''; // Clear existing list
+            memberListContainer.innerHTML = '';
             const members = getMembers();
 
             if (members.length === 0) {
@@ -558,11 +812,11 @@
                 const memberCard = document.createElement('div');
                 memberCard.classList.add('member-card');
                 memberCard.innerHTML = `
-                    <h3>${member.name}</h3>
+                    <h3><i class="fas fa-user"></i> ${member.name}</h3>
                     <p><strong>ID:</strong> ${member.id}</p>
                     <p><strong>HP:</strong> ${member.phone}</p>
                     <p><strong>Alamat:</strong> ${member.address}</p>
-                    <p><strong>Poin:</strong> ${member.points} poin</p>
+                    <p><strong>Poin:</strong> <span class="points-badge">${member.points} poin</span></p>
                     <div class="card-actions">
                         <button class="edit-btn" data-id="${member.id}"><i class="fas fa-edit"></i> Edit</button>
                         <button class="delete-btn" data-id="${member.id}"><i class="fas fa-trash-alt"></i> Hapus</button>
@@ -575,14 +829,14 @@
             document.querySelectorAll('.edit-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     currentAdminAction = 'edit';
-                    openAdminPasswordModal(e.target.dataset.id); // Pass member ID to edit
+                    openAdminPasswordModal(e.target.closest('button').dataset.id);
                 });
             });
 
             document.querySelectorAll('.delete-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     currentAdminAction = 'delete';
-                    openAdminPasswordModal(e.target.dataset.id); // Pass member ID to delete
+                    openAdminPasswordModal(e.target.closest('button').dataset.id);
                 });
             });
         };
@@ -592,19 +846,19 @@
         const adminPasswordForm = document.getElementById('admin-password-form');
         const adminPasswordInput = document.getElementById('admin-password-input');
         const closeAdminModalButton = adminPasswordModal.querySelector('.close-button');
-        let adminModalTargetId = null; // To store the ID of the member being acted upon
+        let adminModalTargetId = null;
 
         const openAdminPasswordModal = (targetId = null) => {
-            adminModalTargetId = targetId; // Set the ID
+            adminModalTargetId = targetId;
             adminPasswordModal.style.display = 'flex';
-            adminPasswordInput.value = ''; // Clear previous input
+            adminPasswordInput.value = '';
             adminPasswordInput.focus();
         };
 
         closeAdminModalButton.addEventListener('click', () => {
             adminPasswordModal.style.display = 'none';
-            adminModalTargetId = null; // Clear target ID
-            currentAdminAction = ''; // Reset action if modal is closed without submitting
+            adminModalTargetId = null;
+            currentAdminAction = '';
         });
 
         window.addEventListener('click', (event) => {
@@ -626,8 +880,8 @@
                 } else if (currentAdminAction === 'delete' && adminModalTargetId) {
                     deleteMember(adminModalTargetId);
                 }
-                currentAdminAction = ''; // Reset action
-                adminModalTargetId = null; // Clear target ID
+                currentAdminAction = '';
+                adminModalTargetId = null;
             } else {
                 showAlert("Password admin salah!", "error");
                 adminPasswordInput.value = '';
@@ -679,7 +933,7 @@
                 members[memberIndex].phone = newPhone;
                 saveMembers(members);
                 showAlert("Data member berhasil diupdate!");
-                renderMemberList(); // Refresh the list
+                renderMemberList();
                 editMemberModal.style.display = 'none';
             } else {
                 showAlert("Gagal mengupdate member.", "error");
@@ -695,13 +949,12 @@
                 if (members.length < initialLength) {
                     saveMembers(members);
                     showAlert("Member berhasil dihapus!");
-                    renderMemberList(); // Refresh the list
+                    renderMemberList();
                 } else {
                     showAlert("Gagal menghapus member.", "error");
                 }
             }
         };
-
 
         // --- Event Listeners for Navigation ---
         document.getElementById('nav-add-member').addEventListener('click', () => {
@@ -717,73 +970,87 @@
             renderMemberList();
         });
 
-        // --- QR Scanner Functions (using HTML5-QRCode) ---
-        let html5QrCodeAdd = null;
-        let html5QrCodeView = null;
-
+        // --- QR Scanner Functions ---
         const initQrScanner = async (containerId, mode) => {
-            const targetContainerId = containerId;
-            // Stop any existing scanner instances before starting a new one
-            await stopQrScanner('qr-scanner-container');
-            await stopQrScanner('qr-scanner-container-view');
-
+            // Stop any existing scanner
+            await stopQrScanner(containerId);
+            
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
             try {
+                const html5QrCode = new Html5Qrcode(containerId);
+                
                 if (mode === 'add') {
-                    html5QrCodeAdd = new Html5Qrcode(targetContainerId);
-                    await html5QrCodeAdd.start(
-                        { facingMode: "environment" }, // Prefer rear camera
-                        { fps: 10, qrbox: { width: 250, height: 250 } }, // Scan region size
-                        (decodedText, decodedResult) => {
-                            console.log("QR detected for add mode: ", decodedText);
-                            document.getElementById('member-id').value = decodedText;
-                            showAlert(`ID Member terdeteksi: ${decodedText}. Silakan lengkapi data.`);
-                            stopQrScanner(targetContainerId); // Stop scanner once ID is detected
-                        },
-                        (errorMessage) => {
-                            // This callback is called frequently, keep console logs minimal here
-                            // console.log(`QR scan error (add mode): ${errorMessage}`);
-                        }
-                    );
+                    html5QrCodeAdd = html5QrCode;
                 } else if (mode === 'view') {
-                    html5QrCodeView = new Html5Qrcode(targetContainerId);
-                    await html5QrCodeView.start(
-                        { facingMode: "environment" }, // Prefer rear camera
-                        { fps: 10, qrbox: { width: 250, height: 250 } }, // Scan region size
-                        (decodedText, decodedResult) => {
-                            console.log("QR detected for view mode: ", decodedText);
-                            displayMemberDetail(decodedText);
-                            // Scanner will be stopped by displayMemberDetail if member is found
-                        },
-                        (errorMessage) => {
-                            // console.log(`QR scan error (view mode): ${errorMessage}`);
-                        }
-                    );
+                    html5QrCodeView = html5QrCode;
                 }
-                console.log(`HTML5-QRCode for ${mode} mode initialized in ${targetContainerId}.`);
-            } catch (err) {
-                console.error(`Gagal menginisialisasi kamera (${mode} mode) di ${targetContainerId}:`, err);
-                document.getElementById(targetContainerId).innerHTML = `<p style="color:red; text-align:center;">Gagal menginisialisasi kamera: ${err.message}. Pastikan Anda memberikan izin kamera.</p>`;
+                
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { 
+                        fps: 10, 
+                        qrbox: { width: 250, height: 250 } 
+                    },
+                    (decodedText) => {
+                        console.log(`QR detected (${mode}): ${decodedText}`);
+                        
+                        if (mode === 'add') {
+                            document.getElementById('member-id').value = decodedText;
+                            showAlert(`ID Member terdeteksi: ${decodedText}`);
+                            stopQrScanner(containerId);
+                        } 
+                        else if (mode === 'view') {
+                            displayMemberDetail(decodedText);
+                            stopQrScanner(containerId);
+                        }
+                    },
+                    (errorMessage) => {
+                        // Handle error messages
+                        if (errorMessage.includes('NotAllowedError')) {
+                            container.innerHTML = `<p style="color:red;text-align:center;">Izinkan akses kamera untuk scan QR</p>`;
+                        }
+                    }
+                );
+                
+                console.log(`Scanner ${mode} aktif di ${containerId}`);
+            } 
+            catch (err) {
+                console.error(`Gagal inisialisasi kamera:`, err);
+                const errorMsg = err.message.includes('NotAllowedError') 
+                    ? "Izinkan akses kamera di pengaturan browser" 
+                    : err.message;
+                
+                container.innerHTML = `<p style="color:red;text-align:center;">${errorMsg}</p>`;
             }
         };
 
         const stopQrScanner = async (containerId) => {
             try {
-                if (containerId === 'qr-scanner-container' && html5QrCodeAdd && html5QrCodeAdd.is==true) { // Check if scanner is active
-                    await html5QrCodeAdd.stop();
-                    html5QrCodeAdd = null;
-                    document.getElementById(containerId).innerHTML = ''; // Clear video element
-                    console.log(`HTML5-QRCode for add mode stopped.`);
+                let scanner = null;
+                
+                if (containerId === 'qr-scanner-container' && html5QrCodeAdd) {
+                    scanner = html5QrCodeAdd;
+                } 
+                else if (containerId === 'qr-scanner-container-view' && html5QrCodeView) {
+                    scanner = html5QrCodeView;
                 }
-                if (containerId === 'qr-scanner-container-view' && html5QrCodeView && html5QrCodeView.is==true) { // Check if scanner is active
-                    await html5QrCodeView.stop();
-                    html5QrCodeView = null;
-                    document.getElementById(containerId).innerHTML = ''; // Clear video element
-                    console.log(`HTML5-QRCode for view mode stopped.`);
+                
+                if (scanner && scanner.isScanning) {
+                    await scanner.stop();
+                    console.log(`Scanner dihentikan di ${containerId}`);
+                    
+                    // Reset instance
+                    if (containerId === 'qr-scanner-container') html5QrCodeAdd = null;
+                    else if (containerId === 'qr-scanner-container-view') html5QrCodeView = null;
                 }
-            } catch (err) {
-                console.warn(`Gagal menghentikan scanner di ${containerId}:`, err);
-                // Clear the container even if stop fails to avoid stale video
+                
+                // Clear container
                 document.getElementById(containerId).innerHTML = '';
+            } 
+            catch (err) {
+                console.warn("Gagal menghentikan scanner:", err);
             }
         };
 
@@ -824,8 +1091,6 @@
 
                 document.getElementById('add-member-form').reset();
                 document.getElementById('member-id').value = '';
-                // Optional: Re-init scanner if user is expected to add another member immediately
-                // initQrScanner('qr-scanner-container', 'add');
             } else {
                 currentAdminAction = 'add';
                 openAdminPasswordModal();
@@ -844,12 +1109,11 @@
                 document.getElementById('detail-member-name-full').textContent = member.name;
                 document.getElementById('detail-member-address').textContent = member.address;
                 document.getElementById('detail-member-phone').textContent = member.phone;
-                document.getElementById('detail-member-points').textContent = member.points;
+                document.getElementById('detail-member-points').textContent = `${member.points} poin`;
 
                 document.getElementById('transaction-form').dataset.memberId = member.id;
                 memberDetailDisplay.style.display = 'block';
                 showAlert(`Detail member ${member.name} ditemukan.`);
-                stopQrScanner('qr-scanner-container-view'); // Stop scanner after finding member
             } else {
                 showAlert("Member tidak ditemukan. Pastikan ID kartu benar.", "error");
                 memberDetailDisplay.style.display = 'none';
@@ -877,7 +1141,7 @@
 
             if (memberIndex !== -1) {
                 const member = members[memberIndex];
-                const pointsEarned = Math.floor(transactionAmount / 100000); // 1 point per 100,000 IDR
+                const pointsEarned = Math.floor(transactionAmount / 100000);
 
                 member.points += pointsEarned;
                 member.transactions.push({
@@ -889,7 +1153,7 @@
                 saveMembers(members);
                 showAlert(`Transaksi sebesar Rp${transactionAmount.toLocaleString('id-ID')} berhasil ditambahkan! Member ${member.name} mendapatkan ${pointsEarned} poin. Total poin: ${member.points}.`);
 
-                document.getElementById('detail-member-points').textContent = member.points;
+                document.getElementById('detail-member-points').textContent = `${member.points} poin`;
                 document.getElementById('transaction-amount').value = '';
             } else {
                 showAlert("Gagal menambahkan transaksi: Member tidak ditemukan.", "error");
@@ -898,8 +1162,11 @@
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
-            showSection('add-member-section'); // Show add member section by default
-            // QR scanner will ONLY be initialized when the user clicks the "Tambah Member Baru" or "Scan Member" button
+            showSection('add-member-section');
+            // Initialize scanner after a short delay
+            setTimeout(() => {
+                initQrScanner('qr-scanner-container', 'add');
+            }, 300);
         });
     </script>
 </body>
