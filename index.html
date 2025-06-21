@@ -293,7 +293,6 @@
             height: 100%; /* Full height */
             overflow: auto; /* Enable scroll if needed */
             background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
-            display: flex;
             justify-content: center;
             align-items: center;
         }
@@ -505,7 +504,12 @@
             document.querySelectorAll('nav button').forEach(button => {
                 button.classList.remove('active');
             });
-            document.getElementById(`nav-${sectionId.replace('-section', '')}`).classList.add('active');
+            // Add active class to the clicked navigation button
+            const navButtonId = `nav-${sectionId.replace('-section', '')}`;
+            const navButton = document.getElementById(navButtonId);
+            if (navButton) {
+                navButton.classList.add('active');
+            }
 
             // Stop all active QR scanners when switching sections
             stopQrScanner('qr-scanner-container');
@@ -592,12 +596,14 @@
         closeAdminModalButton.addEventListener('click', () => {
             adminPasswordModal.style.display = 'none';
             adminModalTargetId = null; // Clear target ID
+            currentAdminAction = ''; // Reset action if modal is closed without submitting
         });
 
         window.addEventListener('click', (event) => {
             if (event.target === adminPasswordModal) {
                 adminPasswordModal.style.display = 'none';
                 adminModalTargetId = null;
+                currentAdminAction = '';
             }
         });
 
@@ -606,8 +612,8 @@
             if (adminPasswordInput.value === ADMIN_PASSWORD) {
                 adminPasswordModal.style.display = 'none';
                 if (currentAdminAction === 'add') {
-                    // If the action was 'add', form submission happens after password check
-                    document.getElementById('add-member-form').requestSubmit();
+                    // Trigger form submission for add member
+                    document.getElementById('add-member-form').dispatchEvent(new Event('submit', { cancelable: true }));
                 } else if (currentAdminAction === 'edit' && adminModalTargetId) {
                     openEditMemberModal(adminModalTargetId);
                 } else if (currentAdminAction === 'delete' && adminModalTargetId) {
@@ -693,10 +699,12 @@
         // --- Event Listeners for Navigation ---
         document.getElementById('nav-add-member').addEventListener('click', () => {
             showSection('add-member-section');
+            // Only initialize scanner here, not on page load
             initQrScanner('qr-scanner-container', 'add');
         });
         document.getElementById('nav-scan-member').addEventListener('click', () => {
             showSection('scan-member-section');
+            // Only initialize scanner here, not on page load
             initQrScanner('qr-scanner-container-view', 'view');
         });
         document.getElementById('nav-all-members').addEventListener('click', () => {
@@ -711,16 +719,8 @@
         const initQrScanner = (containerId, mode) => {
             const targetContainer = document.getElementById(containerId);
             // Stop any existing scanner in this container first
-            if (containerId === 'qr-scanner-container' && scannerInstanceAdd) {
-                scannerInstanceAdd.stop();
-                scannerInstanceAdd = null;
-                targetContainer.innerHTML = ''; // Clear video element
-            }
-            if (containerId === 'qr-scanner-container-view' && scannerInstanceView) {
-                scannerInstanceView.stop();
-                scannerInstanceView = null;
-                targetContainer.innerHTML = ''; // Clear video element
-            }
+            stopQrScanner('qr-scanner-container');
+            stopQrScanner('qr-scanner-container-view');
 
             Quagga.init({
                 inputStream: {
@@ -761,7 +761,10 @@
                     stopQrScanner(containerId); // Stop scanner once ID is detected
                 } else if (mode === 'view') {
                     displayMemberDetail(code);
-                    stopQrScanner(containerId); // Stop scanner once member is found
+                    // No need to stop scanner immediately here, it will be stopped by displayMemberDetail if found,
+                    // or user might need to scan again if not found.
+                    // If you want to stop immediately after any scan attempt (found or not), uncomment next line:
+                    // stopQrScanner(containerId);
                 }
             });
 
@@ -804,50 +807,52 @@
         };
 
         // --- Add Member Form Submission ---
+        // This event listener now only handles form data, not admin password check directly
         document.getElementById('add-member-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            // Check for admin password if not already checked for 'add' action
-            if (currentAdminAction !== 'add') {
-                currentAdminAction = 'add';
+            e.preventDefault(); // Prevent default submission initially
+            // If the currentAdminAction is 'add', it means password was already checked and approved
+            if (currentAdminAction === 'add') {
+                const id = document.getElementById('member-id').value.trim();
+                const name = document.getElementById('member-name').value.trim();
+                const address = document.getElementById('member-address').value.trim();
+                const phone = document.getElementById('member-phone').value.trim();
+
+                if (!id || !name || !phone) {
+                    showAlert("ID Member, Nama, dan Nomor HP harus diisi!", "error");
+                    return;
+                }
+
+                let members = getMembers();
+                const existingMember = members.find(m => m.id === id);
+
+                if (existingMember) {
+                    showAlert("ID Member sudah terdaftar. Gunakan ID lain atau edit member yang sudah ada.", "error");
+                    return;
+                }
+
+                const newMember = {
+                    id: id,
+                    name: name,
+                    address: address,
+                    phone: phone,
+                    points: 0,
+                    transactions: []
+                };
+
+                members.push(newMember);
+                saveMembers(members);
+                showAlert("Member baru berhasil ditambahkan!");
+
+                // Clear form
+                document.getElementById('add-member-form').reset();
+                document.getElementById('member-id').value = '';
+                // Restart scanner for next input only if user remains on this section
+                // initQrScanner('qr-scanner-container', 'add'); // This caused immediate camera access
+            } else {
+                // If currentAdminAction is not 'add', prompt for password
+                currentAdminAction = 'add'; // Set action before opening modal
                 openAdminPasswordModal();
-                return; // Stop here, form will be resubmitted after password check
             }
-
-            const id = document.getElementById('member-id').value.trim();
-            const name = document.getElementById('member-name').value.trim();
-            const address = document.getElementById('member-address').value.trim();
-            const phone = document.getElementById('member-phone').value.trim();
-
-            if (!id || !name || !phone) {
-                showAlert("ID Member, Nama, dan Nomor HP harus diisi!", "error");
-                return;
-            }
-
-            let members = getMembers();
-            const existingMember = members.find(m => m.id === id);
-
-            if (existingMember) {
-                showAlert("ID Member sudah terdaftar. Gunakan ID lain atau edit member yang sudah ada.", "error");
-                return;
-            }
-
-            const newMember = {
-                id: id,
-                name: name,
-                address: address,
-                phone: phone,
-                points: 0,
-                transactions: []
-            };
-
-            members.push(newMember);
-            saveMembers(members);
-            showAlert("Member baru berhasil ditambahkan!");
-
-            // Clear form
-            document.getElementById('add-member-form').reset();
-            document.getElementById('member-id').value = '';
-            initQrScanner('qr-scanner-container', 'add'); // Restart scanner for next input
         });
 
         // --- Display Member Detail & Transaction Input ---
@@ -911,9 +916,6 @@
                 // Update displayed details
                 document.getElementById('detail-member-points').textContent = member.points;
                 document.getElementById('transaction-amount').value = ''; // Clear transaction input
-
-                // Optionally, re-render the list if you want to update points there immediately
-                // renderMemberList();
             } else {
                 showAlert("Gagal menambahkan transaksi: Member tidak ditemukan.", "error");
             }
@@ -922,7 +924,7 @@
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             showSection('add-member-section'); // Show add member section by default
-            initQrScanner('qr-scanner-container', 'add'); // Initialize scanner on load
+            // Do NOT initialize QR scanner here
         });
     </script>
 </body>
