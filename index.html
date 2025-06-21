@@ -6,17 +6,19 @@
     <title>VIP Member Dolan Sawah</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/dist/html5-qrcode.min.js" defer></script>
     <style>
         :root {
-            --primary-color: #4CAF50;
-            --secondary-color: #FFC107;
+            --primary-color: #4CAF50; /* Hijau */
+            --secondary-color: #FFC107; /* Kuning */
             --background-color: #F8F9FA;
             --text-color: #333;
             --card-background: #FFFFFF;
             --border-radius: 10px;
-            --shadow: 0 4px 8px rgba(0,0,0,0.1);
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
             --success-color: #4CAF50;
             --error-color: #f44336;
+            --info-color: #2196F3; /* Biru */
         }
 
         body {
@@ -29,6 +31,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden; /* Mencegah scroll horizontal */
         }
 
         header {
@@ -62,7 +65,7 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
@@ -80,6 +83,9 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-grow: 1; /* Agar tombol tumbuh */
+            justify-content: center; /* Pusatkan ikon dan teks */
+            max-width: 300px; /* Batasi lebar agar tidak terlalu lebar di desktop */
         }
 
         nav button:hover {
@@ -90,15 +96,23 @@
         nav button.active {
             background-color: var(--primary-color);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .section {
             display: none;
             padding: 20px 0;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .section.active {
             display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
@@ -132,6 +146,11 @@
             border-radius: 5px;
             font-size: 1em;
             box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        form input:focus, form textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
         form button {
@@ -143,35 +162,43 @@
             cursor: pointer;
             font-size: 1.1em;
             font-weight: 600;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         form button:hover {
             background-color: #43A047;
+            transform: translateY(-1px);
         }
 
         #qr-scanner-container, #qr-scanner-container-view {
             width: 100%;
+            max-width: 400px; /* Batasi lebar QR scanner */
             height: 300px;
             background-color: #eee;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: var(--border-radius);
-            margin-bottom: 20px;
+            margin: 0 auto 20px auto; /* Pusatkan */
             overflow: hidden;
             position: relative;
+            border: 2px solid #ccc; /* Border default */
+            transition: border-color 0.3s ease;
         }
 
+        #qr-scanner-container.scanning, #qr-scanner-container-view.scanning {
+            border-color: var(--primary-color); /* Border saat scanning aktif */
+        }
+        
         #qr-scanner-container > div, #qr-scanner-container-view > div {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            border-radius: var(--border-radius);
+            /* Pastikan video mengisi kontainer */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -180,13 +207,18 @@
         #qr-scanner-container > div video, #qr-scanner-container-view > div video {
              width: 100%;
              height: 100%;
-             object-fit: cover;
+             object-fit: contain; /* Menggunakan contain agar video tidak terpotong */
         }
 
         #qr-scanner-container:empty::before, #qr-scanner-container-view:empty::before {
             content: 'Nyalakan kamera untuk scan QR';
             color: #666;
             font-style: italic;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
         }
 
         #member-list-container {
@@ -202,13 +234,16 @@
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--shadow);
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .member-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
         }
 
         .member-card h3 {
@@ -221,6 +256,7 @@
         .member-card p {
             margin: 5px 0;
             color: #555;
+            flex-grow: 1; /* Agar konten mengisi ruang */
         }
 
         .member-card .card-actions {
@@ -237,10 +273,15 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
             gap: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .member-card .card-actions button:hover {
+            transform: translateY(-1px);
         }
 
         .member-card .card-actions .edit-btn {
@@ -266,6 +307,7 @@
             padding: 25px;
             box-shadow: var(--shadow);
             margin-top: 20px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .member-detail-view h3 {
@@ -273,6 +315,7 @@
             font-size: 1.6em;
             margin-top: 0;
             margin-bottom: 15px;
+            text-align: center;
         }
 
         .member-detail-view p {
@@ -294,6 +337,7 @@
             color: var(--primary-color);
             margin-bottom: 15px;
             font-size: 1.3em;
+            text-align: center;
         }
 
         .modal {
@@ -308,6 +352,15 @@
             background-color: rgba(0,0,0,0.6);
             justify-content: center;
             align-items: center;
+            animation: fadeInModal 0.3s ease-out;
+        }
+        .modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
@@ -320,6 +373,12 @@
             max-width: 500px;
             box-shadow: var(--shadow);
             position: relative;
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .close-button {
@@ -344,6 +403,8 @@
             margin-top: 0;
             text-align: center;
             color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
         }
 
         .notification {
@@ -351,20 +412,22 @@
             top: 20px;
             right: 20px;
             padding: 15px 25px;
-            border-radius: 5px;
+            border-radius: 8px;
             color: white;
             font-weight: 500;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             z-index: 2000;
-            transform: translateX(200%);
-            transition: transform 0.4s ease;
+            transform: translateX(calc(100% + 20px)); /* Sembunyikan di luar layar */
+            transition: transform 0.4s ease-out, opacity 0.4s ease-out;
             display: flex;
             align-items: center;
             gap: 10px;
+            opacity: 0;
         }
 
         .notification.show {
             transform: translateX(0);
+            opacity: 1;
         }
 
         .notification.success {
@@ -375,6 +438,11 @@
             background-color: var(--error-color);
         }
 
+        .notification.info {
+            background-color: var(--info-color);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             header h1 {
                 font-size: 1.8em;
@@ -392,6 +460,7 @@
 
             nav button {
                 width: 100%;
+                max-width: none; /* Hapus batasan lebar */
             }
 
             form {
@@ -403,10 +472,11 @@
             }
             .member-card .card-actions {
                 flex-direction: column;
-                gap: 5px;
+                gap: 8px;
             }
             .member-card .card-actions button {
                 width: 100%;
+                justify-content: center;
             }
 
             .member-detail-view {
@@ -427,6 +497,16 @@
             .modal-content {
                 padding: 20px;
             }
+            .notification {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+                transform: translateY(calc(-100% - 20px));
+                top: 20px; /* Sesuaikan posisi agar tidak terlalu ke bawah */
+            }
+            .notification.show {
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -445,19 +525,19 @@
         <div id="add-member-section" class="section active">
             <h2><i class="fas fa-user-plus"></i> Tambah Member Baru</h2>
             <div id="qr-scanner-container"></div>
-            <p style="text-align: center; margin-bottom: 20px;">Scan QR Kartu Member untuk mendapatkan ID:</p>
+            <p style="text-align: center; margin-bottom: 20px; color: #555;">Scan QR Kartu Member untuk mendapatkan ID:</p>
             <form id="add-member-form">
                 <label for="member-id">ID Member (Otomatis dari QR):</label>
-                <input type="text" id="member-id" required readonly>
+                <input type="text" id="member-id" required readonly placeholder="Scan QR untuk mengisi ID">
 
                 <label for="member-name">Nama Member:</label>
-                <input type="text" id="member-name" required>
+                <input type="text" id="member-name" required placeholder="Masukkan nama member">
 
                 <label for="member-address">Alamat:</label>
-                <textarea id="member-address" rows="3"></textarea>
+                <textarea id="member-address" rows="3" placeholder="Masukkan alamat member"></textarea>
 
                 <label for="member-phone">Nomor HP Aktif:</label>
-                <input type="text" id="member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka).">
+                <input type="text" id="member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka)." placeholder="Contoh: 081234567890">
 
                 <button type="submit"><i class="fas fa-save"></i> Simpan Member</button>
             </form>
@@ -466,7 +546,7 @@
         <div id="scan-member-section" class="section">
             <h2><i class="fas fa-qrcode"></i> Scan Member & Transaksi</h2>
             <div id="qr-scanner-container-view"></div>
-            <p style="text-align: center; margin-bottom: 20px;">Scan QR Kartu Member untuk melihat detail:</p>
+            <p style="text-align: center; margin-bottom: 20px; color: #555;">Scan QR Kartu Member untuk melihat detail:</p>
             <div id="member-detail-display" class="member-detail-view" style="display: none;">
                 <h3>Detail Member <span id="detail-member-name"></span></h3>
                 <p><strong>ID Member:</strong> <span id="detail-member-id"></span></p>
@@ -479,7 +559,7 @@
                     <h4><i class="fas fa-cash-register"></i> Input Transaksi</h4>
                     <form id="transaction-form">
                         <label for="transaction-amount">Nominal Transaksi (Rupiah):</label>
-                        <input type="number" id="transaction-amount" min="0" step="10000" required>
+                        <input type="number" id="transaction-amount" min="0" step="10000" required placeholder="Contoh: 50000">
                         <button type="submit"><i class="fas fa-coins"></i> Tambah Transaksi</button>
                     </form>
                 </div>
@@ -500,7 +580,7 @@
             <h2><i class="fas fa-lock"></i> Masukkan Password Admin</h2>
             <form id="admin-password-form">
                 <label for="admin-password-input">Password:</label>
-                <input type="password" id="admin-password-input" required>
+                <input type="password" id="admin-password-input" required placeholder="Masukkan password admin">
                 <button type="submit"><i class="fas fa-check-circle"></i> Submit</button>
             </form>
         </div>
@@ -528,345 +608,401 @@
 
     <div id="notification" class="notification"></div>
 
-    <!-- SOLUSI: Menggunakan unpkg.com sebagai alternatif CDN yang bekerja di GitHub Pages -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/dist/html5-qrcode.min.js"></script>
-    
     <script>
-        const ADMIN_PASSWORD = "dolan_sawah_admin";
-        let currentAdminAction = '';
-        let html5QrCodeAdd = null;
-        let html5QrCodeView = null;
+        // Membuat namespace untuk aplikasi
+        const DolanSawahApp = {
+            ADMIN_PASSWORD: "dolan_sawah_admin",
+            currentAdminAction: '',
+            adminModalTargetId: null,
+            html5QrCodeAdd: null,
+            html5QrCodeView: null,
 
-        // --- Utility Functions ---
-        const showSection = (sectionId) => {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
+            elements: {
+                navAddMember: document.getElementById('nav-add-member'),
+                navScanMember: document.getElementById('nav-scan-member'),
+                navAllMembers: document.getElementById('nav-all-members'),
+                
+                addMemberSection: document.getElementById('add-member-section'),
+                scanMemberSection: document.getElementById('scan-member-section'),
+                allMembersSection: document.getElementById('all-members-section'),
 
-            document.querySelectorAll('nav button').forEach(button => {
-                button.classList.remove('active');
-            });
-            const navButtonId = `nav-${sectionId.replace('-section', '')}`;
-            const navButton = document.getElementById(navButtonId);
-            if (navButton) {
-                navButton.classList.add('active');
-            }
+                qrScannerContainerAdd: document.getElementById('qr-scanner-container'),
+                qrScannerContainerView: document.getElementById('qr-scanner-container-view'),
 
-            // Stop all active QR scanners when switching sections
-            stopQrScanner('qr-scanner-container');
-            stopQrScanner('qr-scanner-container-view');
-            
-            // Reset member detail display when not in scan-member section
-            if (sectionId !== 'scan-member-section') {
-                document.getElementById('member-detail-display').style.display = 'none';
-            }
-        };
+                addMemberForm: document.getElementById('add-member-form'),
+                memberIdInput: document.getElementById('member-id'),
+                memberNameInput: document.getElementById('member-name'),
+                memberAddressInput: document.getElementById('member-address'),
+                memberPhoneInput: document.getElementById('member-phone'),
 
-        const showAlert = (message, type = 'success') => {
-            const notification = document.getElementById('notification');
-            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        };
+                memberDetailDisplay: document.getElementById('member-detail-display'),
+                detailMemberName: document.getElementById('detail-member-name'),
+                detailMemberId: document.getElementById('detail-member-id'),
+                detailMemberNameFull: document.getElementById('detail-member-name-full'),
+                detailMemberAddress: document.getElementById('detail-member-address'),
+                detailMemberPhone: document.getElementById('detail-member-phone'),
+                detailMemberPoints: document.getElementById('detail-member-points'),
+                transactionForm: document.getElementById('transaction-form'),
+                transactionAmountInput: document.getElementById('transaction-amount'),
 
-        // --- Local Storage Management ---
-        const getMembers = () => {
-            const members = localStorage.getItem('dolanSawahMembers');
-            return members ? JSON.parse(members) : [];
-        };
+                memberListContainer: document.getElementById('member-list-container'),
+                noMembersMessage: document.getElementById('no-members-message'),
 
-        const saveMembers = (members) => {
-            localStorage.setItem('dolanSawahMembers', JSON.stringify(members));
-        };
+                adminPasswordModal: document.getElementById('adminPasswordModal'),
+                adminPasswordForm: document.getElementById('admin-password-form'),
+                adminPasswordInput: document.getElementById('admin-password-input'),
+                closeAdminModalButton: document.querySelector('#adminPasswordModal .close-button'),
 
-        // --- Member Rendering ---
-        const renderMemberList = () => {
-            const memberListContainer = document.getElementById('member-list-container');
-            memberListContainer.innerHTML = '';
-            const members = getMembers();
+                editMemberModal: document.getElementById('editMemberModal'),
+                editMemberForm: document.getElementById('edit-member-form'),
+                editMemberIdInput: document.getElementById('edit-member-id'),
+                editMemberNameInput: document.getElementById('edit-member-name'),
+                editMemberAddressInput: document.getElementById('edit-member-address'),
+                editMemberPhoneInput: document.getElementById('edit-member-phone'),
+                closeEditModalButton: document.querySelector('#editMemberModal .close-button'),
 
-            if (members.length === 0) {
-                memberListContainer.innerHTML = '<p id="no-members-message" style="text-align: center; color: #666;">Belum ada member terdaftar.</p>';
-                return;
-            }
+                notification: document.getElementById('notification')
+            },
 
-            members.forEach(member => {
-                const memberCard = document.createElement('div');
-                memberCard.classList.add('member-card');
-                memberCard.innerHTML = `
-                    <h3>${member.name}</h3>
-                    <p><strong>ID:</strong> ${member.id}</p>
-                    <p><strong>HP:</strong> ${member.phone}</p>
-                    <p><strong>Alamat:</strong> ${member.address}</p>
-                    <p><strong>Poin:</strong> ${member.points} poin</p>
-                    <div class="card-actions">
-                        <button class="edit-btn" data-id="${member.id}"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="delete-btn" data-id="${member.id}"><i class="fas fa-trash-alt"></i> Hapus</button>
-                    </div>
-                `;
-                memberListContainer.appendChild(memberCard);
-            });
+            // --- Utility Functions ---
+            showAlert: function(message, type = 'success') {
+                const { notification } = this.elements;
+                notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+                notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    notification.style.opacity = '0'; // Pastikan transisi opacity bekerja
+                }, 3000);
+            },
 
-            // Attach event listeners to new buttons
-            document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    currentAdminAction = 'edit';
-                    openAdminPasswordModal(e.target.dataset.id);
+            showSection: function(sectionId) {
+                // Hentikan semua scanner aktif
+                this.stopAllQrScanners();
+
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
                 });
-            });
+                document.getElementById(sectionId).classList.add('active');
 
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    currentAdminAction = 'delete';
-                    openAdminPasswordModal(e.target.dataset.id);
+                document.querySelectorAll('nav button').forEach(button => {
+                    button.classList.remove('active');
                 });
-            });
-        };
-
-        // --- Admin Password Modal ---
-        const adminPasswordModal = document.getElementById('adminPasswordModal');
-        const adminPasswordForm = document.getElementById('admin-password-form');
-        const adminPasswordInput = document.getElementById('admin-password-input');
-        const closeAdminModalButton = adminPasswordModal.querySelector('.close-button');
-        let adminModalTargetId = null;
-
-        const openAdminPasswordModal = (targetId = null) => {
-            adminModalTargetId = targetId;
-            adminPasswordModal.style.display = 'flex';
-            adminPasswordInput.value = '';
-            adminPasswordInput.focus();
-        };
-
-        closeAdminModalButton.addEventListener('click', () => {
-            adminPasswordModal.style.display = 'none';
-            adminModalTargetId = null;
-            currentAdminAction = '';
-        });
-
-        window.addEventListener('click', (event) => {
-            if (event.target === adminPasswordModal) {
-                adminPasswordModal.style.display = 'none';
-                adminModalTargetId = null;
-                currentAdminAction = '';
-            }
-        });
-
-        adminPasswordForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (adminPasswordInput.value === ADMIN_PASSWORD) {
-                adminPasswordModal.style.display = 'none';
-                if (currentAdminAction === 'add') {
-                    document.getElementById('add-member-form').dispatchEvent(new Event('submit', { cancelable: true }));
-                } else if (currentAdminAction === 'edit' && adminModalTargetId) {
-                    openEditMemberModal(adminModalTargetId);
-                } else if (currentAdminAction === 'delete' && adminModalTargetId) {
-                    deleteMember(adminModalTargetId);
+                const navButtonId = `nav-${sectionId.replace('-section', '')}`;
+                const navButton = document.getElementById(navButtonId);
+                if (navButton) {
+                    navButton.classList.add('active');
                 }
-                currentAdminAction = '';
-                adminModalTargetId = null;
-            } else {
-                showAlert("Password admin salah!", "error");
-                adminPasswordInput.value = '';
-            }
-        });
 
-        // --- Edit Member Modal ---
-        const editMemberModal = document.getElementById('editMemberModal');
-        const editMemberForm = document.getElementById('edit-member-form');
-        const closeEditModalButton = editMemberModal.querySelector('.close-button');
+                // Reset member detail display when not in scan-member section
+                if (sectionId !== 'scan-member-section') {
+                    this.elements.memberDetailDisplay.style.display = 'none';
+                    this.elements.transactionForm.reset();
+                }
+            },
 
-        const openEditMemberModal = (memberId) => {
-            const members = getMembers();
-            const memberToEdit = members.find(m => m.id === memberId);
-            if (memberToEdit) {
-                document.getElementById('edit-member-id').value = memberToEdit.id;
-                document.getElementById('edit-member-name').value = memberToEdit.name;
-                document.getElementById('edit-member-address').value = memberToEdit.address;
-                document.getElementById('edit-member-phone').value = memberToEdit.phone;
-                editMemberModal.style.display = 'flex';
-            } else {
-                showAlert("Member tidak ditemukan.", "error");
-            }
-        };
+            // --- Local Storage Management ---
+            getMembers: function() {
+                const members = localStorage.getItem('dolanSawahMembers');
+                return members ? JSON.parse(members) : [];
+            },
 
-        closeEditModalButton.addEventListener('click', () => {
-            editMemberModal.style.display = 'none';
-        });
+            saveMembers: function(members) {
+                localStorage.setItem('dolanSawahMembers', JSON.stringify(members));
+            },
 
-        window.addEventListener('click', (event) => {
-            if (event.target === editMemberModal) {
-                editMemberModal.style.display = 'none';
-            }
-        });
+            // --- Member Rendering ---
+            renderMemberList: function() {
+                const { memberListContainer, noMembersMessage } = this.elements;
+                memberListContainer.innerHTML = ''; // Clear existing list
+                const members = this.getMembers();
 
-        editMemberForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const memberId = document.getElementById('edit-member-id').value;
-            const newName = document.getElementById('edit-member-name').value;
-            const newAddress = document.getElementById('edit-member-address').value;
-            const newPhone = document.getElementById('edit-member-phone').value;
-
-            let members = getMembers();
-            const memberIndex = members.findIndex(m => m.id === memberId);
-
-            if (memberIndex !== -1) {
-                members[memberIndex].name = newName;
-                members[memberIndex].address = newAddress;
-                members[memberIndex].phone = newPhone;
-                saveMembers(members);
-                showAlert("Data member berhasil diupdate!");
-                renderMemberList();
-                editMemberModal.style.display = 'none';
-            } else {
-                showAlert("Gagal mengupdate member.", "error");
-            }
-        });
-
-        // --- Delete Member Function ---
-        const deleteMember = (memberId) => {
-            if (confirm(`Anda yakin ingin menghapus member dengan ID ${memberId}?`)) {
-                let members = getMembers();
-                const initialLength = members.length;
-                members = members.filter(m => m.id !== memberId);
-                if (members.length < initialLength) {
-                    saveMembers(members);
-                    showAlert("Member berhasil dihapus!");
-                    renderMemberList();
+                if (members.length === 0) {
+                    memberListContainer.appendChild(noMembersMessage); // Re-append the message
+                    noMembersMessage.style.display = 'block'; // Ensure it's visible
+                    return;
                 } else {
-                    showAlert("Gagal menghapus member.", "error");
+                    noMembersMessage.style.display = 'none'; // Hide the message if members exist
                 }
-            }
-        };
 
-        // --- Event Listeners for Navigation ---
-        document.getElementById('nav-add-member').addEventListener('click', () => {
-            showSection('add-member-section');
-            initQrScanner('qr-scanner-container', 'add');
-        });
-        document.getElementById('nav-scan-member').addEventListener('click', () => {
-            showSection('scan-member-section');
-            initQrScanner('qr-scanner-container-view', 'view');
-        });
-        document.getElementById('nav-all-members').addEventListener('click', () => {
-            showSection('all-members-section');
-            renderMemberList();
-        });
+                members.forEach(member => {
+                    const memberCard = document.createElement('div');
+                    memberCard.classList.add('member-card');
+                    memberCard.innerHTML = `
+                        <h3>${member.name}</h3>
+                        <p><strong>ID:</strong> ${member.id}</p>
+                        <p><strong>HP:</strong> ${member.phone}</p>
+                        <p><strong>Alamat:</strong> ${member.address || '-'}</p>
+                        <p><strong>Poin:</strong> ${member.points} poin</p>
+                        <div class="card-actions">
+                            <button class="edit-btn" data-id="${member.id}"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="delete-btn" data-id="${member.id}"><i class="fas fa-trash-alt"></i> Hapus</button>
+                        </div>
+                    `;
+                    memberListContainer.appendChild(memberCard);
+                });
 
-        // --- QR Scanner Functions ---
-        const initQrScanner = async (containerId, mode) => {
-            // Pastikan library sudah dimuat
-            if (typeof Html5Qrcode === 'undefined') {
-                showAlert('Scanner library tidak terdeteksi. Silakan refresh halaman.', 'error');
-                console.error('Html5Qrcode library not loaded!');
-                return;
-            }
-            
-            // Stop any existing scanner
-            await stopQrScanner(containerId);
-            
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            try {
-                const html5QrCode = new Html5Qrcode(containerId);
-                
-                if (mode === 'add') {
-                    html5QrCodeAdd = html5QrCode;
-                } else if (mode === 'view') {
-                    html5QrCodeView = html5QrCode;
-                }
-                
-                await html5QrCode.start(
-                    { facingMode: "environment" },
-                    { 
-                        fps: 10, 
-                        qrbox: { width: 250, height: 250 } 
-                    },
-                    (decodedText) => {
-                        console.log(`QR detected (${mode}): ${decodedText}`);
-                        
-                        if (mode === 'add') {
-                            document.getElementById('member-id').value = decodedText;
-                            showAlert(`ID Member terdeteksi: ${decodedText}`);
-                            stopQrScanner(containerId);
-                        } 
-                        else if (mode === 'view') {
-                            displayMemberDetail(decodedText);
-                            stopQrScanner(containerId);
-                        }
-                    },
-                    (errorMessage) => {
-                        // Handle error messages
-                        if (errorMessage.includes('NotAllowedError')) {
-                            container.innerHTML = `<p style="color:red;text-align:center;">Izinkan akses kamera untuk scan QR</p>`;
-                        }
+                // Attach event listeners to new buttons
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.currentAdminAction = 'edit';
+                        this.openAdminPasswordModal(e.currentTarget.dataset.id); // Use currentTarget
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.currentAdminAction = 'delete';
+                        this.openAdminPasswordModal(e.currentTarget.dataset.id); // Use currentTarget
+                    });
+                });
+            },
+
+            // --- Admin Password Modal ---
+            openAdminPasswordModal: function(targetId = null) {
+                this.adminModalTargetId = targetId;
+                this.elements.adminPasswordModal.classList.add('show');
+                this.elements.adminPasswordInput.value = '';
+                this.elements.adminPasswordInput.focus();
+            },
+
+            closeAdminPasswordModal: function() {
+                this.elements.adminPasswordModal.classList.remove('show');
+                this.adminModalTargetId = null;
+                this.currentAdminAction = '';
+            },
+
+            handleAdminPasswordSubmit: function(e) {
+                e.preventDefault();
+                if (this.elements.adminPasswordInput.value === this.ADMIN_PASSWORD) {
+                    this.closeAdminPasswordModal();
+                    if (this.currentAdminAction === 'add') {
+                        // Langsung panggil handler submit form, jangan dispatch event
+                        this.handleAddMember(new Event('submit')); 
+                    } else if (this.currentAdminAction === 'edit' && this.adminModalTargetId) {
+                        this.openEditMemberModal(this.adminModalTargetId);
+                    } else if (this.currentAdminAction === 'delete' && this.adminModalTargetId) {
+                        this.deleteMember(this.adminModalTargetId);
                     }
-                );
-                
-                console.log(`Scanner ${mode} aktif di ${containerId}`);
-            } 
-            catch (err) {
-                console.error(`Gagal inisialisasi kamera:`, err);
-                const errorMsg = err.message.includes('NotAllowedError') 
-                    ? "Izinkan akses kamera di pengaturan browser" 
-                    : err.message;
-                
-                container.innerHTML = `<p style="color:red;text-align:center;">${errorMsg}</p>`;
-            }
-        };
-
-        const stopQrScanner = async (containerId) => {
-            try {
-                let scanner = null;
-                
-                if (containerId === 'qr-scanner-container' && html5QrCodeAdd) {
-                    scanner = html5QrCodeAdd;
-                } 
-                else if (containerId === 'qr-scanner-container-view' && html5QrCodeView) {
-                    scanner = html5QrCodeView;
+                } else {
+                    this.showAlert("Password admin salah!", "error");
+                    this.elements.adminPasswordInput.value = '';
                 }
-                
-                if (scanner && scanner.isScanning) {
-                    await scanner.stop();
-                    console.log(`Scanner dihentikan di ${containerId}`);
-                    
-                    // Reset instance
-                    if (containerId === 'qr-scanner-container') html5QrCodeAdd = null;
-                    else if (containerId === 'qr-scanner-container-view') html5QrCodeView = null;
+            },
+
+            // --- Edit Member Modal ---
+            openEditMemberModal: function(memberId) {
+                const members = this.getMembers();
+                const memberToEdit = members.find(m => m.id === memberId);
+                if (memberToEdit) {
+                    this.elements.editMemberIdInput.value = memberToEdit.id;
+                    this.elements.editMemberNameInput.value = memberToEdit.name;
+                    this.elements.editMemberAddressInput.value = memberToEdit.address;
+                    this.elements.editMemberPhoneInput.value = memberToEdit.phone;
+                    this.elements.editMemberModal.classList.add('show');
+                } else {
+                    this.showAlert("Member tidak ditemukan.", "error");
                 }
-                
-                // Clear container
-                document.getElementById(containerId).innerHTML = '';
-            } 
-            catch (err) {
-                console.warn("Gagal menghentikan scanner:", err);
-            }
-        };
+            },
 
-        // --- Add Member Form Submission ---
-        document.getElementById('add-member-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (currentAdminAction === 'add') {
-                const id = document.getElementById('member-id').value.trim();
-                const name = document.getElementById('member-name').value.trim();
-                const address = document.getElementById('member-address').value.trim();
-                const phone = document.getElementById('member-phone').value.trim();
+            closeEditMemberModal: function() {
+                this.elements.editMemberModal.classList.remove('show');
+            },
 
-                if (!id || !name || !phone) {
-                    showAlert("ID Member, Nama, dan Nomor HP harus diisi!", "error");
+            handleEditMemberSubmit: function(e) {
+                e.preventDefault();
+                const memberId = this.elements.editMemberIdInput.value;
+                const newName = this.elements.editMemberNameInput.value.trim();
+                const newAddress = this.elements.editMemberAddressInput.value.trim();
+                const newPhone = this.elements.editMemberPhoneInput.value.trim();
+
+                if (!newName || !newPhone) {
+                    this.showAlert("Nama dan Nomor HP harus diisi!", "error");
                     return;
                 }
 
-                let members = getMembers();
+                if (!newPhone.match(/^[0-9]{10,15}$/)) {
+                    this.showAlert("Nomor HP tidak valid (10-15 digit angka).", "error");
+                    return;
+                }
+
+                let members = this.getMembers();
+                const memberIndex = members.findIndex(m => m.id === memberId);
+
+                if (memberIndex !== -1) {
+                    members[memberIndex].name = newName;
+                    members[memberIndex].address = newAddress;
+                    members[memberIndex].phone = newPhone;
+                    this.saveMembers(members);
+                    this.showAlert("Data member berhasil diupdate!");
+                    this.renderMemberList();
+                    this.closeEditMemberModal();
+                } else {
+                    this.showAlert("Gagal mengupdate member.", "error");
+                }
+            },
+
+            // --- Delete Member Function ---
+            deleteMember: function(memberId) {
+                if (confirm(`Anda yakin ingin menghapus member dengan ID ${memberId}?`)) {
+                    let members = this.getMembers();
+                    const initialLength = members.length;
+                    members = members.filter(m => m.id !== memberId);
+                    if (members.length < initialLength) {
+                        this.saveMembers(members);
+                        this.showAlert("Member berhasil dihapus!");
+                        this.renderMemberList();
+                    } else {
+                        this.showAlert("Gagal menghapus member.", "error");
+                    }
+                }
+            },
+
+            // --- QR Scanner Functions ---
+            /**
+             * Menginisialisasi QR scanner di kontainer yang ditentukan.
+             * @param {HTMLElement} containerElement Elemen DOM kontainer scanner.
+             * @param {'add'|'view'} mode Mode scanner (untuk penanganan hasil scan).
+             */
+            initQrScanner: async function(containerElement, mode) {
+                // Pastikan library sudah dimuat
+                if (typeof Html5Qrcode === 'undefined') {
+                    this.showAlert('Scanner library tidak terdeteksi. Silakan refresh halaman.', 'error');
+                    console.error('Html5Qrcode library not loaded!');
+                    return;
+                }
+
+                // Pastikan kontainer tidak kosong dan siap
+                if (!containerElement) {
+                    console.error('QR Scanner container element not found!');
+                    return;
+                }
+                
+                // Stop any other active scanner
+                this.stopAllQrScanners();
+
+                containerElement.innerHTML = ''; // Bersihkan konten sebelumnya
+                containerElement.classList.add('scanning'); // Tambahkan kelas visual
+
+                try {
+                    const html5QrCode = new Html5Qrcode(containerElement.id);
+                    
+                    if (mode === 'add') {
+                        this.html5QrCodeAdd = html5QrCode;
+                    } else if (mode === 'view') {
+                        this.html5QrCodeView = html5QrCode;
+                    }
+                    
+                    await html5QrCode.start(
+                        { facingMode: "environment" }, // Prioritaskan kamera belakang
+                        { 
+                            fps: 10, 
+                            qrbox: { width: 250, height: 250 } 
+                        },
+                        (decodedText) => {
+                            console.log(`QR detected (${mode}): ${decodedText}`);
+                            
+                            if (mode === 'add') {
+                                this.elements.memberIdInput.value = decodedText.trim();
+                                this.showAlert(`ID Member terdeteksi: ${decodedText.trim()}`, 'success');
+                                this.stopQrScanner(containerElement);
+                                this.elements.memberNameInput.focus(); // Fokus ke nama setelah scan
+                            } 
+                            else if (mode === 'view') {
+                                this.displayMemberDetail(decodedText.trim());
+                                this.stopQrScanner(containerElement);
+                            }
+                        },
+                        (errorMessage) => {
+                            // Penanganan error real-time, seperti gagal membaca QR
+                            // console.warn(`QR scanning error: ${errorMessage}`);
+                        }
+                    );
+                    this.showAlert('Kamera aktif, siap scan QR!', 'info');
+                    console.log(`Scanner ${mode} aktif di ${containerElement.id}`);
+
+                } catch (err) {
+                    console.error(`Gagal inisialisasi kamera di ${containerElement.id}:`, err);
+                    containerElement.classList.remove('scanning');
+                    let errorMsg = "Gagal memulai kamera. Coba lagi atau periksa izin kamera Anda.";
+                    if (err.message.includes('NotAllowedError')) {
+                        errorMsg = "Akses kamera ditolak. Mohon izinkan akses kamera di pengaturan browser Anda.";
+                    } else if (err.message.includes('NotFoundError')) {
+                        errorMsg = "Tidak ada kamera yang ditemukan di perangkat ini.";
+                    }
+                    containerElement.innerHTML = `<p style="color:var(--error-color); text-align:center; padding:10px;">${errorMsg}</p>`;
+                    this.showAlert(errorMsg, "error");
+                }
+            },
+
+            /**
+             * Menghentikan QR scanner di kontainer yang ditentukan.
+             * @param {HTMLElement} containerElement Elemen DOM kontainer scanner.
+             */
+            stopQrScanner: async function(containerElement) {
+                let scanner = null;
+                const containerId = containerElement ? containerElement.id : null;
+
+                if (containerId === 'qr-scanner-container' && this.html5QrCodeAdd) {
+                    scanner = this.html5QrCodeAdd;
+                    this.html5QrCodeAdd = null; // Reset instance
+                } 
+                else if (containerId === 'qr-scanner-container-view' && this.html5QrCodeView) {
+                    scanner = this.html5QrCodeView;
+                    this.html5QrCodeView = null; // Reset instance
+                }
+                
+                if (scanner && scanner.isScanning) {
+                    try {
+                        await scanner.stop();
+                        console.log(`Scanner dihentikan di ${containerId}`);
+                        containerElement.innerHTML = ''; // Bersihkan elemen video
+                        containerElement.classList.remove('scanning'); // Hapus kelas visual
+                    } catch (err) {
+                        console.warn(`Gagal menghentikan scanner di ${containerId}:`, err);
+                        // Jika sudah berhenti, atau ada error lain, mungkin tidak perlu showAlert
+                    }
+                } else if (containerElement) {
+                    containerElement.innerHTML = ''; // Pastikan bersih
+                    containerElement.classList.remove('scanning');
+                }
+            },
+
+            stopAllQrScanners: function() {
+                this.stopQrScanner(this.elements.qrScannerContainerAdd);
+                this.stopQrScanner(this.elements.qrScannerContainerView);
+            },
+
+            // --- Add Member Form Submission ---
+            handleAddMember: function(e) {
+                e.preventDefault();
+                
+                // Jika aksi bukan 'add' (berarti baru mau submit dan butuh password admin)
+                if (this.currentAdminAction !== 'add') {
+                    this.currentAdminAction = 'add';
+                    this.openAdminPasswordModal();
+                    return; // Hentikan proses, lanjutkan setelah password diinput
+                }
+
+                const id = this.elements.memberIdInput.value.trim();
+                const name = this.elements.memberNameInput.value.trim();
+                const address = this.elements.memberAddressInput.value.trim();
+                const phone = this.elements.memberPhoneInput.value.trim();
+
+                if (!id || !name || !phone) {
+                    this.showAlert("ID Member, Nama, dan Nomor HP harus diisi!", "error");
+                    return;
+                }
+                if (!phone.match(/^[0-9]{10,15}$/)) {
+                    this.showAlert("Nomor HP tidak valid (10-15 digit angka).", "error");
+                    return;
+                }
+
+                let members = this.getMembers();
                 const existingMember = members.find(m => m.id === id);
 
                 if (existingMember) {
-                    showAlert("ID Member sudah terdaftar. Gunakan ID lain atau edit member yang sudah ada.", "error");
+                    this.showAlert("ID Member sudah terdaftar. Gunakan ID lain atau edit member yang sudah ada.", "error");
                     return;
                 }
 
@@ -880,93 +1016,146 @@
                 };
 
                 members.push(newMember);
-                saveMembers(members);
-                showAlert("Member baru berhasil ditambahkan!");
+                this.saveMembers(members);
+                this.showAlert("Member baru berhasil ditambahkan!", 'success');
 
-                document.getElementById('add-member-form').reset();
-                document.getElementById('member-id').value = '';
-            } else {
-                currentAdminAction = 'add';
-                openAdminPasswordModal();
-            }
-        });
+                this.elements.addMemberForm.reset();
+                this.elements.memberIdInput.value = ''; // Kosongkan ID setelah simpan
+                this.currentAdminAction = ''; // Reset admin action
+                this.initQrScanner(this.elements.qrScannerContainerAdd, 'add'); // Restart scanner
+            },
 
-        // --- Display Member Detail & Transaction Input ---
-        const displayMemberDetail = (memberId) => {
-            const members = getMembers();
-            const member = members.find(m => m.id === memberId);
-            const memberDetailDisplay = document.getElementById('member-detail-display');
+            // --- Display Member Detail & Transaction Input ---
+            displayMemberDetail: function(memberId) {
+                const members = this.getMembers();
+                const member = members.find(m => m.id === memberId);
+                const { 
+                    memberDetailDisplay, detailMemberName, detailMemberId, 
+                    detailMemberNameFull, detailMemberAddress, detailMemberPhone, 
+                    detailMemberPoints, transactionForm 
+                } = this.elements;
 
-            if (member) {
-                document.getElementById('detail-member-name').textContent = member.name;
-                document.getElementById('detail-member-id').textContent = member.id;
-                document.getElementById('detail-member-name-full').textContent = member.name;
-                document.getElementById('detail-member-address').textContent = member.address;
-                document.getElementById('detail-member-phone').textContent = member.phone;
-                document.getElementById('detail-member-points').textContent = `${member.points} poin`;
+                if (member) {
+                    detailMemberName.textContent = member.name;
+                    detailMemberId.textContent = member.id;
+                    detailMemberNameFull.textContent = member.name;
+                    detailMemberAddress.textContent = member.address || '-';
+                    detailMemberPhone.textContent = member.phone;
+                    detailMemberPoints.textContent = `${member.points} poin`;
 
-                document.getElementById('transaction-form').dataset.memberId = member.id;
-                memberDetailDisplay.style.display = 'block';
-                showAlert(`Detail member ${member.name} ditemukan.`);
-            } else {
-                showAlert("Member tidak ditemukan. Pastikan ID kartu benar.", "error");
-                memberDetailDisplay.style.display = 'none';
+                    transactionForm.dataset.memberId = member.id;
+                    memberDetailDisplay.style.display = 'block';
+                    this.showAlert(`Detail member ${member.name} ditemukan.`, 'success');
+                    this.elements.transactionAmountInput.focus();
+                } else {
+                    this.showAlert("Member tidak ditemukan. Pastikan ID kartu benar.", "error");
+                    memberDetailDisplay.style.display = 'none';
+                }
+            },
+
+            // --- Transaction Form Submission ---
+            handleTransactionSubmit: function(e) {
+                e.preventDefault();
+                const memberId = e.currentTarget.dataset.memberId; // Use currentTarget
+                const transactionAmount = parseInt(this.elements.transactionAmountInput.value);
+
+                if (!memberId) {
+                    this.showAlert("Tidak ada member yang dipilih untuk transaksi.", "error");
+                    return;
+                }
+
+                if (isNaN(transactionAmount) || transactionAmount <= 0) {
+                    this.showAlert("Nominal transaksi tidak valid. Masukkan angka positif.", "error");
+                    return;
+                }
+
+                let members = this.getMembers();
+                const memberIndex = members.findIndex(m => m.id === memberId);
+
+                if (memberIndex !== -1) {
+                    const member = members[memberIndex];
+                    const pointsEarned = Math.floor(transactionAmount / 100000); // 1 poin per Rp 100.000
+
+                    member.points += pointsEarned;
+                    member.transactions.push({
+                        amount: transactionAmount,
+                        points: pointsEarned,
+                        date: new Date().toISOString()
+                    });
+
+                    this.saveMembers(members);
+                    this.showAlert(`Transaksi sebesar Rp${transactionAmount.toLocaleString('id-ID')} berhasil ditambahkan! Member ${member.name} mendapatkan ${pointsEarned} poin. Total poin: ${member.points}.`, 'success');
+
+                    this.elements.detailMemberPoints.textContent = `${member.points} poin`;
+                    this.elements.transactionAmountInput.value = '';
+                } else {
+                    this.showAlert("Gagal menambahkan transaksi: Member tidak ditemukan.", "error");
+                }
+            },
+
+            // --- Initialization ---
+            init: function() {
+                // Event Listeners for Navigation
+                this.elements.navAddMember.addEventListener('click', () => {
+                    this.showSection('add-member-section');
+                    // Inisialisasi scanner setelah section aktif
+                    this.initQrScanner(this.elements.qrScannerContainerAdd, 'add');
+                });
+                this.elements.navScanMember.addEventListener('click', () => {
+                    this.showSection('scan-member-section');
+                    // Inisialisasi scanner setelah section aktif
+                    this.initQrScanner(this.elements.qrScannerContainerView, 'view');
+                });
+                this.elements.navAllMembers.addEventListener('click', () => {
+                    this.showSection('all-members-section');
+                    this.renderMemberList();
+                });
+
+                // Admin Password Modal Event Listeners
+                this.elements.adminPasswordForm.addEventListener('submit', this.handleAdminPasswordSubmit.bind(this));
+                this.elements.closeAdminModalButton.addEventListener('click', this.closeAdminPasswordModal.bind(this));
+                this.elements.adminPasswordModal.addEventListener('click', (event) => {
+                    if (event.target === this.elements.adminPasswordModal) {
+                        this.closeAdminPasswordModal();
+                    }
+                });
+
+                // Edit Member Modal Event Listeners
+                this.elements.editMemberForm.addEventListener('submit', this.handleEditMemberSubmit.bind(this));
+                this.elements.closeEditModalButton.addEventListener('click', this.closeEditMemberModal.bind(this));
+                this.elements.editMemberModal.addEventListener('click', (event) => {
+                    if (event.target === this.elements.editMemberModal) {
+                        this.closeEditMemberModal();
+                    }
+                });
+
+                // Add Member Form Event Listener
+                // Panggil handleAddMember, yang akan memicu modal admin jika perlu
+                this.elements.addMemberForm.addEventListener('submit', this.handleAddMember.bind(this));
+
+                // Transaction Form Event Listener
+                this.elements.transactionForm.addEventListener('submit', this.handleTransactionSubmit.bind(this));
+
+                // Initial Load: Show add member section and init its scanner
+                this.showSection('add-member-section');
+                // Pastikan Html5Qrcode dimuat sebelum mencoba menggunakannya
+                // defer di script tag sudah memastikan ini, tapi bisa ditambahkan cek defensif
+                setTimeout(() => {
+                    if (typeof Html5Qrcode !== 'undefined') {
+                        this.initQrScanner(this.elements.qrScannerContainerAdd, 'add');
+                    } else {
+                        this.showAlert('Scanner library tidak dapat dimuat. Pastikan koneksi internet stabil atau refresh halaman.', 'error');
+                        console.error('Html5Qrcode is not defined after timeout. Check CDN link and network.');
+                    }
+                }, 500); // Memberi sedikit waktu untuk library dimuat
             }
         };
 
-        // --- Transaction Form Submission ---
-        document.getElementById('transaction-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const memberId = e.target.dataset.memberId;
-            const transactionAmount = parseInt(document.getElementById('transaction-amount').value);
-
-            if (!memberId) {
-                showAlert("Tidak ada member yang dipilih untuk transaksi.", "error");
-                return;
-            }
-
-            if (isNaN(transactionAmount) || transactionAmount <= 0) {
-                showAlert("Nominal transaksi tidak valid.", "error");
-                return;
-            }
-
-            let members = getMembers();
-            const memberIndex = members.findIndex(m => m.id === memberId);
-
-            if (memberIndex !== -1) {
-                const member = members[memberIndex];
-                const pointsEarned = Math.floor(transactionAmount / 100000);
-
-                member.points += pointsEarned;
-                member.transactions.push({
-                    amount: transactionAmount,
-                    points: pointsEarned,
-                    date: new Date().toISOString()
-                });
-
-                saveMembers(members);
-                showAlert(`Transaksi sebesar Rp${transactionAmount.toLocaleString('id-ID')} berhasil ditambahkan! Member ${member.name} mendapatkan ${pointsEarned} poin. Total poin: ${member.points}.`);
-
-                document.getElementById('detail-member-points').textContent = `${member.points} poin`;
-                document.getElementById('transaction-amount').value = '';
-            } else {
-                showAlert("Gagal menambahkan transaksi: Member tidak ditemukan.", "error");
-            }
-        });
-
-        // --- Initial Load ---
+        // Initialize the application when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
-            showSection('add-member-section');
-            
-            // Inisialisasi scanner setelah memastikan library terload
-            if (typeof Html5Qrcode !== 'undefined') {
-                setTimeout(() => {
-                    initQrScanner('qr-scanner-container', 'add');
-                }, 300);
-            } else {
-                showAlert('Scanner library tidak terdeteksi. Silakan refresh halaman.', 'error');
-            }
+            DolanSawahApp.init();
         });
     </script>
 </body>
 </html>
+
