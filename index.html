@@ -1,51 +1,929 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>QR Code Scanner Redirect</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; margin: 20px; }
-    video { width: 100%; max-width: 400px; border: 1px solid #ccc; }
-    #result { margin-top: 10px; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Member Dolan Sawah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4CAF50; /* Hijau Dolah Sawah */
+            --secondary-color: #FFC107; /* Kuning cerah */
+            --background-color: #F8F9FA;
+            --text-color: #333;
+            --card-background: #FFFFFF;
+            --border-radius: 10px;
+            --shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            flex: 1;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav button:hover {
+            background-color: #FFD740;
+            transform: translateY(-2px);
+        }
+
+        nav button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .section {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        form {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: 1fr;
+        }
+
+        form label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        form input[type="text"],
+        form input[type="number"],
+        form textarea,
+        form input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        form button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        form button:hover {
+            background-color: #43A047;
+        }
+
+        #qr-scanner-container, #qr-scanner-container-view {
+            width: 100%;
+            height: 300px;
+            background-color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            overflow: hidden; /* Penting untuk video feed */
+            position: relative;
+        }
+        #qr-scanner-container video, #qr-scanner-container-view video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+        }
+
+        #qr-scanner-container:empty::before, #qr-scanner-container-view:empty::before {
+            content: 'Nyalakan kamera untuk scan QR';
+            color: #666;
+            font-style: italic;
+        }
+
+        #member-list-container {
+            margin-top: 20px;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .member-card {
+            background-color: var(--card-background);
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+        }
+
+        .member-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .member-card .card-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .member-card .card-actions button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .member-card .card-actions .edit-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        .member-card .card-actions .edit-btn:hover {
+            background-color: #FFD740;
+        }
+
+        .member-card .card-actions .delete-btn {
+            background-color: #F44336;
+            color: white;
+        }
+        .member-card .card-actions .delete-btn:hover {
+            background-color: #E53935;
+        }
+
+        .member-detail-view {
+            background-color: var(--card-background);
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+
+        .member-detail-view h3 {
+            color: var(--primary-color);
+            font-size: 1.6em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .member-detail-view p {
+            margin: 8px 0;
+            font-size: 1.1em;
+        }
+
+        .member-detail-view p strong {
+            color: var(--text-color);
+        }
+
+        .transaction-input {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .transaction-input h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1001; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-background);
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal h2 {
+            margin-top: 0;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .container {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            nav button {
+                width: 100%;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .member-card {
+                padding: 15px;
+            }
+            .member-card .card-actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .member-card .card-actions button {
+                width: 100%;
+            }
+
+            .member-detail-view {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 15px;
+            }
+            header h1 {
+                font-size: 1.5em;
+            }
+            .container {
+                padding: 10px;
+            }
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h2>Scan QR Code untuk Membuka Link</h2>
-  <button onclick="startScanner()">Buka Kamera</button><br><br>
-  <video id="preview" autoplay muted playsinline></video>
-  <div id="result">Scan QR untuk mengunjungi link</div>
+    <header>
+        <h1>VIP Member Dolan Sawah</h1>
+    </header>
 
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script>
-    let video = document.getElementById('preview');
-    let resultDiv = document.getElementById('result');
-    let canvas = document.createElement('canvas');
-    let ctx = canvas.getContext('2d');
-    let alreadyScanned = false;
+    <div class="container">
+        <nav>
+            <button id="nav-add-member"><i class="fas fa-user-plus"></i> Tambah Member Baru</button>
+            <button id="nav-scan-member"><i class="fas fa-qrcode"></i> Scan Member</button>
+            <button id="nav-all-members"><i class="fas fa-users"></i> Semua Member</button>
+        </nav>
 
-    async function startScanner() {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      video.srcObject = stream;
-      scanLoop();
-    }
+        <div id="add-member-section" class="section active">
+            <h2><i class="fas fa-user-plus"></i> Tambah Member Baru</h2>
+            <div id="qr-scanner-container">
+                </div>
+            <p style="text-align: center; margin-bottom: 20px;">Scan QR Kartu Member untuk mendapatkan ID:</p>
+            <form id="add-member-form">
+                <label for="member-id">ID Member (Otomatis dari QR):</label>
+                <input type="text" id="member-id" required readonly>
 
-    function scanLoop() {
-      if (alreadyScanned) return;
-      requestAnimationFrame(scanLoop);
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let code = jsQR(imageData.data, canvas.width, canvas.height);
-        if (code && code.data.startsWith("http")) {
-          alreadyScanned = true;
-          resultDiv.innerText = "Membuka: " + code.data;
-          setTimeout(() => {
-            window.location.href = code.data;
-          }, 1000);
-        }
-      }
-    }
-  </script>
+                <label for="member-name">Nama Member:</label>
+                <input type="text" id="member-name" required>
+
+                <label for="member-address">Alamat:</label>
+                <textarea id="member-address" rows="3"></textarea>
+
+                <label for="member-phone">Nomor HP Aktif:</label>
+                <input type="text" id="member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka).">
+
+                <button type="submit"><i class="fas fa-save"></i> Simpan Member</button>
+            </form>
+        </div>
+
+        <div id="scan-member-section" class="section">
+            <h2><i class="fas fa-qrcode"></i> Scan Member & Transaksi</h2>
+            <div id="qr-scanner-container-view">
+                </div>
+            <p style="text-align: center; margin-bottom: 20px;">Scan QR Kartu Member untuk melihat detail:</p>
+            <div id="member-detail-display" class="member-detail-view" style="display: none;">
+                <h3>Detail Member <span id="detail-member-name"></span></h3>
+                <p><strong>ID Member:</strong> <span id="detail-member-id"></span></p>
+                <p><strong>Nama:</strong> <span id="detail-member-name-full"></span></p>
+                <p><strong>Alamat:</strong> <span id="detail-member-address"></span></p>
+                <p><strong>Nomor HP:</strong> <span id="detail-member-phone"></span></p>
+                <p><strong>Total Poin:</strong> <span id="detail-member-points"></span> poin</p>
+
+                <div class="transaction-input">
+                    <h4><i class="fas fa-cash-register"></i> Input Transaksi</h4>
+                    <form id="transaction-form">
+                        <label for="transaction-amount">Nominal Transaksi (Rupiah):</label>
+                        <input type="number" id="transaction-amount" min="0" step="10000" required>
+                        <button type="submit"><i class="fas fa-coins"></i> Tambah Transaksi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="all-members-section" class="section">
+            <h2><i class="fas fa-users"></i> Daftar Semua Member</h2>
+            <div id="member-list-container">
+                <p id="no-members-message" style="text-align: center; color: #666;">Belum ada member terdaftar.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2><i class="fas fa-lock"></i> Masukkan Password Admin</h2>
+            <form id="admin-password-form">
+                <label for="admin-password-input">Password:</label>
+                <input type="password" id="admin-password-input" required>
+                <button type="submit"><i class="fas fa-check-circle"></i> Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2><i class="fas fa-edit"></i> Edit Data Member</h2>
+            <form id="edit-member-form">
+                <input type="hidden" id="edit-member-id">
+                <label for="edit-member-name">Nama Member:</label>
+                <input type="text" id="edit-member-name" required>
+
+                <label for="edit-member-address">Alamat:</label>
+                <textarea id="edit-member-address" rows="3"></textarea>
+
+                <label for="edit-member-phone">Nomor HP Aktif:</label>
+                <input type="text" id="edit-member-phone" required pattern="[0-9]{10,15}" title="Masukkan nomor HP yang valid (10-15 digit angka).">
+
+                <button type="submit"><i class="fas fa-save"></i> Update Member</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@ericblade/quagga2@1.8.0/dist/quagga.min.js"></script>
+
+    <script>
+        const ADMIN_PASSWORD = "dolan_sawah_admin"; // Ganti dengan password yang lebih kuat
+        let currentAdminAction = ''; // To store which action triggered the admin password modal
+
+        // --- Utility Functions ---
+        const showSection = (sectionId) => {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('nav button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(`nav-${sectionId.replace('-section', '')}`).classList.add('active');
+
+            // Stop all active QR scanners when switching sections
+            stopQrScanner('qr-scanner-container');
+            stopQrScanner('qr-scanner-container-view');
+            // Reset member detail display when not in scan-member section
+            if (sectionId !== 'scan-member-section') {
+                document.getElementById('member-detail-display').style.display = 'none';
+            }
+        };
+
+        const showAlert = (message, type = 'success') => {
+            // Implementasi sederhana untuk notifikasi, bisa dipercantik dengan library toast/snackbar
+            alert(message);
+        };
+
+        // --- Local Storage Management ---
+        const getMembers = () => {
+            const members = localStorage.getItem('dolanSawahMembers');
+            return members ? JSON.parse(members) : [];
+        };
+
+        const saveMembers = (members) => {
+            localStorage.setItem('dolanSawahMembers', JSON.stringify(members));
+        };
+
+        // --- Member Rendering ---
+        const renderMemberList = () => {
+            const memberListContainer = document.getElementById('member-list-container');
+            memberListContainer.innerHTML = ''; // Clear existing list
+            const members = getMembers();
+
+            if (members.length === 0) {
+                memberListContainer.innerHTML = '<p id="no-members-message" style="text-align: center; color: #666;">Belum ada member terdaftar.</p>';
+                return;
+            }
+
+            members.forEach(member => {
+                const memberCard = document.createElement('div');
+                memberCard.classList.add('member-card');
+                memberCard.innerHTML = `
+                    <h3>${member.name}</h3>
+                    <p><strong>ID:</strong> ${member.id}</p>
+                    <p><strong>HP:</strong> ${member.phone}</p>
+                    <p><strong>Alamat:</strong> ${member.address}</p>
+                    <p><strong>Poin:</strong> ${member.points} poin</p>
+                    <div class="card-actions">
+                        <button class="edit-btn" data-id="${member.id}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="delete-btn" data-id="${member.id}"><i class="fas fa-trash-alt"></i> Hapus</button>
+                    </div>
+                `;
+                memberListContainer.appendChild(memberCard);
+            });
+
+            // Attach event listeners to new buttons
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    currentAdminAction = 'edit';
+                    openAdminPasswordModal(e.target.dataset.id); // Pass member ID to edit
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    currentAdminAction = 'delete';
+                    openAdminPasswordModal(e.target.dataset.id); // Pass member ID to delete
+                });
+            });
+        };
+
+        // --- Admin Password Modal ---
+        const adminPasswordModal = document.getElementById('adminPasswordModal');
+        const adminPasswordForm = document.getElementById('admin-password-form');
+        const adminPasswordInput = document.getElementById('admin-password-input');
+        const closeAdminModalButton = adminPasswordModal.querySelector('.close-button');
+        let adminModalTargetId = null; // To store the ID of the member being acted upon
+
+        const openAdminPasswordModal = (targetId = null) => {
+            adminModalTargetId = targetId; // Set the ID
+            adminPasswordModal.style.display = 'flex';
+            adminPasswordInput.value = ''; // Clear previous input
+            adminPasswordInput.focus();
+        };
+
+        closeAdminModalButton.addEventListener('click', () => {
+            adminPasswordModal.style.display = 'none';
+            adminModalTargetId = null; // Clear target ID
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === adminPasswordModal) {
+                adminPasswordModal.style.display = 'none';
+                adminModalTargetId = null;
+            }
+        });
+
+        adminPasswordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (adminPasswordInput.value === ADMIN_PASSWORD) {
+                adminPasswordModal.style.display = 'none';
+                if (currentAdminAction === 'add') {
+                    // If the action was 'add', form submission happens after password check
+                    document.getElementById('add-member-form').requestSubmit();
+                } else if (currentAdminAction === 'edit' && adminModalTargetId) {
+                    openEditMemberModal(adminModalTargetId);
+                } else if (currentAdminAction === 'delete' && adminModalTargetId) {
+                    deleteMember(adminModalTargetId);
+                }
+                currentAdminAction = ''; // Reset action
+                adminModalTargetId = null; // Clear target ID
+            } else {
+                showAlert("Password admin salah!", "error");
+                adminPasswordInput.value = '';
+            }
+        });
+
+        // --- Edit Member Modal ---
+        const editMemberModal = document.getElementById('editMemberModal');
+        const editMemberForm = document.getElementById('edit-member-form');
+        const closeEditModalButton = editMemberModal.querySelector('.close-button');
+
+        const openEditMemberModal = (memberId) => {
+            const members = getMembers();
+            const memberToEdit = members.find(m => m.id === memberId);
+            if (memberToEdit) {
+                document.getElementById('edit-member-id').value = memberToEdit.id;
+                document.getElementById('edit-member-name').value = memberToEdit.name;
+                document.getElementById('edit-member-address').value = memberToEdit.address;
+                document.getElementById('edit-member-phone').value = memberToEdit.phone;
+                editMemberModal.style.display = 'flex';
+            } else {
+                showAlert("Member tidak ditemukan.", "error");
+            }
+        };
+
+        closeEditModalButton.addEventListener('click', () => {
+            editMemberModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === editMemberModal) {
+                editMemberModal.style.display = 'none';
+            }
+        });
+
+        editMemberForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const memberId = document.getElementById('edit-member-id').value;
+            const newName = document.getElementById('edit-member-name').value;
+            const newAddress = document.getElementById('edit-member-address').value;
+            const newPhone = document.getElementById('edit-member-phone').value;
+
+            let members = getMembers();
+            const memberIndex = members.findIndex(m => m.id === memberId);
+
+            if (memberIndex !== -1) {
+                members[memberIndex].name = newName;
+                members[memberIndex].address = newAddress;
+                members[memberIndex].phone = newPhone;
+                saveMembers(members);
+                showAlert("Data member berhasil diupdate!");
+                renderMemberList(); // Refresh the list
+                editMemberModal.style.display = 'none';
+            } else {
+                showAlert("Gagal mengupdate member.", "error");
+            }
+        });
+
+        // --- Delete Member Function ---
+        const deleteMember = (memberId) => {
+            if (confirm(`Anda yakin ingin menghapus member dengan ID ${memberId}?`)) {
+                let members = getMembers();
+                const initialLength = members.length;
+                members = members.filter(m => m.id !== memberId);
+                if (members.length < initialLength) {
+                    saveMembers(members);
+                    showAlert("Member berhasil dihapus!");
+                    renderMemberList(); // Refresh the list
+                } else {
+                    showAlert("Gagal menghapus member.", "error");
+                }
+            }
+        };
+
+
+        // --- Event Listeners for Navigation ---
+        document.getElementById('nav-add-member').addEventListener('click', () => {
+            showSection('add-member-section');
+            initQrScanner('qr-scanner-container', 'add');
+        });
+        document.getElementById('nav-scan-member').addEventListener('click', () => {
+            showSection('scan-member-section');
+            initQrScanner('qr-scanner-container-view', 'view');
+        });
+        document.getElementById('nav-all-members').addEventListener('click', () => {
+            showSection('all-members-section');
+            renderMemberList();
+        });
+
+        // --- QR Scanner Functions ---
+        let scannerInstanceAdd = null;
+        let scannerInstanceView = null;
+
+        const initQrScanner = (containerId, mode) => {
+            const targetContainer = document.getElementById(containerId);
+            // Stop any existing scanner in this container first
+            if (containerId === 'qr-scanner-container' && scannerInstanceAdd) {
+                scannerInstanceAdd.stop();
+                scannerInstanceAdd = null;
+                targetContainer.innerHTML = ''; // Clear video element
+            }
+            if (containerId === 'qr-scanner-container-view' && scannerInstanceView) {
+                scannerInstanceView.stop();
+                scannerInstanceView = null;
+                targetContainer.innerHTML = ''; // Clear video element
+            }
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: targetContainer,
+                    constraints: {
+                        facingMode: "environment" // Or "user" for front camera
+                    },
+                },
+                decoder: {
+                    readers: ["ean_reader", "code_128_reader", "qrcode_reader"] // Add qrcode_reader for QR codes
+                },
+                locate: true, // Enable detection of the barcode location
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    targetContainer.innerHTML = `<p style="color:red; text-align:center;">Gagal menginisialisasi kamera: ${err.message}. Pastikan Anda memberikan izin kamera.</p>`;
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+
+                if (containerId === 'qr-scanner-container') {
+                    scannerInstanceAdd = Quagga;
+                } else if (containerId === 'qr-scanner-container-view') {
+                    scannerInstanceView = Quagga;
+                }
+            });
+
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                console.log("Barcode detected and processed: ", code);
+                // Handle the detected code based on mode
+                if (mode === 'add') {
+                    document.getElementById('member-id').value = code;
+                    showAlert(`ID Member terdeteksi: ${code}. Silakan lengkapi data.`);
+                    stopQrScanner(containerId); // Stop scanner once ID is detected
+                } else if (mode === 'view') {
+                    displayMemberDetail(code);
+                    stopQrScanner(containerId); // Stop scanner once member is found
+                }
+            });
+
+            Quagga.onProcessed(function(result) {
+                var drawingCtx = Quagga.canvas.ctx.overlay,
+                    drawingCanvas = Quagga.canvas.dom.overlay;
+
+                if (result) {
+                    if (result.boxes) {
+                        drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.width), parseInt(drawingCanvas.height));
+                        result.boxes.filter(function (box) {
+                            return box !== result.box;
+                        }).forEach(function (box) {
+                            Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
+                        });
+                    }
+
+                    if (result.box) {
+                        Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
+                    }
+
+                    if (result.codeResult && result.codeResult.code) {
+                        Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: "red", lineWidth: 3});
+                    }
+                }
+            });
+        };
+
+        const stopQrScanner = (containerId) => {
+            if (containerId === 'qr-scanner-container' && scannerInstanceAdd) {
+                scannerInstanceAdd.stop();
+                scannerInstanceAdd = null;
+                document.getElementById(containerId).innerHTML = ''; // Clear video element
+            }
+            if (containerId === 'qr-scanner-container-view' && scannerInstanceView) {
+                scannerInstanceView.stop();
+                scannerInstanceView = null;
+                document.getElementById(containerId).innerHTML = ''; // Clear video element
+            }
+        };
+
+        // --- Add Member Form Submission ---
+        document.getElementById('add-member-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Check for admin password if not already checked for 'add' action
+            if (currentAdminAction !== 'add') {
+                currentAdminAction = 'add';
+                openAdminPasswordModal();
+                return; // Stop here, form will be resubmitted after password check
+            }
+
+            const id = document.getElementById('member-id').value.trim();
+            const name = document.getElementById('member-name').value.trim();
+            const address = document.getElementById('member-address').value.trim();
+            const phone = document.getElementById('member-phone').value.trim();
+
+            if (!id || !name || !phone) {
+                showAlert("ID Member, Nama, dan Nomor HP harus diisi!", "error");
+                return;
+            }
+
+            let members = getMembers();
+            const existingMember = members.find(m => m.id === id);
+
+            if (existingMember) {
+                showAlert("ID Member sudah terdaftar. Gunakan ID lain atau edit member yang sudah ada.", "error");
+                return;
+            }
+
+            const newMember = {
+                id: id,
+                name: name,
+                address: address,
+                phone: phone,
+                points: 0,
+                transactions: []
+            };
+
+            members.push(newMember);
+            saveMembers(members);
+            showAlert("Member baru berhasil ditambahkan!");
+
+            // Clear form
+            document.getElementById('add-member-form').reset();
+            document.getElementById('member-id').value = '';
+            initQrScanner('qr-scanner-container', 'add'); // Restart scanner for next input
+        });
+
+        // --- Display Member Detail & Transaction Input ---
+        const displayMemberDetail = (memberId) => {
+            const members = getMembers();
+            const member = members.find(m => m.id === memberId);
+            const memberDetailDisplay = document.getElementById('member-detail-display');
+
+            if (member) {
+                document.getElementById('detail-member-name').textContent = member.name;
+                document.getElementById('detail-member-id').textContent = member.id;
+                document.getElementById('detail-member-name-full').textContent = member.name;
+                document.getElementById('detail-member-address').textContent = member.address;
+                document.getElementById('detail-member-phone').textContent = member.phone;
+                document.getElementById('detail-member-points').textContent = member.points;
+
+                // Store current member ID for transaction form
+                document.getElementById('transaction-form').dataset.memberId = member.id;
+                memberDetailDisplay.style.display = 'block'; // Show the detail section
+                showAlert(`Detail member ${member.name} ditemukan.`);
+                stopQrScanner('qr-scanner-container-view'); // Stop scanner after finding member
+            } else {
+                showAlert("Member tidak ditemukan. Pastikan ID kartu benar.", "error");
+                memberDetailDisplay.style.display = 'none'; // Hide if not found
+            }
+        };
+
+        // --- Transaction Form Submission ---
+        document.getElementById('transaction-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const memberId = e.target.dataset.memberId;
+            const transactionAmount = parseInt(document.getElementById('transaction-amount').value);
+
+            if (!memberId) {
+                showAlert("Tidak ada member yang dipilih untuk transaksi.", "error");
+                return;
+            }
+
+            if (isNaN(transactionAmount) || transactionAmount <= 0) {
+                showAlert("Nominal transaksi tidak valid.", "error");
+                return;
+            }
+
+            let members = getMembers();
+            const memberIndex = members.findIndex(m => m.id === memberId);
+
+            if (memberIndex !== -1) {
+                const member = members[memberIndex];
+                const pointsEarned = Math.floor(transactionAmount / 100000); // 1 point per 100,000 IDR
+
+                member.points += pointsEarned;
+                member.transactions.push({
+                    amount: transactionAmount,
+                    points: pointsEarned,
+                    date: new Date().toISOString()
+                });
+
+                saveMembers(members);
+                showAlert(`Transaksi sebesar Rp${transactionAmount.toLocaleString('id-ID')} berhasil ditambahkan! Member ${member.name} mendapatkan ${pointsEarned} poin. Total poin: ${member.points}.`);
+
+                // Update displayed details
+                document.getElementById('detail-member-points').textContent = member.points;
+                document.getElementById('transaction-amount').value = ''; // Clear transaction input
+
+                // Optionally, re-render the list if you want to update points there immediately
+                // renderMemberList();
+            } else {
+                showAlert("Gagal menambahkan transaksi: Member tidak ditemukan.", "error");
+            }
+        });
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('add-member-section'); // Show add member section by default
+            initQrScanner('qr-scanner-container', 'add'); // Initialize scanner on load
+        });
+    </script>
 </body>
 </html>
