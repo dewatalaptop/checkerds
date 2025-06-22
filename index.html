@@ -6,7 +6,6 @@
     <title>VIP Member Dolan Sawah</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/dist/html5-qrcode.min.js" defer></script>
     <style>
         :root {
             --primary-color: #4CAF50; /* Hijau */
@@ -175,50 +174,27 @@
             transform: translateY(-1px);
         }
 
-        #qr-scanner-container, #qr-scanner-container-view {
-            width: 100%;
-            max-width: 400px; /* Batasi lebar QR scanner */
-            height: 300px;
-            background-color: #eee;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Styling untuk instruksi scanner eksternal */
+        .external-scanner-info {
+            background-color: #e3f2fd; /* Light blue background */
+            border: 1px solid #90caf9; /* Blue border */
             border-radius: var(--border-radius);
-            margin: 0 auto 20px auto; /* Pusatkan */
-            overflow: hidden;
-            position: relative;
-            border: 2px solid #ccc; /* Border default */
-            transition: border-color 0.3s ease;
-        }
-
-        #qr-scanner-container.scanning, #qr-scanner-container-view.scanning {
-            border-color: var(--primary-color); /* Border saat scanning aktif */
-        }
-        
-        #qr-scanner-container > div, #qr-scanner-container-view > div {
-            width: 100%;
-            height: 100%;
-            /* Pastikan video mengisi kontainer */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #qr-scanner-container > div video, #qr-scanner-container-view > div video {
-             width: 100%;
-             height: 100%;
-             object-fit: contain; /* Menggunakan contain agar video tidak terpotong */
-        }
-
-        #qr-scanner-container:empty::before, #qr-scanner-container-view:empty::before {
-            content: 'Nyalakan kamera untuk scan QR';
-            color: #666;
-            font-style: italic;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            padding: 15px;
+            margin: 0 auto 20px auto;
+            max-width: 400px;
             text-align: center;
+            color: #1976d2;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .external-scanner-info i {
+            font-size: 1.5em;
+            color: #1565c0;
+        }
+        .external-scanner-info p {
+            margin: 0;
         }
 
         #member-list-container {
@@ -518,17 +494,18 @@
     <div class="container">
         <nav>
             <button id="nav-add-member"><i class="fas fa-user-plus"></i> Tambah Member Baru</button>
-            <button id="nav-scan-member"><i class="fas fa-qrcode"></i> Scan Member</button>
-            <button id="nav-all-members"><i class="fas fa-users"></i> Semua Member</button>
+            <button id="nav-scan-member"><i class="fas fa-search"></i> Cari Member</button> <button id="nav-all-members"><i class="fas fa-users"></i> Semua Member</button>
         </nav>
 
         <div id="add-member-section" class="section active">
             <h2><i class="fas fa-user-plus"></i> Tambah Member Baru</h2>
-            <div id="qr-scanner-container"></div>
-            <p style="text-align: center; margin-bottom: 20px; color: #555;">Scan QR Kartu Member untuk mendapatkan ID:</p>
+            <div class="external-scanner-info">
+                <i class="fas fa-info-circle"></i>
+                <p><strong>Info:</strong> Scan QR Kartu Member menggunakan aplikasi kamera bawaan ponsel Anda, lalu salin ID yang didapat dan tempelkan di kolom "ID Member" di bawah ini.</p>
+            </div>
             <form id="add-member-form">
-                <label for="member-id">ID Member (Otomatis dari QR):</label>
-                <input type="text" id="member-id" required readonly placeholder="Scan QR untuk mengisi ID">
+                <label for="member-id">ID Member (Tempel dari QR/Input Manual):</label>
+                <input type="text" id="member-id" required placeholder="Contoh: DS-001">
 
                 <label for="member-name">Nama Member:</label>
                 <input type="text" id="member-name" required placeholder="Masukkan nama member">
@@ -544,9 +521,16 @@
         </div>
 
         <div id="scan-member-section" class="section">
-            <h2><i class="fas fa-qrcode"></i> Scan Member & Transaksi</h2>
-            <div id="qr-scanner-container-view"></div>
-            <p style="text-align: center; margin-bottom: 20px; color: #555;">Scan QR Kartu Member untuk melihat detail:</p>
+            <h2><i class="fas fa-search"></i> Cari Member & Transaksi</h2>
+            <div class="external-scanner-info">
+                <i class="fas fa-info-circle"></i>
+                <p><strong>Info:</strong> Scan QR Kartu Member menggunakan aplikasi kamera bawaan ponsel Anda, lalu salin ID dan tempelkan di kolom "ID Member" di bawah ini, atau input manual.</p>
+            </div>
+            <form id="search-member-form"> <label for="search-member-id">ID Member:</label>
+                <input type="text" id="search-member-id" required placeholder="Masukkan ID Member">
+                <button type="submit"><i class="fas fa-search"></i> Cari Member</button>
+            </form>
+            
             <div id="member-detail-display" class="member-detail-view" style="display: none;">
                 <h3>Detail Member <span id="detail-member-name"></span></h3>
                 <p><strong>ID Member:</strong> <span id="detail-member-id"></span></p>
@@ -609,13 +593,10 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // Membuat namespace untuk aplikasi
         const DolanSawahApp = {
             ADMIN_PASSWORD: "dolan_sawah_admin",
             currentAdminAction: '',
             adminModalTargetId: null,
-            html5QrCodeAdd: null,
-            html5QrCodeView: null,
 
             elements: {
                 navAddMember: document.getElementById('nav-add-member'),
@@ -626,14 +607,14 @@
                 scanMemberSection: document.getElementById('scan-member-section'),
                 allMembersSection: document.getElementById('all-members-section'),
 
-                qrScannerContainerAdd: document.getElementById('qr-scanner-container'),
-                qrScannerContainerView: document.getElementById('qr-scanner-container-view'),
-
                 addMemberForm: document.getElementById('add-member-form'),
                 memberIdInput: document.getElementById('member-id'),
                 memberNameInput: document.getElementById('member-name'),
                 memberAddressInput: document.getElementById('member-address'),
                 memberPhoneInput: document.getElementById('member-phone'),
+
+                searchMemberForm: document.getElementById('search-member-form'), // New form
+                searchMemberIdInput: document.getElementById('search-member-id'), // New input
 
                 memberDetailDisplay: document.getElementById('member-detail-display'),
                 detailMemberName: document.getElementById('detail-member-name'),
@@ -672,14 +653,11 @@
                 
                 setTimeout(() => {
                     notification.classList.remove('show');
-                    notification.style.opacity = '0'; // Pastikan transisi opacity bekerja
+                    notification.style.opacity = '0'; 
                 }, 3000);
             },
 
             showSection: function(sectionId) {
-                // Hentikan semua scanner aktif
-                this.stopAllQrScanners();
-
                 document.querySelectorAll('.section').forEach(section => {
                     section.classList.remove('active');
                 });
@@ -698,6 +676,7 @@
                 if (sectionId !== 'scan-member-section') {
                     this.elements.memberDetailDisplay.style.display = 'none';
                     this.elements.transactionForm.reset();
+                    this.elements.searchMemberForm.reset(); // Reset search form
                 }
             },
 
@@ -714,15 +693,15 @@
             // --- Member Rendering ---
             renderMemberList: function() {
                 const { memberListContainer, noMembersMessage } = this.elements;
-                memberListContainer.innerHTML = ''; // Clear existing list
+                memberListContainer.innerHTML = ''; 
                 const members = this.getMembers();
 
                 if (members.length === 0) {
-                    memberListContainer.appendChild(noMembersMessage); // Re-append the message
-                    noMembersMessage.style.display = 'block'; // Ensure it's visible
+                    memberListContainer.appendChild(noMembersMessage); 
+                    noMembersMessage.style.display = 'block'; 
                     return;
                 } else {
-                    noMembersMessage.style.display = 'none'; // Hide the message if members exist
+                    noMembersMessage.style.display = 'none'; 
                 }
 
                 members.forEach(member => {
@@ -742,18 +721,17 @@
                     memberListContainer.appendChild(memberCard);
                 });
 
-                // Attach event listeners to new buttons
                 document.querySelectorAll('.edit-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         this.currentAdminAction = 'edit';
-                        this.openAdminPasswordModal(e.currentTarget.dataset.id); // Use currentTarget
+                        this.openAdminPasswordModal(e.currentTarget.dataset.id); 
                     });
                 });
 
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         this.currentAdminAction = 'delete';
-                        this.openAdminPasswordModal(e.currentTarget.dataset.id); // Use currentTarget
+                        this.openAdminPasswordModal(e.currentTarget.dataset.id); 
                     });
                 });
             },
@@ -777,7 +755,6 @@
                 if (this.elements.adminPasswordInput.value === this.ADMIN_PASSWORD) {
                     this.closeAdminPasswordModal();
                     if (this.currentAdminAction === 'add') {
-                        // Langsung panggil handler submit form, jangan dispatch event
                         this.handleAddMember(new Event('submit')); 
                     } else if (this.currentAdminAction === 'edit' && this.adminModalTargetId) {
                         this.openEditMemberModal(this.adminModalTargetId);
@@ -858,130 +835,14 @@
                 }
             },
 
-            // --- QR Scanner Functions ---
-            /**
-             * Menginisialisasi QR scanner di kontainer yang ditentukan.
-             * @param {HTMLElement} containerElement Elemen DOM kontainer scanner.
-             * @param {'add'|'view'} mode Mode scanner (untuk penanganan hasil scan).
-             */
-            initQrScanner: async function(containerElement, mode) {
-                // Pastikan library sudah dimuat
-                if (typeof Html5Qrcode === 'undefined') {
-                    this.showAlert('Scanner library tidak terdeteksi. Silakan refresh halaman.', 'error');
-                    console.error('Html5Qrcode library not loaded!');
-                    return;
-                }
-
-                // Pastikan kontainer tidak kosong dan siap
-                if (!containerElement) {
-                    console.error('QR Scanner container element not found!');
-                    return;
-                }
-                
-                // Stop any other active scanner
-                this.stopAllQrScanners();
-
-                containerElement.innerHTML = ''; // Bersihkan konten sebelumnya
-                containerElement.classList.add('scanning'); // Tambahkan kelas visual
-
-                try {
-                    const html5QrCode = new Html5Qrcode(containerElement.id);
-                    
-                    if (mode === 'add') {
-                        this.html5QrCodeAdd = html5QrCode;
-                    } else if (mode === 'view') {
-                        this.html5QrCodeView = html5QrCode;
-                    }
-                    
-                    await html5QrCode.start(
-                        { facingMode: "environment" }, // Prioritaskan kamera belakang
-                        { 
-                            fps: 10, 
-                            qrbox: { width: 250, height: 250 } 
-                        },
-                        (decodedText) => {
-                            console.log(`QR detected (${mode}): ${decodedText}`);
-                            
-                            if (mode === 'add') {
-                                this.elements.memberIdInput.value = decodedText.trim();
-                                this.showAlert(`ID Member terdeteksi: ${decodedText.trim()}`, 'success');
-                                this.stopQrScanner(containerElement);
-                                this.elements.memberNameInput.focus(); // Fokus ke nama setelah scan
-                            } 
-                            else if (mode === 'view') {
-                                this.displayMemberDetail(decodedText.trim());
-                                this.stopQrScanner(containerElement);
-                            }
-                        },
-                        (errorMessage) => {
-                            // Penanganan error real-time, seperti gagal membaca QR
-                            // console.warn(`QR scanning error: ${errorMessage}`);
-                        }
-                    );
-                    this.showAlert('Kamera aktif, siap scan QR!', 'info');
-                    console.log(`Scanner ${mode} aktif di ${containerElement.id}`);
-
-                } catch (err) {
-                    console.error(`Gagal inisialisasi kamera di ${containerElement.id}:`, err);
-                    containerElement.classList.remove('scanning');
-                    let errorMsg = "Gagal memulai kamera. Coba lagi atau periksa izin kamera Anda.";
-                    if (err.message.includes('NotAllowedError')) {
-                        errorMsg = "Akses kamera ditolak. Mohon izinkan akses kamera di pengaturan browser Anda.";
-                    } else if (err.message.includes('NotFoundError')) {
-                        errorMsg = "Tidak ada kamera yang ditemukan di perangkat ini.";
-                    }
-                    containerElement.innerHTML = `<p style="color:var(--error-color); text-align:center; padding:10px;">${errorMsg}</p>`;
-                    this.showAlert(errorMsg, "error");
-                }
-            },
-
-            /**
-             * Menghentikan QR scanner di kontainer yang ditentukan.
-             * @param {HTMLElement} containerElement Elemen DOM kontainer scanner.
-             */
-            stopQrScanner: async function(containerElement) {
-                let scanner = null;
-                const containerId = containerElement ? containerElement.id : null;
-
-                if (containerId === 'qr-scanner-container' && this.html5QrCodeAdd) {
-                    scanner = this.html5QrCodeAdd;
-                    this.html5QrCodeAdd = null; // Reset instance
-                } 
-                else if (containerId === 'qr-scanner-container-view' && this.html5QrCodeView) {
-                    scanner = this.html5QrCodeView;
-                    this.html5QrCodeView = null; // Reset instance
-                }
-                
-                if (scanner && scanner.isScanning) {
-                    try {
-                        await scanner.stop();
-                        console.log(`Scanner dihentikan di ${containerId}`);
-                        containerElement.innerHTML = ''; // Bersihkan elemen video
-                        containerElement.classList.remove('scanning'); // Hapus kelas visual
-                    } catch (err) {
-                        console.warn(`Gagal menghentikan scanner di ${containerId}:`, err);
-                        // Jika sudah berhenti, atau ada error lain, mungkin tidak perlu showAlert
-                    }
-                } else if (containerElement) {
-                    containerElement.innerHTML = ''; // Pastikan bersih
-                    containerElement.classList.remove('scanning');
-                }
-            },
-
-            stopAllQrScanners: function() {
-                this.stopQrScanner(this.elements.qrScannerContainerAdd);
-                this.stopQrScanner(this.elements.qrScannerContainerView);
-            },
-
             // --- Add Member Form Submission ---
             handleAddMember: function(e) {
                 e.preventDefault();
                 
-                // Jika aksi bukan 'add' (berarti baru mau submit dan butuh password admin)
                 if (this.currentAdminAction !== 'add') {
                     this.currentAdminAction = 'add';
                     this.openAdminPasswordModal();
-                    return; // Hentikan proses, lanjutkan setelah password diinput
+                    return; 
                 }
 
                 const id = this.elements.memberIdInput.value.trim();
@@ -1020,9 +881,18 @@
                 this.showAlert("Member baru berhasil ditambahkan!", 'success');
 
                 this.elements.addMemberForm.reset();
-                this.elements.memberIdInput.value = ''; // Kosongkan ID setelah simpan
-                this.currentAdminAction = ''; // Reset admin action
-                this.initQrScanner(this.elements.qrScannerContainerAdd, 'add'); // Restart scanner
+                this.currentAdminAction = ''; 
+            },
+
+            // --- Search Member Form Submission ---
+            handleSearchMember: function(e) {
+                e.preventDefault();
+                const memberIdToSearch = this.elements.searchMemberIdInput.value.trim();
+                if (!memberIdToSearch) {
+                    this.showAlert("Masukkan ID Member untuk mencari.", "error");
+                    return;
+                }
+                this.displayMemberDetail(memberIdToSearch);
             },
 
             // --- Display Member Detail & Transaction Input ---
@@ -1056,7 +926,7 @@
             // --- Transaction Form Submission ---
             handleTransactionSubmit: function(e) {
                 e.preventDefault();
-                const memberId = e.currentTarget.dataset.memberId; // Use currentTarget
+                const memberId = e.currentTarget.dataset.memberId; 
                 const transactionAmount = parseInt(this.elements.transactionAmountInput.value);
 
                 if (!memberId) {
@@ -1074,7 +944,7 @@
 
                 if (memberIndex !== -1) {
                     const member = members[memberIndex];
-                    const pointsEarned = Math.floor(transactionAmount / 100000); // 1 poin per Rp 100.000
+                    const pointsEarned = Math.floor(transactionAmount / 100000); 
 
                     member.points += pointsEarned;
                     member.transactions.push({
@@ -1098,13 +968,9 @@
                 // Event Listeners for Navigation
                 this.elements.navAddMember.addEventListener('click', () => {
                     this.showSection('add-member-section');
-                    // Inisialisasi scanner setelah section aktif
-                    this.initQrScanner(this.elements.qrScannerContainerAdd, 'add');
                 });
-                this.elements.navScanMember.addEventListener('click', () => {
+                this.elements.navScanMember.addEventListener('click', () => { // Nama event listener diubah
                     this.showSection('scan-member-section');
-                    // Inisialisasi scanner setelah section aktif
-                    this.initQrScanner(this.elements.qrScannerContainerView, 'view');
                 });
                 this.elements.navAllMembers.addEventListener('click', () => {
                     this.showSection('all-members-section');
@@ -1130,24 +996,16 @@
                 });
 
                 // Add Member Form Event Listener
-                // Panggil handleAddMember, yang akan memicu modal admin jika perlu
                 this.elements.addMemberForm.addEventListener('submit', this.handleAddMember.bind(this));
+
+                // Search Member Form Event Listener (NEW)
+                this.elements.searchMemberForm.addEventListener('submit', this.handleSearchMember.bind(this));
 
                 // Transaction Form Event Listener
                 this.elements.transactionForm.addEventListener('submit', this.handleTransactionSubmit.bind(this));
 
-                // Initial Load: Show add member section and init its scanner
+                // Initial Load
                 this.showSection('add-member-section');
-                // Pastikan Html5Qrcode dimuat sebelum mencoba menggunakannya
-                // defer di script tag sudah memastikan ini, tapi bisa ditambahkan cek defensif
-                setTimeout(() => {
-                    if (typeof Html5Qrcode !== 'undefined') {
-                        this.initQrScanner(this.elements.qrScannerContainerAdd, 'add');
-                    } else {
-                        this.showAlert('Scanner library tidak dapat dimuat. Pastikan koneksi internet stabil atau refresh halaman.', 'error');
-                        console.error('Html5Qrcode is not defined after timeout. Check CDN link and network.');
-                    }
-                }, 500); // Memberi sedikit waktu untuk library dimuat
             }
         };
 
@@ -1158,4 +1016,3 @@
     </script>
 </body>
 </html>
-
