@@ -18,6 +18,7 @@
             --border-color: #ddd;
             --button-hover: #45a049;
             --error-color: #e74c3c;
+            --info-color: #3498db;
         }
 
         body {
@@ -86,23 +87,32 @@
 
         .content-section {
             display: none;
+            padding-top: 10px; /* Add some padding at the top of content sections */
         }
 
         .content-section.active {
             display: block;
         }
 
-        #reader {
+        /* Styling for QR Code reader containers */
+        #reader, #qrScanForNewMember, #qrScanForManageMember {
             width: 100%;
-            min-height: 300px;
+            min-height: 300px; /* Ensure sufficient height for scanner */
             border: 2px solid var(--primary-color);
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             margin-top: 20px;
+            display: flex; /* Use flexbox to center content */
+            justify-content: center;
+            align-items: center;
+            background-color: #eee; /* Placeholder background */
+            color: #666;
+            text-align: center;
+            font-style: italic;
         }
 
-        #result {
+        #result, #newMemberQrResult, #manageMemberQrResult {
             margin-top: 20px;
             padding: 15px;
             border: 1px solid var(--border-color);
@@ -209,6 +219,12 @@
             font-weight: bold;
             margin-top: 10px;
         }
+        .info {
+            color: var(--info-color);
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
 
         .info-message {
             font-size: 0.9em;
@@ -260,14 +276,14 @@
 
     <div class="container">
         <div class="nav-buttons">
-            <button id="btnScan" class="active">Scan QR Code</button>
+            <button id="btnScan" class="active">Scan QR Code Umum</button>
             <button id="btnAddMember">Tambah Member Baru</button>
             <button id="btnManageMember">Kelola Member</button>
             <button id="btnListMembers">Daftar Member</button>
         </div>
 
         <div id="scanSection" class="content-section active">
-            <h2>Pindai QR Code</h2>
+            <h2>Pindai QR Code Umum</h2>
             <div id="reader"></div>
             <div id="result">Hasil Scan Akan Muncul Di Sini</div>
             <p class="info-message">Pastikan Anda memberikan izin akses kamera saat diminta.</p>
@@ -275,7 +291,7 @@
 
         <div id="addMemberSection" class="content-section">
             <h2>Tambah Member Baru</h2>
-            <div id="qrScanForNewMember"></div>
+            <div id="qrScanForNewMember">Akan memuat scanner untuk ID Member baru...</div>
             <div id="newMemberQrResult" class="result">Pindai QR untuk ID Member Baru</div>
 
             <form id="newMemberForm" style="display: none;">
@@ -302,7 +318,7 @@
 
         <div id="manageMemberSection" class="content-section">
             <h2>Kelola Member (Scan Kartu)</h2>
-            <div id="qrScanForManageMember"></div>
+            <div id="qrScanForManageMember">Akan memuat scanner untuk Kartu Member...</div>
             <div id="manageMemberQrResult" class="result">Pindai Kartu Member</div>
 
             <div id="memberDetails" style="display: none;">
@@ -359,7 +375,11 @@
 
     <script>
         const membersKey = 'restaurantMembers';
-        let currentScanner = null; // To manage active scanner instance
+        
+        // --- Scanner instances for each section ---
+        let mainQrCodeReader = null; // For the original "Scan QR Code Umum" section
+        let newMemberQrCodeReader = null; // For "Tambah Member Baru" section
+        let manageMemberQrCodeReader = null; // For "Kelola Member" section
 
         const sections = {
             scanSection: document.getElementById('scanSection'),
@@ -389,49 +409,155 @@
             const element = document.getElementById(elementId);
             element.textContent = message;
             element.className = `info-message ${type}`;
-            setTimeout(() => {
+            clearTimeout(element.timer); // Clear any existing timer
+            element.timer = setTimeout(() => {
                 element.textContent = '';
                 element.className = 'info-message';
             }, timeout);
         }
 
-        function stopCurrentScanner() {
-            if (currentScanner && currentScanner.isScanning) {
-                currentScanner.stop().then(() => {
-                    console.log("QR Code scanning stopped.");
-                    currentScanner = null;
-                }).catch((err) => {
-                    console.error("Error stopping QR code scanner:", err);
-                });
+        function stopAllScanners() {
+            if (mainQrCodeReader && mainQrCodeReader.isScanning) {
+                mainQrCodeReader.stop().then(() => console.log("Main scanner stopped.")).catch(err => console.warn("Error stopping main scanner:", err));
+            }
+            if (newMemberQrCodeReader && newMemberQrCodeReader.isScanning) {
+                newMemberQrCodeReader.stop().then(() => console.log("New member scanner stopped.")).catch(err => console.warn("Error stopping new member scanner:", err));
+            }
+            if (manageMemberQrCodeReader && manageMemberQrCodeReader.isScanning) {
+                manageMemberQrCodeReader.stop().then(() => console.log("Manage member scanner stopped.")).catch(err => console.warn("Error stopping manage member scanner:", err));
             }
         }
 
-        function startScanner(elementId, successCallback, errorCallback, qrboxSize = 250) {
-            stopCurrentScanner(); // Stop any existing scanner first
-            const html5QrCode = new Html5Qrcode(elementId);
-            currentScanner = html5QrCode; // Set the current active scanner
+        // --- ORIGINAL SCANNER FUNCTIONALITY ---
+        // This function matches your original working scanner
+        function startMainScanner() {
+            stopAllScanners(); // Stop others before starting this one
+            const resultDiv = document.getElementById("result");
+            mainQrCodeReader = new Html5Qrcode("reader");
 
-            const config = {
+            const qrCodeConfig = {
                 fps: 10,
-                qrbox: { width: qrboxSize, height: qrboxSize },
-                rememberLastUsedCamera: true
+                qrbox: { width: 250, height: 250 }
             };
 
-            html5QrCode.start({ facingMode: "environment" }, config, successCallback, errorCallback)
+            const onScanSuccessMain = (decodedText, decodedResult) => {
+                console.log(`Main Scan result: ${decodedText}`, decodedResult);
+                resultDiv.innerHTML = `<p><strong>Terdeteksi:</strong> <br><a href="${decodedText}" target="_blank" rel="noopener noreferrer">${decodedText}</a></p>`;
+                // You can choose to stop scanner after first scan here if preferred
+                // mainQrCodeReader.stop().then(() => console.log("Main scanner stopped after success."));
+            };
+
+            const onScanErrorMain = (errorMessage) => {
+                // console.warn(`Main QR Code scan error: ${errorMessage}`);
+                // Often, you don't need to show this continuously to the user
+            };
+
+            mainQrCodeReader.start({ facingMode: "environment" }, qrCodeConfig, onScanSuccessMain, onScanErrorMain)
                 .catch((err) => {
-                    console.error(`Error starting QR Code scanner for ${elementId}:`, err);
-                    if (elementId === "reader") {
-                        document.getElementById("result").innerHTML = `<p class="error">Gagal mengakses kamera. Pastikan Anda memberikan izin dan tidak ada aplikasi lain yang menggunakan kamera.</p>`;
-                    } else if (elementId === "qrScanForNewMember") {
-                        document.getElementById("newMemberQrResult").innerHTML = `<p class="error">Gagal mengakses kamera untuk pendaftaran member baru.</p>`;
-                    } else if (elementId === "qrScanForManageMember") {
-                        document.getElementById("manageMemberQrResult").innerHTML = `<p class="error">Gagal mengakses kamera untuk kelola member.</p>`;
-                    }
+                    resultDiv.innerHTML = `<p class="error">Gagal mengakses kamera untuk Scan Umum. Pastikan Anda memberikan izin dan tidak ada aplikasi lain yang menggunakan kamera.</p>`;
+                    console.error("Error starting main QR Code scanner:", err);
                 });
         }
 
+        // --- Dedicated Scanner for Add Member ---
+        function startNewMemberScanner() {
+            stopAllScanners();
+            const newMemberQrResultDiv = document.getElementById("newMemberQrResult");
+            newMemberQrCodeReader = new Html5Qrcode("qrScanForNewMember");
+
+            const qrCodeConfig = {
+                fps: 10,
+                qrbox: { width: 200, height: 200 }
+            };
+
+            const onScanNewMemberIdSuccess = (decodedText) => {
+                const members = getMembers();
+                if (members[decodedText]) {
+                    showMessage('addMemberMessage', 'ID Member ini sudah terdaftar!', 'error');
+                    // Do not stop scanner, let user try another QR
+                } else {
+                    newMemberQrCodeReader.stop().then(() => {
+                        console.log("New member ID scanner stopped after success.");
+                    }).catch(err => console.warn("Error stopping new member ID scanner:", err));
+                    
+                    newMemberQrResultDiv.innerHTML = `<p class="success">QR Code terdeteksi sebagai ID baru: <strong>${decodedText}</strong></p>`;
+                    document.getElementById('newMemberId').value = decodedText;
+                    document.getElementById('newMemberForm').style.display = 'block';
+                    showMessage('addMemberMessage', 'Silakan lengkapi data member baru.', 'info');
+                }
+            };
+
+            const onScanErrorNewMember = (errorMessage) => {
+                // console.warn(`New member QR Code scan error: ${errorMessage}`);
+            };
+
+            newMemberQrCodeReader.start({ facingMode: "environment" }, qrCodeConfig, onScanNewMemberIdSuccess, onScanErrorNewMember)
+                .catch((err) => {
+                    newMemberQrResultDiv.innerHTML = `<p class="error">Gagal mengakses kamera untuk pendaftaran member baru.</p>`;
+                    console.error("Error starting new member QR Code scanner:", err);
+                });
+        }
+
+        // --- Dedicated Scanner for Manage Member ---
+        let currentManagingMemberId = null; // Keep track of the member being managed
+
+        function startManageMemberScanner() {
+            stopAllScanners();
+            const manageMemberQrResultDiv = document.getElementById("manageMemberQrResult");
+            manageMemberQrCodeReader = new Html5Qrcode("qrScanForManageMember");
+
+            const qrCodeConfig = {
+                fps: 10,
+                qrbox: { width: 200, height: 200 }
+            };
+
+            const onScanManageMemberSuccess = (decodedText) => {
+                const members = getMembers();
+                const member = members[decodedText];
+
+                if (member) {
+                    manageMemberQrCodeReader.stop().then(() => {
+                        console.log("Manage member scanner stopped after success.");
+                    }).catch(err => console.warn("Error stopping manage member scanner:", err));
+
+                    currentManagingMemberId = decodedText;
+                    manageMemberQrResultDiv.innerHTML = `<p class="success">Member terdeteksi: <strong>${member.name}</strong></p>`;
+                    
+                    document.getElementById('memberNameDisplay').textContent = member.name;
+                    document.getElementById('memberIdDisplay').textContent = member.id;
+                    document.getElementById('memberPhoneDisplay').textContent = member.phone || '-';
+                    document.getElementById('memberEmailDisplay').textContent = member.email || '-';
+                    document.getElementById('memberTotalTransactionDisplay').textContent = member.totalTransaction.toLocaleString('id-ID');
+
+                    document.getElementById('editMemberName').value = member.name;
+                    document.getElementById('editMemberPhone').value = member.phone;
+                    document.getElementById('editMemberEmail').value = member.email;
+                    document.getElementById('transactionAmount').value = 0; // Reset transaction amount
+
+                    document.getElementById('memberDetails').style.display = 'block';
+                    showMessage('manageMemberMessage', 'Anda dapat menambah transaksi atau mengedit data member ini.', 'info');
+                } else {
+                    showMessage('manageMemberMessage', 'ID Member tidak ditemukan!', 'error');
+                    currentManagingMemberId = null;
+                    document.getElementById('memberDetails').style.display = 'none';
+                }
+            };
+
+            const onScanErrorManageMember = (errorMessage) => {
+                // console.warn(`Manage member QR Code scan error: ${errorMessage}`);
+            };
+
+            manageMemberQrCodeReader.start({ facingMode: "environment" }, qrCodeConfig, onScanManageMemberSuccess, onScanErrorManageMember)
+                .catch((err) => {
+                    manageMemberQrResultDiv.innerHTML = `<p class="error">Gagal mengakses kamera untuk kelola member.</p>`;
+                    console.error("Error starting manage member QR Code scanner:", err);
+                });
+        }
+
+
         function switchSection(sectionId) {
-            stopCurrentScanner(); // Stop scanner when switching sections
+            stopAllScanners(); // Stop all scanners when changing sections
+
             for (let id in sections) {
                 sections[id].classList.remove('active');
             }
@@ -444,8 +570,8 @@
 
             // Specific actions for each section
             if (sectionId === 'scanSection') {
-                startScanner("reader", onScanSuccess, onScanError);
                 document.getElementById("result").textContent = "Hasil Scan Akan Muncul Di Sini";
+                startMainScanner(); // Start the original scanner
             } else if (sectionId === 'addMemberSection') {
                 document.getElementById('newMemberForm').style.display = 'none';
                 document.getElementById('newMemberQrResult').textContent = "Pindai QR untuk ID Member Baru";
@@ -453,44 +579,17 @@
                 document.getElementById('newMemberName').value = '';
                 document.getElementById('newMemberPhone').value = '';
                 document.getElementById('newMemberEmail').value = '';
-                startScanner("qrScanForNewMember", onScanNewMemberIdSuccess, onScanError, 200);
+                startNewMemberScanner(); // Start scanner for new member ID
             } else if (sectionId === 'manageMemberSection') {
                 document.getElementById('memberDetails').style.display = 'none';
                 document.getElementById('manageMemberQrResult').textContent = "Pindai Kartu Member";
-                startScanner("qrScanForManageMember", onScanManageMemberSuccess, onScanError, 200);
+                startManageMemberScanner(); // Start scanner for managing members
             } else if (sectionId === 'listMembersSection') {
                 renderMemberList();
             }
         }
 
-        // --- Scan QR Code Section ---
-        const onScanSuccess = (decodedText, decodedResult) => {
-            console.log(`Scan result: ${decodedText}`, decodedResult);
-            document.getElementById("result").innerHTML = `<p><strong>Terdeteksi:</strong> <br><a href="${decodedText}" target="_blank" rel="noopener noreferrer">${decodedText}</a></p>`;
-            // Optionally stop scanning after a successful scan if not continuously scanning
-            // stopCurrentScanner();
-        };
-
-        const onScanError = (errorMessage) => {
-            // console.warn(`QR Code scan error: ${errorMessage}`);
-            // This is often for continuous scanning, no need to show to user constantly
-        };
-
-        // --- Add New Member Section ---
-        const onScanNewMemberIdSuccess = (decodedText) => {
-            const members = getMembers();
-            if (members[decodedText]) {
-                showMessage('newMemberMessage', 'ID Member ini sudah terdaftar!', 'error');
-                // Don't stop scanner, let user try another QR
-            } else {
-                stopCurrentScanner(); // Stop scanner after successful unique ID scan
-                document.getElementById('newMemberQrResult').innerHTML = `<p class="success">QR Code terdeteksi sebagai ID baru: <strong>${decodedText}</strong></p>`;
-                document.getElementById('newMemberId').value = decodedText;
-                document.getElementById('newMemberForm').style.display = 'block';
-                showMessage('addMemberMessage', 'Silakan lengkapi data member baru.', 'info');
-            }
-        };
-
+        // --- Add New Member Section Form Logic ---
         document.getElementById('newMemberForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const memberId = document.getElementById('newMemberId').value;
@@ -519,48 +618,17 @@
             saveMembers(members);
             showMessage('addMemberMessage', 'Member baru berhasil ditambahkan!', 'success');
 
-            // Reset form and UI
+            // Reset form and UI, then restart scanner for next new member
             document.getElementById('newMemberForm').style.display = 'none';
             document.getElementById('newMemberId').value = '';
             document.getElementById('newMemberName').value = '';
             document.getElementById('newMemberPhone').value = '';
             document.getElementById('newMemberEmail').value = '';
             document.getElementById('newMemberQrResult').textContent = "Pindai QR untuk ID Member Baru";
-            startScanner("qrScanForNewMember", onScanNewMemberIdSuccess, onScanError, 200); // Restart scanner
+            startNewMemberScanner(); // Restart scanner
         });
 
-        // --- Manage Member Section ---
-        let currentManagingMemberId = null;
-
-        const onScanManageMemberSuccess = (decodedText) => {
-            const members = getMembers();
-            const member = members[decodedText];
-
-            if (member) {
-                stopCurrentScanner(); // Stop scanner as member is found
-                currentManagingMemberId = decodedText;
-                document.getElementById('manageMemberQrResult').innerHTML = `<p class="success">Member terdeteksi: <strong>${member.name}</strong></p>`;
-                
-                document.getElementById('memberNameDisplay').textContent = member.name;
-                document.getElementById('memberIdDisplay').textContent = member.id;
-                document.getElementById('memberPhoneDisplay').textContent = member.phone || '-';
-                document.getElementById('memberEmailDisplay').textContent = member.email || '-';
-                document.getElementById('memberTotalTransactionDisplay').textContent = member.totalTransaction.toLocaleString('id-ID');
-
-                document.getElementById('editMemberName').value = member.name;
-                document.getElementById('editMemberPhone').value = member.phone;
-                document.getElementById('editMemberEmail').value = member.email;
-                document.getElementById('transactionAmount').value = 0; // Reset transaction amount
-
-                document.getElementById('memberDetails').style.display = 'block';
-                showMessage('manageMemberMessage', 'Anda dapat menambah transaksi atau mengedit data member ini.', 'info');
-            } else {
-                showMessage('manageMemberMessage', 'ID Member tidak ditemukan!', 'error');
-                currentManagingMemberId = null;
-                document.getElementById('memberDetails').style.display = 'none';
-            }
-        };
-
+        // --- Manage Member Section Logic ---
         document.getElementById('addTransactionBtn').addEventListener('click', function() {
             if (!currentManagingMemberId) {
                 showMessage('manageMemberMessage', 'Pindai kartu member terlebih dahulu.', 'error');
@@ -617,13 +685,13 @@
             }
         });
 
-        // --- List Members Section ---
+        // --- List Members Section Logic ---
         function renderMemberList() {
             const members = getMembers();
             const tableBody = document.getElementById('memberTableBody');
             tableBody.innerHTML = ''; // Clear existing rows
 
-            const memberArray = Object.values(members); // Convert object to array for easier iteration/sorting
+            const memberArray = Object.values(members); // Convert object to array
 
             if (memberArray.length === 0) {
                 tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Belum ada member terdaftar.</td></tr>';
@@ -646,8 +714,9 @@
                 editButton.addEventListener('click', () => {
                     // Switch to manage member section and load this member's data
                     switchSection('manageMemberSection');
-                    // Simulate a scan for this member ID
-                    onScanManageMemberSuccess(member.id);
+                    // Manually call the success handler for manage member scanner
+                    // This simulates scanning the QR code for the specific member
+                    setTimeout(() => onScanManageMemberSuccess(member.id), 100); // Small delay to ensure section is ready
                 });
                 actionsCell.appendChild(editButton);
 
@@ -670,7 +739,7 @@
                 saveMembers(members);
                 showMessage('listMemberMessage', 'Member berhasil dihapus!', 'success');
                 renderMemberList(); // Re-render the list
-                // If the deleted member was being managed, clear manage section
+                // If the deleted member was being managed, clear manage section UI
                 if (currentManagingMemberId === memberId) {
                     currentManagingMemberId = null;
                     document.getElementById('memberDetails').style.display = 'none';
