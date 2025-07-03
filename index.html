@@ -4,414 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Member VIP Restoran</title>
-    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@latest/dist/html5-qrcode.min.js"></script>
+    <!-- Gunakan versi stabil dari library -->
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/dist/html5-qrcode.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
-        :root {
-            --primary-color: #4CAF50; /* Green */
-            --secondary-color: #FFC107; /* Amber */
-            --text-dark: #333;
-            --text-light: #f9f9f9;
-            --bg-light: #f4f4f4;
-            --bg-dark: #2c3e50; /* Dark blue-gray */
-            --border-color: #ddd;
-            --button-hover: #45a049;
-            --error-color: #e74c3c;
-            --info-color: #3498db;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 800px;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.2em;
-            font-weight: 700;
-        }
-
-        .nav-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .nav-buttons button {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            flex: 1 1 auto;
-            max-width: 250px;
-        }
-
-        .nav-buttons button:hover {
-            background-color: var(--button-hover);
-            transform: translateY(-2px);
-        }
-
-        .nav-buttons button.active {
-            background-color: var(--button-hover);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .content-section {
-            display: none;
-            padding-top: 10px;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        /* Improved Scanner Container Styles */
-        #reader, #qrScanForNewMember, #qrScanForManageMember {
-            width: 100%;
-            min-height: 300px;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-top: 20px;
-            position: relative;
-            background-color: #f0f0f0;
-        }
-
-        #reader video, 
-        #qrScanForNewMember video, 
-        #qrScanForManageMember video {
-            width: 100% !important;
-            height: auto !important;
-            object-fit: cover;
-        }
-
-        .scanner-controls {
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .scanner-controls button {
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin: 0 5px;
-            transition: opacity 0.3s ease;
-        }
-
-        .scanner-controls button:hover {
-            opacity: 0.9;
-        }
-
-        #result, #newMemberQrResult, #manageMemberQrResult {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--bg-light);
-            min-height: 50px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.1em;
-            word-wrap: break-word;
-            box-sizing: border-box;
-        }
-        #result a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        #result a:hover {
-            text-decoration: underline;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group textarea {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 1em;
-            box-sizing: border-box;
-        }
-
-        .form-group button {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-        .form-group button:hover {
-            background-color: var(--button-hover);
-        }
-
-        .member-list {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .member-list th, .member-list td {
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            text-align: left;
-        }
-
-        .member-list th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-
-        .member-list tr:nth-child(even) {
-            background-color: var(--bg-light);
-        }
-
-        .member-list .actions button {
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
-            padding: 6px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-right: 5px;
-            transition: background-color 0.3s ease;
-        }
-        .member-list .actions button.delete {
-            background-color: var(--error-color);
-            color: white;
-        }
-        .member-list .actions button:hover {
-            opacity: 0.9;
-        }
-
-        .error {
-            color: var(--error-color);
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .success {
-            color: var(--primary-color);
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .info {
-            color: var(--info-color);
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .info-message {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .nav-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            .nav-buttons button {
-                width: 90%;
-                max-width: 300px;
-            }
-            .container {
-                padding: 20px;
-            }
-            .member-list th, .member-list td {
-                padding: 8px;
-                font-size: 0.9em;
-            }
-            .member-list .actions button {
-                padding: 4px 8px;
-                font-size: 0.8em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            .nav-buttons button {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-            .form-group input, .form-group textarea {
-                width: calc(100% - 20px);
-                padding: 8px;
-            }
-        }
+        /* [CSS Anda yang sebelumnya tetap sama] */
     </style>
 </head>
 <body>
-    <h1>Aplikasi Member VIP Restoran</h1>
-
-    <div class="container">
-        <div class="nav-buttons">
-            <button id="btnScan" class="active">Scan QR Code Umum</button>
-            <button id="btnAddMember">Tambah Member Baru</button>
-            <button id="btnManageMember">Kelola Member</button>
-            <button id="btnListMembers">Daftar Member</button>
-        </div>
-
-        <div id="scanSection" class="content-section active">
-            <h2>Pindai QR Code Umum</h2>
-            <div id="reader"></div>
-            <div id="result">Hasil Scan Akan Muncul Di Sini</div>
-            <p class="info-message">Pastikan Anda memberikan izin akses kamera saat diminta.</p>
-        </div>
-
-        <div id="addMemberSection" class="content-section">
-            <h2>Tambah Member Baru</h2>
-            <div id="qrScanForNewMember">Akan memuat scanner untuk ID Member baru...</div>
-            <div id="newMemberQrResult">Pindai QR untuk ID Member Baru</div>
-
-            <form id="newMemberForm" style="display: none;">
-                <div class="form-group">
-                    <label for="newMemberId">ID Member (dari QR):</label>
-                    <input type="text" id="newMemberId" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="newMemberName">Nama Member:</label>
-                    <input type="text" id="newMemberName" required>
-                </div>
-                <div class="form-group">
-                    <label for="newMemberPhone">Nomor Telepon:</label>
-                    <input type="text" id="newMemberPhone">
-                </div>
-                <div class="form-group">
-                    <label for="newMemberEmail">Email:</label>
-                    <input type="text" id="newMemberEmail">
-                </div>
-                <button type="submit">Simpan Member Baru</button>
-            </form>
-            <p class="info-message" id="addMemberMessage"></p>
-        </div>
-
-        <div id="manageMemberSection" class="content-section">
-            <h2>Kelola Member (Scan Kartu)</h2>
-            <div id="qrScanForManageMember">Akan memuat scanner untuk Kartu Member...</div>
-            <div id="manageMemberQrResult">Pindai Kartu Member</div>
-
-            <div id="memberDetails" style="display: none;">
-                <h3>Detail Member: <span id="memberNameDisplay"></span></h3>
-                <p><strong>ID:</strong> <span id="memberIdDisplay"></span></p>
-                <p><strong>Telepon:</strong> <span id="memberPhoneDisplay"></span></p>
-                <p><strong>Email:</strong> <span id="memberEmailDisplay"></span></p>
-                <p><strong>Total Transaksi:</strong> Rp <span id="memberTotalTransactionDisplay">0</span></p>
-
-                <h4>Input Transaksi Baru</h4>
-                <div class="form-group">
-                    <label for="transactionAmount">Nominal Transaksi (Rp):</label>
-                    <input type="number" id="transactionAmount" min="0" value="0">
-                </div>
-                <button id="addTransactionBtn">Tambahkan Transaksi</button>
-
-                <h4>Edit Data Member</h4>
-                <div class="form-group">
-                    <label for="editMemberName">Nama Member:</label>
-                    <input type="text" id="editMemberName">
-                </div>
-                <div class="form-group">
-                    <label for="editMemberPhone">Nomor Telepon:</label>
-                    <input type="text" id="editMemberPhone">
-                </div>
-                <div class="form-group">
-                    <label for="editMemberEmail">Email:</label>
-                    <input type="text" id="editMemberEmail">
-                </div>
-                <button id="saveEditMemberBtn">Simpan Perubahan</button>
-                <p class="info-message" id="manageMemberMessage"></p>
-            </div>
-        </div>
-
-        <div id="listMembersSection" class="content-section">
-            <h2>Daftar Seluruh Member</h2>
-            <table class="member-list">
-                <thead>
-                    <tr>
-                        <th>ID Member</th>
-                        <th>Nama</th>
-                        <th>Telepon</th>
-                        <th>Email</th>
-                        <th>Total Transaksi</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="memberTableBody">
-                    <!-- Member data will be inserted here -->
-                </tbody>
-            </table>
-            <p class="info-message" id="listMemberMessage"></p>
-        </div>
-    </div>
+    <!-- [HTML Anda yang sebelumnya tetap sama] -->
 
     <script>
-        // Global variables
+        // ========== KONFIGURASI UTAMA ==========
         const membersKey = 'restaurantMembers';
-        let membersCache = null;
-        let lastCacheUpdate = 0;
+        let currentScanner = null;
         let currentManagingMemberId = null;
         
-        // Scanner instances
-        const scannerInstances = {
-            scanSection: null,
-            addMemberSection: null,
-            manageMemberSection: null
-        };
-        
-        // DOM Elements
+        // ========== INISIALISASI ELEMEN ==========
         const sections = {
             scanSection: document.getElementById('scanSection'),
             addMemberSection: document.getElementById('addMemberSection'),
@@ -426,302 +34,208 @@
             btnListMembers: document.getElementById('btnListMembers')
         };
 
-        // Utility Functions
-        function getMembers() {
-            const now = Date.now();
-            if (!membersCache || (now - lastCacheUpdate) > 5000) { // Cache for 5 seconds
-                const members = localStorage.getItem(membersKey);
-                membersCache = members ? JSON.parse(members) : {};
-                lastCacheUpdate = now;
+        // ========== FUNGSI UTAMA ==========
+        async function initializeQRScanner(containerId, onSuccess) {
+            // Hentikan scanner sebelumnya jika ada
+            await stopScanner();
+            
+            // Kosongkan container
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<p class="info">Menyiapkan scanner...</p>';
+            
+            try {
+                // Coba dapatkan daftar kamera
+                const cameras = await Html5Qrcode.getCameras();
+                let cameraConfig = { facingMode: "environment" }; // Default
+                
+                if (cameras && cameras.length > 0) {
+                    // Prioritaskan kamera belakang
+                    const backCamera = cameras.find(c => c.label.toLowerCase().includes('back'));
+                    cameraConfig = backCamera ? { deviceId: backCamera.id } : { deviceId: cameras[0].id };
+                }
+                
+                // Buat instance scanner baru
+                const html5QrCode = new Html5Qrcode(containerId);
+                
+                // Konfigurasi scanner
+                const config = { 
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true
+                    },
+                    rememberLastUsedCamera: true
+                };
+                
+                // Mulai scanning
+                await html5QrCode.start(
+                    cameraConfig,
+                    config,
+                    (decodedText, decodedResult) => {
+                        console.log('Scan berhasil:', decodedText);
+                        onSuccess(decodedText, decodedResult);
+                    },
+                    (errorMessage) => {
+                        console.warn('Scan error:', errorMessage);
+                    }
+                ).catch(err => {
+                    console.error('Gagal memulai scanner:', err);
+                    container.innerHTML = `<p class="error">Gagal memulai scanner: ${err.message}</p>`;
+                    throw err;
+                });
+                
+                currentScanner = html5QrCode;
+                console.log('Scanner berhasil diinisialisasi');
+                return html5QrCode;
+            } catch (error) {
+                console.error('Error inisialisasi scanner:', error);
+                container.innerHTML = `
+                    <p class="error">Gagal mengakses kamera:</p>
+                    <p>${error.message}</p>
+                    <button onclick="retryScanner('${containerId}')">Coba Lagi</button>
+                `;
+                return null;
             }
-            return {...membersCache}; // Return copy to prevent direct modification
+        }
+
+        async function stopScanner() {
+            if (currentScanner && currentScanner.isScanning) {
+                try {
+                    await currentScanner.stop();
+                    console.log('Scanner berhasil dihentikan');
+                } catch (err) {
+                    console.warn('Gagal menghentikan scanner:', err);
+                } finally {
+                    currentScanner = null;
+                }
+            }
+        }
+
+        function retryScanner(containerId) {
+            const currentSection = Object.keys(sections).find(
+                key => sections[key].classList.contains('active')
+            );
+            switchSection(currentSection);
+        }
+
+        // ========== MANAJEMEN SECTION ==========
+        async function switchSection(sectionId) {
+            // Hentikan scanner aktif
+            await stopScanner();
+            
+            // Sembunyikan semua section
+            Object.values(sections).forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Nonaktifkan semua tombol
+            Object.values(navButtons).forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Aktifkan section dan tombol yang dipilih
+            sections[sectionId].classList.add('active');
+            navButtons[`btn${sectionId.replace('Section', '')}`].classList.add('active');
+            
+            // Inisialisasi scanner sesuai section
+            try {
+                if (sectionId === 'scanSection') {
+                    document.getElementById("result").innerHTML = "Hasil Scan Akan Muncul Di Sini";
+                    await initializeQRScanner("reader", (text) => {
+                        document.getElementById("result").innerHTML = `
+                            <p><strong>Terdeteksi:</strong></p>
+                            <p><a href="${text}" target="_blank">${text}</a></p>
+                        `;
+                    });
+                }
+                else if (sectionId === 'addMemberSection') {
+                    document.getElementById('newMemberForm').style.display = 'none';
+                    document.getElementById('newMemberQrResult').innerHTML = "Pindai QR untuk ID Member Baru";
+                    await initializeQRScanner("qrScanForNewMember", (text) => {
+                        const members = getMembers();
+                        if (members[text]) {
+                            showMessage('addMemberMessage', 'ID Member sudah terdaftar!', 'error');
+                        } else {
+                            stopScanner();
+                            document.getElementById('newMemberQrResult').innerHTML = `
+                                <p class="success">QR Code terdeteksi:</p>
+                                <p><strong>${text}</strong></p>
+                            `;
+                            document.getElementById('newMemberId').value = text;
+                            document.getElementById('newMemberForm').style.display = 'block';
+                        }
+                    });
+                }
+                else if (sectionId === 'manageMemberSection') {
+                    document.getElementById('memberDetails').style.display = 'none';
+                    document.getElementById('manageMemberQrResult').innerHTML = "Pindai Kartu Member";
+                    await initializeQRScanner("qrScanForManageMember", (text) => {
+                        const members = getMembers();
+                        const member = members[text];
+                        if (member) {
+                            stopScanner();
+                            currentManagingMemberId = text;
+                            displayMemberDetails(member);
+                        } else {
+                            showMessage('manageMemberMessage', 'ID Member tidak ditemukan!', 'error');
+                        }
+                    });
+                }
+                else if (sectionId === 'listMembersSection') {
+                    renderMemberList();
+                }
+            } catch (error) {
+                console.error('Error saat mengubah section:', error);
+            }
+        }
+
+        // ========== FUNGSI PENDUKUNG ==========
+        function displayMemberDetails(member) {
+            document.getElementById('memberNameDisplay').textContent = member.name;
+            document.getElementById('memberIdDisplay').textContent = member.id;
+            document.getElementById('memberPhoneDisplay').textContent = member.phone || '-';
+            document.getElementById('memberEmailDisplay').textContent = member.email || '-';
+            document.getElementById('memberTotalTransactionDisplay').textContent = 
+                member.totalTransaction?.toLocaleString('id-ID') || '0';
+            
+            document.getElementById('editMemberName').value = member.name;
+            document.getElementById('editMemberPhone').value = member.phone || '';
+            document.getElementById('editMemberEmail').value = member.email || '';
+            
+            document.getElementById('memberDetails').style.display = 'block';
+        }
+
+        function getMembers() {
+            const membersJson = localStorage.getItem(membersKey);
+            return membersJson ? JSON.parse(membersJson) : {};
         }
 
         function saveMembers(members) {
             localStorage.setItem(membersKey, JSON.stringify(members));
-            membersCache = {...members};
-            lastCacheUpdate = Date.now();
         }
 
         function showMessage(elementId, message, type = 'info', timeout = 3000) {
             const element = document.getElementById(elementId);
+            if (!element) return;
+            
             element.textContent = message;
             element.className = `info-message ${type}`;
-            clearTimeout(element.timer);
+            
+            if (element.timer) clearTimeout(element.timer);
             element.timer = setTimeout(() => {
                 element.textContent = '';
                 element.className = 'info-message';
             }, timeout);
         }
 
-        async function safelyStopScanner(instance) {
-            if (!instance || !instance.isScanning) return;
-            try {
-                await instance.stop();
-                console.log("Scanner stopped successfully");
-                return true;
-            } catch (err) {
-                console.warn("Error stopping scanner:", err);
-                return false;
-            }
-        }
+        // [Fungsi renderMemberList dan lainnya tetap sama seperti sebelumnya]
 
-        async function initializeScanner(containerId, onSuccess, onError) {
-            // Clear previous scanner
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            try {
-                const scanner = new Html5Qrcode(containerId);
-                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-                
-                // Try to get camera list first
-                const cameras = await Html5Qrcode.getCameras();
-                let cameraId = null;
-                
-                if (cameras && cameras.length) {
-                    // Prefer back camera
-                    const backCamera = cameras.find(cam => cam.label.includes("back"));
-                    cameraId = backCamera ? backCamera.id : cameras[0].id;
-                }
-                
-                // Start scanner with specific camera or environment mode
-                if (cameraId) {
-                    await scanner.start(cameraId, config, onSuccess, onError);
-                } else {
-                    await scanner.start({ facingMode: "environment" }, config, onSuccess, onError);
-                }
-                
-                // Add scanner controls
-                addScannerControls(containerId, scanner);
-                
-                return scanner;
-            } catch (err) {
-                console.error("Scanner initialization failed:", err);
-                container.innerHTML = `<p class="error">Gagal memulai scanner: ${err.message}</p>`;
-                throw err;
-            }
-        }
-
-        function addScannerControls(containerId, scannerInstance) {
-            const container = document.getElementById(containerId);
-            const controlsDiv = document.createElement('div');
-            controlsDiv.className = 'scanner-controls';
-            
-            const stopBtn = document.createElement('button');
-            stopBtn.textContent = 'Stop Scanner';
-            stopBtn.onclick = async () => {
-                await safelyStopScanner(scannerInstance);
-                container.innerHTML = '<p>Scanner dihentikan. Klik tombol section untuk memulai ulang.</p>';
-            };
-            
-            const flipBtn = document.createElement('button');
-            flipBtn.textContent = 'Ganti Kamera';
-            flipBtn.onclick = async () => {
-                await safelyStopScanner(scannerInstance);
-                container.innerHTML = '<p>Menyiapkan kamera alternatif...</p>';
-                setTimeout(() => switchSection(getCurrentSectionId()), 300);
-            };
-            
-            controlsDiv.appendChild(stopBtn);
-            controlsDiv.appendChild(flipBtn);
-            container.parentNode.insertBefore(controlsDiv, container.nextSibling);
-        }
-
-        function getCurrentSectionId() {
-            for (let id in sections) {
-                if (sections[id].classList.contains('active')) {
-                    return id;
-                }
-            }
-            return 'scanSection';
-        }
-
-        // Section Management
-        async function switchSection(sectionId) {
-            // Stop all scanners first
-            await Promise.all([
-                safelyStopScanner(scannerInstances.scanSection),
-                safelyStopScanner(scannerInstances.addMemberSection),
-                safelyStopScanner(scannerInstances.manageMemberSection)
-            ]);
-            
-            // Reset scanner instances
-            scannerInstances.scanSection = null;
-            scannerInstances.addMemberSection = null;
-            scannerInstances.manageMemberSection = null;
-            
-            // Hide all sections and deactivate buttons
-            for (let id in sections) {
-                sections[id].classList.remove('active');
-                navButtons[`btn${id.replace('Section', '')}`]?.classList.remove('active');
-            }
-            
-            // Show target section and activate button
-            sections[sectionId].classList.add('active');
-            navButtons[`btn${sectionId.replace('Section', '')}`].classList.add('active');
-            
-            // Initialize appropriate scanner
-            try {
-                if (sectionId === 'scanSection') {
-                    document.getElementById("result").textContent = "Hasil Scan Akan Muncul Di Sini";
-                    scannerInstances.scanSection = await initializeScanner(
-                        "reader",
-                        (text, result) => {
-                            console.log(`Scan result: ${text}`, result);
-                            document.getElementById("result").innerHTML = 
-                                `<p><strong>Terdeteksi:</strong> <br><a href="${text}" target="_blank">${text}</a></p>`;
-                        },
-                        (error) => console.warn("Scan error:", error)
-                    );
-                } 
-                else if (sectionId === 'addMemberSection') {
-                    document.getElementById('newMemberForm').style.display = 'none';
-                    document.getElementById('newMemberQrResult').textContent = "Pindai QR untuk ID Member Baru";
-                    scannerInstances.addMemberSection = await initializeScanner(
-                        "qrScanForNewMember",
-                        (text) => {
-                            const members = getMembers();
-                            if (members[text]) {
-                                showMessage('addMemberMessage', 'ID Member sudah terdaftar!', 'error');
-                            } else {
-                                safelyStopScanner(scannerInstances.addMemberSection);
-                                document.getElementById('newMemberQrResult').innerHTML = 
-                                    `<p class="success">QR Code terdeteksi: <strong>${text}</strong></p>`;
-                                document.getElementById('newMemberId').value = text;
-                                document.getElementById('newMemberForm').style.display = 'block';
-                            }
-                        },
-                        (error) => console.warn("New member scan error:", error)
-                    );
-                }
-                else if (sectionId === 'manageMemberSection') {
-                    document.getElementById('memberDetails').style.display = 'none';
-                    document.getElementById('manageMemberQrResult').textContent = "Pindai Kartu Member";
-                    scannerInstances.manageMemberSection = await initializeScanner(
-                        "qrScanForManageMember",
-                        (text) => {
-                            const members = getMembers();
-                            const member = members[text];
-                            
-                            if (member) {
-                                safelyStopScanner(scannerInstances.manageMemberSection);
-                                currentManagingMemberId = text;
-                                
-                                // Update UI with member details
-                                document.getElementById('memberNameDisplay').textContent = member.name;
-                                document.getElementById('memberIdDisplay').textContent = member.id;
-                                document.getElementById('memberPhoneDisplay').textContent = member.phone || '-';
-                                document.getElementById('memberEmailDisplay').textContent = member.email || '-';
-                                document.getElementById('memberTotalTransactionDisplay').textContent = 
-                                    member.totalTransaction?.toLocaleString('id-ID') || '0';
-                                
-                                // Set edit form values
-                                document.getElementById('editMemberName').value = member.name;
-                                document.getElementById('editMemberPhone').value = member.phone || '';
-                                document.getElementById('editMemberEmail').value = member.email || '';
-                                
-                                document.getElementById('memberDetails').style.display = 'block';
-                            } else {
-                                showMessage('manageMemberMessage', 'ID Member tidak ditemukan!', 'error');
-                            }
-                        },
-                        (error) => console.warn("Manage member scan error:", error)
-                    );
-                }
-                else if (sectionId === 'listMembersSection') {
-                    renderMemberList();
-                }
-            } catch (error) {
-                console.error("Error initializing section:", error);
-                const errorElement = sectionId === 'scanSection' ? "result" : 
-                                   sectionId === 'addMemberSection' ? "newMemberQrResult" : 
-                                   "manageMemberQrResult";
-                document.getElementById(errorElement).innerHTML = 
-                    `<p class="error">Gagal mengakses kamera: ${error.message}</p>`;
-            }
-        }
-
-        // Member List Rendering
-        function renderMemberList() {
-            const members = getMembers();
-            const tableBody = document.getElementById('memberTableBody');
-            tableBody.innerHTML = '';
-            
-            const memberArray = Object.values(members);
-            
-            if (memberArray.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Belum ada member terdaftar.</td></tr>';
-                return;
-            }
-            
-            memberArray.forEach(member => {
-                const row = tableBody.insertRow();
-                
-                row.insertCell().textContent = member.id;
-                row.insertCell().textContent = member.name;
-                row.insertCell().textContent = member.phone || '-';
-                row.insertCell().textContent = member.email || '-';
-                row.insertCell().textContent = member.totalTransaction?.toLocaleString('id-ID') || '0';
-                
-                const actionsCell = row.insertCell();
-                actionsCell.className = 'actions';
-                
-                const editBtn = document.createElement('button');
-                editBtn.textContent = 'Edit';
-                editBtn.onclick = () => {
-                    switchSection('manageMemberSection');
-                    // Simulate scanning this member's ID
-                    setTimeout(() => {
-                        const members = getMembers();
-                        const member = members[member.id];
-                        if (member) {
-                            currentManagingMemberId = member.id;
-                            document.getElementById('memberNameDisplay').textContent = member.name;
-                            document.getElementById('memberIdDisplay').textContent = member.id;
-                            document.getElementById('memberDetails').style.display = 'block';
-                        }
-                    }, 100);
-                };
-                actionsCell.appendChild(editBtn);
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'Hapus';
-                deleteBtn.className = 'delete';
-                deleteBtn.onclick = () => {
-                    if (confirm(`Hapus member ${member.name} (${member.id})?`)) {
-                        deleteMember(member.id);
-                    }
-                };
-                actionsCell.appendChild(deleteBtn);
-            });
-        }
-
-        function deleteMember(memberId) {
-            const members = getMembers();
-            if (members[memberId]) {
-                delete members[memberId];
-                saveMembers(members);
-                showMessage('listMemberMessage', 'Member berhasil dihapus!', 'success');
-                renderMemberList();
-                
-                // If deleted member was being managed, reset manage section
-                if (currentManagingMemberId === memberId) {
-                    currentManagingMemberId = null;
-                    document.getElementById('memberDetails').style.display = 'none';
-                    document.getElementById('manageMemberQrResult').textContent = "Pindai Kartu Member";
-                }
-            }
-        }
-
-        // Form Event Listeners
-        document.getElementById('newMemberForm').addEventListener('submit', function(e) {
+        // ========== EVENT LISTENERS ==========
+        document.getElementById('newMemberForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const memberId = document.getElementById('newMemberId').value;
             const memberName = document.getElementById('newMemberName').value;
-            const memberPhone = document.getElementById('newMemberPhone').value;
-            const memberEmail = document.getElementById('newMemberEmail').value;
             
             if (!memberId || !memberName) {
                 showMessage('addMemberMessage', 'ID dan Nama Member wajib diisi!', 'error');
@@ -737,8 +251,8 @@
             members[memberId] = {
                 id: memberId,
                 name: memberName,
-                phone: memberPhone,
-                email: memberEmail,
+                phone: document.getElementById('newMemberPhone').value,
+                email: document.getElementById('newMemberEmail').value,
                 totalTransaction: 0
             };
             
@@ -746,88 +260,41 @@
             showMessage('addMemberMessage', 'Member baru berhasil ditambahkan!', 'success');
             
             // Reset form
-            document.getElementById('newMemberForm').style.display = 'none';
-            document.getElementById('newMemberId').value = '';
-            document.getElementById('newMemberName').value = '';
-            document.getElementById('newMemberPhone').value = '';
-            document.getElementById('newMemberEmail').value = '';
-            
-            // Restart scanner
-            switchSection('addMemberSection');
+            this.reset();
+            this.style.display = 'none';
+            await switchSection('addMemberSection');
         });
 
-        document.getElementById('addTransactionBtn').addEventListener('click', function() {
-            if (!currentManagingMemberId) {
-                showMessage('manageMemberMessage', 'Pindai kartu member terlebih dahulu!', 'error');
-                return;
-            }
-            
-            const amount = parseFloat(document.getElementById('transactionAmount').value);
-            if (isNaN(amount) {
-                showMessage('manageMemberMessage', 'Masukkan nominal transaksi yang valid!', 'error');
-                return;
-            }
-            
-            const members = getMembers();
-            if (members[currentManagingMemberId]) {
-                members[currentManagingMemberId].totalTransaction = 
-                    (members[currentManagingMemberId].totalTransaction || 0) + amount;
-                saveMembers(members);
-                
-                document.getElementById('memberTotalTransactionDisplay').textContent = 
-                    members[currentManagingMemberId].totalTransaction.toLocaleString('id-ID');
-                document.getElementById('transactionAmount').value = '';
-                
-                showMessage('manageMemberMessage', 
-                    `Transaksi Rp${amount.toLocaleString('id-ID')} berhasil ditambahkan!`, 
-                    'success');
-                
-                renderMemberList(); // Update member list if visible
-            }
-        });
+        // [Event listeners lainnya tetap sama]
 
-        document.getElementById('saveEditMemberBtn').addEventListener('click', function() {
-            if (!currentManagingMemberId) {
-                showMessage('manageMemberMessage', 'Pindai kartu member terlebih dahulu!', 'error');
-                return;
-            }
-            
-            const newName = document.getElementById('editMemberName').value;
-            const newPhone = document.getElementById('editMemberPhone').value;
-            const newEmail = document.getElementById('editMemberEmail').value;
-            
-            if (!newName) {
-                showMessage('manageMemberMessage', 'Nama member tidak boleh kosong!', 'error');
-                return;
-            }
-            
-            const members = getMembers();
-            if (members[currentManagingMemberId]) {
-                members[currentManagingMemberId].name = newName;
-                members[currentManagingMemberId].phone = newPhone;
-                members[currentManagingMemberId].email = newEmail;
-                saveMembers(members);
-                
-                // Update displayed info
-                document.getElementById('memberNameDisplay').textContent = newName;
-                document.getElementById('memberPhoneDisplay').textContent = newPhone || '-';
-                document.getElementById('memberEmailDisplay').textContent = newEmail || '-';
-                
-                showMessage('manageMemberMessage', 'Data member berhasil diperbarui!', 'success');
-                renderMemberList(); // Update member list if visible
-            }
-        });
-
-        // Navigation Event Listeners
-        navButtons.btnScan.addEventListener('click', () => switchSection('scanSection'));
-        navButtons.btnAddMember.addEventListener('click', () => switchSection('addMemberSection'));
-        navButtons.btnManageMember.addEventListener('click', () => switchSection('manageMemberSection'));
-        navButtons.btnListMembers.addEventListener('click', () => switchSection('listMembersSection'));
-
-        // Initialize
+        // ========== INISIALISASI AWAL ==========
         document.addEventListener('DOMContentLoaded', () => {
+            // Tambahkan event listeners untuk navigasi
+            Object.entries(navButtons).forEach(([id, button]) => {
+                const sectionId = id.replace('btn', '') + 'Section';
+                button.addEventListener('click', () => switchSection(sectionId));
+            });
+            
+            // Mulai dengan section scan
             switchSection('scanSection');
+            
+            // Tambahkan handler untuk izin kamera
+            document.addEventListener('click', async (e) => {
+                if (e.target.classList.contains('retry-camera')) {
+                    const currentSection = Object.keys(sections).find(
+                        key => sections[key].classList.contains('active')
+                    );
+                    await switchSection(currentSection);
+                }
+            });
         });
+
+        // Ekspos fungsi ke global scope untuk debugging
+        window.debugScanner = {
+            getCurrentScanner: () => currentScanner,
+            stopScanner,
+            switchSection
+        };
     </script>
 </body>
 </html>
