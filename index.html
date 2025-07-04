@@ -1,364 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Member VIP Restoran</title>
-    <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+    <title>Pemindai Kode QR</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
-        :root {
-            --primary-color: #4CAF50;
-            --secondary-color: #FFC107;
-            --text-dark: #333;
-            --text-light: #f9f9f9;
-            --bg-light: #f4f4f4;
-            --bg-dark: #2c3e50;
-            --border-color: #ddd;
-            --button-hover: #45a049;
-            --error-color: #e74c3c;
-            --info-color: #3498db;
-        }
-
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
+            background-color: #f0f2f5;
             margin: 0;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
             padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 800px;
-            margin-bottom: 20px;
+            color: #333;
         }
 
         h1 {
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.2em;
-            font-weight: 700;
+            color: #0056b3;
         }
 
-        .nav-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .nav-buttons button {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            flex: 1 1 auto;
-            max-width: 250px;
-        }
-
-        /* Scanner Container Styles */
-        .scanner-container {
-            position: relative;
+        #reader-container {
             width: 100%;
             max-width: 500px;
-            margin: 0 auto;
+            margin: 20px auto;
+            border: 8px solid #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-color: #000;
         }
 
-        #video {
+        #reader {
             width: 100%;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            background: #000;
+            border: none;
         }
 
-        #scan-region {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 250px;
-            height: 250px;
-            border: 3px dashed var(--secondary-color);
-            box-sizing: border-box;
-            pointer-events: none;
-        }
-
-        .scanner-controls {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        #result-container {
+            width: 100%;
+            max-width: 500px;
             margin-top: 15px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
-        .scanner-controls button {
-            background-color: var(--secondary-color);
-            color: var(--text-dark);
-            padding: 8px 16px;
+        #result-label {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        #result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            font-size: 1em;
+            color: #495057;
+            word-wrap: break-word; /* Agar link panjang tidak merusak layout */
+        }
+        
+        #copy-button {
+            display: none; /* Tombol disembunyikan secara default */
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #007bff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: 600;
-            transition: opacity 0.3s;
+            transition: background-color 0.3s;
         }
 
-        .scanner-controls button:hover {
-            opacity: 0.9;
-        }
-
-        #result, #newMemberQrResult, #manageMemberQrResult {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--bg-light);
-            min-height: 50px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.1em;
-            word-wrap: break-word;
-        }
-
-        /* [CSS lainnya tetap sama seperti sebelumnya] */
-
-        @media (max-width: 768px) {
-            .nav-buttons {
-                flex-direction: column;
-            }
-            #scan-region {
-                width: 200px;
-                height: 200px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #scan-region {
-                width: 150px;
-                height: 150px;
-            }
+        #copy-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Aplikasi Member VIP Restoran</h1>
 
-    <div class="container">
-        <div class="nav-buttons">
-            <button id="btnScan" class="active">Scan QR Code Umum</button>
-            <button id="btnAddMember">Tambah Member Baru</button>
-            <button id="btnManageMember">Kelola Member</button>
-            <button id="btnListMembers">Daftar Member</button>
-        </div>
+    <h1>Pemindai Kode QR Sederhana</h1>
 
-        <div id="scanSection" class="content-section active">
-            <h2>Pindai QR Code Umum</h2>
-            <div class="scanner-container">
-                <video id="video"></video>
-                <div id="scan-region"></div>
-            </div>
-            <div class="scanner-controls">
-                <button id="startScanner">Mulai Scanner</button>
-                <button id="stopScanner">Hentikan Scanner</button>
-                <button id="switchCamera">Ganti Kamera</button>
-            </div>
-            <div id="result">Hasil Scan Akan Muncul Di Sini</div>
-            <p class="info-message">Pastikan Anda memberikan izin akses kamera saat diminta.</p>
-        </div>
-
-        <!-- [Bagian lainnya tetap sama seperti kode asli Anda] -->
+    <div id="reader-container">
+        <div id="reader"></div>
+    </div>
+    
+    <div id="result-container">
+        <span id="result-label">Hasil Pindai:</span>
+        <div id="result">Arahkan kamera ke kode QR...</div>
+        <button id="copy-button">Salin Kode</button>
     </div>
 
+    <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+
     <script>
-        // ========== KONFIGURASI UTAMA ==========
-        const membersKey = 'restaurantMembers';
-        let currentScanner = null;
-        let currentManagingMemberId = null;
-        let currentVideoInputId = null;
-        let isScanning = false;
-
-        // Inisialisasi ZXing
-        const codeReader = new ZXing.BrowserQRCodeReader();
-
-        // ========== FUNGSI SCANNER ==========
-        async function startScanner() {
-            try {
-                // Hentikan scanner jika sedang aktif
-                if (isScanning) await stopScanner();
-                
-                // Dapatkan daftar kamera
-                const videoInputDevices = await ZXing.BrowserCodeReader.listVideoInputDevices();
-                
-                if (videoInputDevices.length === 0) {
-                    throw new Error('Tidak ditemukan kamera');
-                }
-
-                // Cari kamera belakang
-                const backCamera = videoInputDevices.find(device => 
-                    device.label.toLowerCase().includes('back'));
-                
-                currentVideoInputId = backCamera ? backCamera.deviceId : videoInputDevices[0].deviceId;
-                
-                // Mulai scanning
-                await codeReader.decodeFromVideoDevice(
-                    currentVideoInputId,
-                    'video',
-                    (result, error) => {
-                        if (result) {
-                            handleScanResult(result.text);
-                        }
-                        if (error && !error.message.includes('No QR code found')) {
-                            console.error('Scan error:', error);
-                            showMessage('result', `Error: ${error.message}`, 'error');
-                        }
-                    }
-                );
-                
-                isScanning = true;
-                showMessage('result', 'Scanner siap digunakan', 'success');
-                return true;
-            } catch (error) {
-                console.error('Scanner error:', error);
-                showMessage('result', `Gagal memulai scanner: ${error.message}`, 'error');
-                return false;
-            }
-        }
-
-        async function stopScanner() {
-            if (isScanning) {
-                try {
-                    codeReader.reset();
-                    isScanning = false;
-                    document.getElementById('video').srcObject = null;
-                    console.log('Scanner dihentikan');
-                    return true;
-                } catch (error) {
-                    console.error('Gagal menghentikan scanner:', error);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        async function switchCamera() {
-            try {
-                const videoInputDevices = await ZXing.BrowserCodeReader.listVideoInputDevices();
-                if (videoInputDevices.length < 2) {
-                    throw new Error('Hanya ditemukan 1 kamera');
-                }
-                
-                const currentIndex = videoInputDevices.findIndex(
-                    device => device.deviceId === currentVideoInputId
-                );
-                
-                const nextIndex = (currentIndex + 1) % videoInputDevices.length;
-                currentVideoInputId = videoInputDevices[nextIndex].deviceId;
-                
-                await startScanner();
-                showMessage('result', `Menggunakan kamera: ${videoInputDevices[nextIndex].label}`, 'info');
-            } catch (error) {
-                console.error('Gagal ganti kamera:', error);
-                showMessage('result', `Gagal ganti kamera: ${error.message}`, 'error');
-            }
-        }
-
-        function handleScanResult(decodedText) {
-            console.log('Hasil scan:', decodedText);
-            document.getElementById('result').innerHTML = `
-                <p><strong>Terdeteksi:</strong></p>
-                <p><a href="${decodedText}" target="_blank" rel="noopener noreferrer">${decodedText}</a></p>
-            `;
-        }
-
-        // ========== FUNGSI UTILITAS ==========
-        function showMessage(elementId, message, type = 'info', timeout = 3000) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            
-            element.innerHTML = `<p class="${type}">${message}</p>`;
-            
-            if (element.timer) clearTimeout(element.timer);
-            element.timer = setTimeout(() => {
-                element.innerHTML = '';
-            }, timeout);
-        }
-
-        function getMembers() {
-            const members = localStorage.getItem(membersKey);
-            return members ? JSON.parse(members) : {};
-        }
-
-        function saveMembers(members) {
-            localStorage.setItem(membersKey, JSON.stringify(members));
-        }
-
-        // ========== MANAJEMEN SECTION ==========
-        async function switchSection(sectionId) {
-            // Hentikan scanner saat berpindah section
-            await stopScanner();
-            
-            // Sembunyikan semua section
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Nonaktifkan semua tombol navigasi
-            document.querySelectorAll('.nav-buttons button').forEach(button => {
-                button.classList.remove('active');
-            });
-            
-            // Aktifkan section dan tombol yang dipilih
-            document.getElementById(sectionId).classList.add('active');
-            document.getElementById(`btn${sectionId.replace('Section', '')}`).classList.add('active');
-            
-            // Inisialisasi scanner jika di scanSection
-            if (sectionId === 'scanSection') {
-                document.getElementById("result").innerHTML = "Menyiapkan scanner...";
-                await startScanner();
-            }
-        }
-
-        // ========== EVENT LISTENERS ==========
+        // Menunggu seluruh konten halaman dimuat sebelum menjalankan skrip
         document.addEventListener('DOMContentLoaded', () => {
-            // Navigation buttons
-            document.getElementById('btnScan').addEventListener('click', () => switchSection('scanSection'));
-            document.getElementById('btnAddMember').addEventListener('click', () => switchSection('addMemberSection'));
-            document.getElementById('btnManageMember').addEventListener('click', () => switchSection('manageMemberSection'));
-            document.getElementById('btnListMembers').addEventListener('click', () => switchSection('listMembersSection'));
-            
-            // Scanner controls
-            document.getElementById('startScanner').addEventListener('click', startScanner);
-            document.getElementById('stopScanner').addEventListener('click', stopScanner);
-            document.getElementById('switchCamera').addEventListener('click', switchCamera);
-            
-            // Mulai dengan section scan
-            switchSection('scanSection');
-        });
 
-        // Ekspos fungsi untuk debugging
-        window.appDebug = {
-            startScanner,
-            stopScanner,
-            switchCamera,
-            getCameras: () => ZXing.BrowserCodeReader.listVideoInputDevices()
-        };
+            const resultElement = document.getElementById('result');
+            const copyButton = document.getElementById('copy-button');
+            let lastResult = '';
+
+            // Fungsi yang akan dijalankan ketika QR code berhasil dipindai
+            function onScanSuccess(decodedText, decodedResult) {
+                // Hanya proses jika hasilnya berbeda dari pindaian terakhir
+                if (decodedText !== lastResult) {
+                    lastResult = decodedText;
+                    
+                    // Tampilkan hasil di elemen 'result'
+                    resultElement.textContent = decodedText;
+                    
+                    // Jika hasil berupa link, buat menjadi tautan yang bisa diklik
+                    try {
+                        new URL(decodedText);
+                        resultElement.innerHTML = `<a href="${decodedText}" target="_blank">${decodedText}</a>`;
+                    } catch (_) {
+                        // Bukan URL yang valid, biarkan sebagai teks biasa
+                    }
+                    
+                    // Tampilkan tombol 'Salin'
+                    copyButton.style.display = 'block';
+                    console.log(`Hasil Pindai: ${decodedText}`);
+                }
+            }
+
+            // Fungsi yang akan dijalankan jika terjadi error (misal: tidak ada QR code di frame)
+            function onScanFailure(error) {
+                // Biarkan kosong agar tidak menampilkan pesan error terus-menerus
+                // console.warn(`Scan error: ${error}`);
+            }
+
+            // Inisialisasi pemindai QR code
+            let html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", // ID dari elemen div untuk menampung pemindai
+                { 
+                    fps: 10, // Frame per second untuk pemindaian
+                    qrbox: { width: 250, height: 250 }, // Ukuran kotak pemindai
+                    rememberLastUsedCamera: true, // Ingat kamera terakhir yang digunakan
+                    supportedScanTypes: [ // Prioritaskan pemindaian via kamera
+                        Html5QrcodeScanType.SCAN_TYPE_CAMERA
+                    ]
+                },
+                /* verbose= */ false
+            );
+            
+            // Mulai proses pemindaian
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+            // Menambahkan fungsi pada tombol 'Salin'
+            copyButton.addEventListener('click', () => {
+                navigator.clipboard.writeText(lastResult).then(() => {
+                    // Beri feedback ke pengguna bahwa teks berhasil disalin
+                    copyButton.textContent = 'Disalin!';
+                    setTimeout(() => {
+                        copyButton.textContent = 'Salin Kode';
+                    }, 2000); // Kembalikan teks tombol setelah 2 detik
+                }).catch(err => {
+                    console.error('Gagal menyalin teks: ', err);
+                    alert('Gagal menyalin kode.');
+                });
+            });
+        });
     </script>
+
 </body>
 </html>
