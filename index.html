@@ -17,6 +17,7 @@
             --light-text-color: #ffffff;
             --border-radius: 12px;
             --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            --error-color: #dc3545;
         }
 
         body {
@@ -61,7 +62,7 @@
             background-color: #000;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            overflow: hidden; /* Penting agar video tidak keluar dari border-radius */
+            overflow: hidden;
             margin-bottom: 25px;
             position: relative;
         }
@@ -72,42 +73,39 @@
             display: block;
         }
 
-        #result-card {
+        .card {
             background-color: var(--card-background);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             padding: 25px;
+            margin-bottom: 20px;
         }
         
-        #result-label {
+        .label {
             font-weight: 600;
             font-size: 1.1em;
             color: var(--text-color);
             margin-bottom: 10px;
             display: block;
+            text-align: left;
         }
 
-        #result-display {
-            background-color: #e9ecef;
-            border-radius: 8px;
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-field {
+            width: 100%;
             padding: 12px;
             font-size: 1em;
-            color: #495057;
-            word-wrap: break-word;
-            min-height: 24px;
-            margin-bottom: 20px;
-        }
-        
-        #result-display a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        
-        #result-display a:hover {
-            text-decoration: underline;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 5px;
         }
 
-        #action-button {
+        .button {
             display: block;
             width: 100%;
             padding: 15px;
@@ -123,17 +121,81 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            margin-top: 10px;
         }
 
-        #action-button:hover {
-            background-color: #218838; /* Hijau lebih gelap */
+        .button:hover {
+            background-color: #218838;
             transform: translateY(-2px);
         }
         
-        #action-button:disabled {
+        .button:disabled {
             background-color: #a1a1a1;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .button-secondary {
+            background-color: var(--primary-color);
+        }
+
+        .button-secondary:hover {
+            background-color: #004494;
+        }
+
+        .member-info {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .member-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid var(--primary-color);
+        }
+
+        .member-detail {
+            margin-bottom: 8px;
+        }
+
+        .member-detail strong {
+            display: inline-block;
+            width: 100px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.9em;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background-color: var(--primary-color);
+            color: white;
         }
 
         footer {
@@ -153,6 +215,9 @@
             header p {
                 font-size: 1em;
             }
+            .nav-tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -161,17 +226,93 @@
     <div class="main-container">
         <header>
             <h1><i class="fas fa-crown"></i> Aplikasi VIP Dolan Sawah</h1>
-            <p>Pindai kode QR untuk validasi member.</p>
+            <p>Manajemen Member VIP Restoran</p>
         </header>
 
-        <div id="reader-container">
-            <div id="reader"></div>
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="scan">Scan QR Code</div>
+            <div class="nav-tab" data-tab="member">Member Area</div>
+            <div class="nav-tab" data-tab="add">Tambah Member</div>
         </div>
-        
-        <div id="result-card">
-            <label id="result-label" for="result-display">Kode QR Hasil Pindaian</label>
-            <div id="result-display">Belum ada kode yang dipindai...</div>
-            <button id="action-button" disabled><i class="fas fa-copy"></i> Salin Kode & Buka Aplikasi</button>
+
+        <!-- Scan QR Code Tab -->
+        <div id="scan-tab" class="tab-content">
+            <div id="reader-container">
+                <div id="reader"></div>
+            </div>
+            
+            <div class="card">
+                <label class="label">Kode QR Hasil Pindaian</label>
+                <div id="result-display">Belum ada kode yang dipindai...</div>
+                <button id="action-button" class="button" disabled><i class="fas fa-copy"></i> Salin Kode & Buka Aplikasi</button>
+            </div>
+        </div>
+
+        <!-- Member Area Tab -->
+        <div id="member-tab" class="tab-content hidden">
+            <div class="card">
+                <label class="label">ID Member</label>
+                <div class="input-group">
+                    <input type="text" id="member-id-input" class="input-field" placeholder="Masukkan ID Member">
+                    <button id="paste-member-id" class="button button-secondary"><i class="fas fa-paste"></i> Paste dari Clipboard</button>
+                </div>
+                
+                <div id="member-info-container" class="member-info hidden">
+                    <img id="member-photo" class="member-photo" src="" alt="Foto Member">
+                    <div class="member-detail"><strong>Nama:</strong> <span id="member-name"></span></div>
+                    <div class="member-detail"><strong>Alamat:</strong> <span id="member-address"></span></div>
+                    <div class="member-detail"><strong>No. HP:</strong> <span id="member-phone"></span></div>
+                    <div class="member-detail"><strong>Poin:</strong> <span id="member-points"></span></div>
+                    
+                    <div class="input-group">
+                        <label class="label">Nominal Transaksi</label>
+                        <input type="number" id="transaction-amount" class="input-field" placeholder="Masukkan nominal transaksi (Rp)">
+                        <div id="transaction-error" class="error-message hidden"></div>
+                        <button id="save-transaction" class="button"><i class="fas fa-save"></i> Simpan Transaksi</button>
+                    </div>
+                </div>
+                
+                <div id="member-not-found" class="error-message hidden">
+                    Member tidak ditemukan. Silakan coba lagi atau tambahkan member baru.
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Member Tab -->
+        <div id="add-tab" class="tab-content hidden">
+            <div class="card">
+                <label class="label">ID Member Baru</label>
+                <div class="input-group">
+                    <input type="text" id="new-member-id" class="input-field" placeholder="Masukkan ID Member baru">
+                    <button id="paste-new-member-id" class="button button-secondary"><i class="fas fa-paste"></i> Paste dari Clipboard</button>
+                </div>
+                
+                <div class="input-group">
+                    <label class="label">Nama Lengkap</label>
+                    <input type="text" id="new-member-name" class="input-field" placeholder="Masukkan nama lengkap">
+                </div>
+                
+                <div class="input-group">
+                    <label class="label">Alamat</label>
+                    <input type="text" id="new-member-address" class="input-field" placeholder="Masukkan alamat">
+                </div>
+                
+                <div class="input-group">
+                    <label class="label">Nomor HP</label>
+                    <input type="tel" id="new-member-phone" class="input-field" placeholder="Masukkan nomor HP">
+                </div>
+                
+                <div class="input-group">
+                    <label class="label">Foto Member (URL)</label>
+                    <input type="text" id="new-member-photo" class="input-field" placeholder="Masukkan URL foto">
+                </div>
+                
+                <button id="save-member" class="button"><i class="fas fa-user-plus"></i> Simpan Member Baru</button>
+                <div id="add-member-error" class="error-message hidden"></div>
+                <div id="add-member-success" class="error-message" style="color: var(--secondary-color); display: none;">
+                    Member berhasil disimpan!
+                </div>
+            </div>
         </div>
     </div>
 
@@ -183,81 +324,247 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Tab navigation
+            const tabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.add('hidden'));
+                    
+                    // Add active class to clicked tab and show corresponding content
+                    tab.classList.add('active');
+                    const tabId = tab.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabId).classList.remove('hidden');
+                });
+            });
 
+            // QR Code Scanner functionality
             const resultDisplay = document.getElementById('result-display');
             const actionButton = document.getElementById('action-button');
             const targetUrl = 'https://dewatalaptop.github.io/restaurant-vip-member/index.html';
             let lastResult = '';
 
-            // Fungsi saat pemindaian berhasil
             function onScanSuccess(decodedText, decodedResult) {
                 if (decodedText !== lastResult) {
                     lastResult = decodedText;
                     
-                    // Menampilkan hasil
                     resultDisplay.textContent = decodedText;
                     try {
                         new URL(decodedText);
                         resultDisplay.innerHTML = `<a href="${decodedText}" target="_blank" rel="noopener noreferrer">${decodedText}</a>`;
                     } catch (_) {
-                        // Bukan URL, biarkan sebagai teks
+                        // Not a URL
                     }
                     
-                    // Mengaktifkan tombol
                     actionButton.disabled = false;
                     console.log(`Scan Selesai: ${decodedText}`);
                 }
             }
 
-            // Fungsi saat pemindaian gagal (opsional, bisa diabaikan)
             function onScanFailure(error) {
-                // Biarkan kosong untuk UI yang lebih bersih
+                // Optional error handling
             }
 
-            // Inisialisasi pemindai
             const html5QrcodeScanner = new Html5QrcodeScanner(
                 "reader",
                 { 
                     fps: 10, 
                     qrbox: (viewfinderWidth, viewfinderHeight) => {
-                        // Membuat kotak pemindaian responsif
                         const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                        const qrboxSize = Math.floor(minEdge * 0.7); // 70% dari sisi terkecil
+                        const qrboxSize = Math.floor(minEdge * 0.7);
                         return { width: qrboxSize, height: qrboxSize };
                     },
                     rememberLastUsedCamera: true,
                     supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
                 },
-                false // verbose = false
+                false
             );
             
             html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 
-            // Fungsi untuk tombol aksi
             actionButton.addEventListener('click', () => {
                 if (!lastResult) return;
 
                 navigator.clipboard.writeText(lastResult)
                     .then(() => {
-                        // Teks berhasil disalin
                         console.log('Kode berhasil disalin ke clipboard:', lastResult);
-                        
-                        // Beri feedback visual ke pengguna
                         actionButton.innerHTML = '<i class="fas fa-check"></i> Kode Disalin!';
-                        
-                        // Buka tab baru
                         window.open(targetUrl, '_blank');
                         
-                        // Kembalikan teks tombol setelah 2 detik
                         setTimeout(() => {
                             actionButton.innerHTML = '<i class="fas fa-copy"></i> Salin Kode & Buka Aplikasi';
                         }, 2000);
-                        
                     })
                     .catch(err => {
                         console.error('Gagal menyalin teks: ', err);
                         alert('Gagal menyalin kode. Pastikan situs ini berjalan di HTTPS.');
                     });
+            });
+
+            // Member Area functionality
+            const memberIdInput = document.getElementById('member-id-input');
+            const pasteMemberIdBtn = document.getElementById('paste-member-id');
+            const memberInfoContainer = document.getElementById('member-info-container');
+            const memberNotFound = document.getElementById('member-not-found');
+            const memberPhoto = document.getElementById('member-photo');
+            const memberName = document.getElementById('member-name');
+            const memberAddress = document.getElementById('member-address');
+            const memberPhone = document.getElementById('member-phone');
+            const memberPoints = document.getElementById('member-points');
+            const transactionAmount = document.getElementById('transaction-amount');
+            const saveTransactionBtn = document.getElementById('save-transaction');
+            const transactionError = document.getElementById('transaction-error');
+
+            // Paste Member ID button
+            pasteMemberIdBtn.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    memberIdInput.value = text;
+                    loadMemberData(text);
+                } catch (err) {
+                    console.error('Failed to read clipboard contents: ', err);
+                    alert('Gagal membaca clipboard. Pastikan situs ini berjalan di HTTPS dan Anda memberikan izin akses clipboard.');
+                }
+            });
+
+            // Load member data from localStorage
+            function loadMemberData(memberId) {
+                const members = JSON.parse(localStorage.getItem('vipMembers') || '{}');
+                const member = members[memberId];
+                
+                if (member) {
+                    // Display member info
+                    memberPhoto.src = member.photo || 'https://via.placeholder.com/100';
+                    memberName.textContent = member.name || '-';
+                    memberAddress.textContent = member.address || '-';
+                    memberPhone.textContent = member.phone || '-';
+                    memberPoints.textContent = member.points || '0';
+                    
+                    memberInfoContainer.classList.remove('hidden');
+                    memberNotFound.classList.add('hidden');
+                } else {
+                    memberInfoContainer.classList.add('hidden');
+                    memberNotFound.classList.remove('hidden');
+                }
+            }
+
+            // Save transaction
+            saveTransactionBtn.addEventListener('click', () => {
+                const amount = parseInt(transactionAmount.value);
+                const memberId = memberIdInput.value;
+                
+                if (!amount || amount <= 0) {
+                    transactionError.textContent = 'Masukkan nominal transaksi yang valid';
+                    transactionError.classList.remove('hidden');
+                    return;
+                }
+                
+                if (!memberId) {
+                    transactionError.textContent = 'ID Member tidak valid';
+                    transactionError.classList.remove('hidden');
+                    return;
+                }
+                
+                transactionError.classList.add('hidden');
+                
+                // Calculate points (100,000 = 1 point)
+                const pointsToAdd = Math.floor(amount / 100000);
+                
+                // Update member data
+                const members = JSON.parse(localStorage.getItem('vipMembers') || '{}');
+                if (members[memberId]) {
+                    members[memberId].points = (parseInt(members[memberId].points) || 0) + pointsToAdd;
+                    localStorage.setItem('vipMembers', JSON.stringify(members));
+                    
+                    // Update displayed points
+                    memberPoints.textContent = members[memberId].points;
+                    transactionAmount.value = '';
+                    
+                    alert(`Transaksi berhasil dicatat! Member mendapatkan ${pointsToAdd} poin.`);
+                } else {
+                    transactionError.textContent = 'Member tidak ditemukan';
+                    transactionError.classList.remove('hidden');
+                }
+            });
+
+            // Add New Member functionality
+            const newMemberId = document.getElementById('new-member-id');
+            const pasteNewMemberId = document.getElementById('paste-new-member-id');
+            const newMemberName = document.getElementById('new-member-name');
+            const newMemberAddress = document.getElementById('new-member-address');
+            const newMemberPhone = document.getElementById('new-member-phone');
+            const newMemberPhoto = document.getElementById('new-member-photo');
+            const saveMemberBtn = document.getElementById('save-member');
+            const addMemberError = document.getElementById('add-member-error');
+            const addMemberSuccess = document.getElementById('add-member-success');
+
+            // Paste New Member ID button
+            pasteNewMemberId.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    newMemberId.value = text;
+                } catch (err) {
+                    console.error('Failed to read clipboard contents: ', err);
+                    alert('Gagal membaca clipboard. Pastikan situs ini berjalan di HTTPS dan Anda memberikan izin akses clipboard.');
+                }
+            });
+
+            // Save new member
+            saveMemberBtn.addEventListener('click', () => {
+                const memberId = newMemberId.value.trim();
+                const name = newMemberName.value.trim();
+                const address = newMemberAddress.value.trim();
+                const phone = newMemberPhone.value.trim();
+                const photo = newMemberPhoto.value.trim();
+                
+                // Validation
+                if (!memberId) {
+                    addMemberError.textContent = 'ID Member harus diisi';
+                    addMemberError.classList.remove('hidden');
+                    return;
+                }
+                
+                if (!name) {
+                    addMemberError.textContent = 'Nama member harus diisi';
+                    addMemberError.classList.remove('hidden');
+                    return;
+                }
+                
+                addMemberError.classList.add('hidden');
+                
+                // Save to localStorage
+                const members = JSON.parse(localStorage.getItem('vipMembers') || '{}');
+                
+                if (members[memberId]) {
+                    addMemberError.textContent = 'ID Member sudah terdaftar';
+                    addMemberError.classList.remove('hidden');
+                    return;
+                }
+                
+                members[memberId] = {
+                    name,
+                    address,
+                    phone,
+                    photo: photo || 'https://via.placeholder.com/100',
+                    points: 0
+                };
+                
+                localStorage.setItem('vipMembers', JSON.stringify(members));
+                
+                // Show success message and clear form
+                addMemberSuccess.style.display = 'block';
+                setTimeout(() => {
+                    addMemberSuccess.style.display = 'none';
+                }, 3000);
+                
+                newMemberId.value = '';
+                newMemberName.value = '';
+                newMemberAddress.value = '';
+                newMemberPhone.value = '';
+                newMemberPhoto.value = '';
             });
         });
     </script>
