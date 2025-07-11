@@ -1,266 +1,355 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi VIP member Dolan Sawah</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary-color: #0056b3; /* Biru Tua */
-            --secondary-color: #28a745; /* Hijau Sukses */
-            --background-color: #f0f2f5;
-            --card-background: #ffffff;
-            --text-color: #333333;
-            --light-text-color: #ffffff;
-            --border-radius: 12px;
-            --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Viewer Reservasi Dolan Sawah</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--background-color);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            color: var(--text-color);
-        }
+  <style>
+    /* CSS Styles */
+    :root {
+      --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a;
+      --accent: #f4a261; --danger: #e76f51; --light: #f8f9fa; --dark: #343a40;
+    }
+    body {
+      font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5;
+      color: var(--dark);
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white; padding: 20px; text-align: center;
+    }
+    header h2 { margin: 0; }
+    .container {
+      max-width: 900px; margin: 20px auto; padding: 20px;
+      background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .month-year { font-size: 1.5rem; font-weight: 600; color: var(--primary-dark); }
+    .calendar-nav button { background-color: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; }
+    .calendar-nav button:hover { background-color: var(--primary-dark); }
+    .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 600; margin-bottom: 10px; color: var(--primary-dark); }
+    .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+    .calendar-day { min-height: 80px; padding: 8px; border: 1px solid #eee; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .calendar-day:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .day-number { font-weight: 600; text-align: right; }
+    .has-reservation { background-color: rgba(42, 157, 143, 0.1); font-weight: bold; }
+    .selected { border: 2px solid var(--accent); background-color: rgba(244, 162, 97, 0.2); }
+    .today .day-number { background-color: var(--secondary); color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; margin-left: auto; }
+    .empty-day { background-color: #f9f9f9; cursor: default; }
+    .empty-day:hover { transform: none; border-color: #eee; }
 
-        .main-container {
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-        
-        header {
-            margin-bottom: 25px;
-        }
+    .summary { margin-top: 25px; padding: 20px; border-radius: 8px; border-top: 4px solid var(--primary); background-color: #fdfdfd; }
+    .summary h3 { margin-top: 0; }
+    .location-capacity { margin-bottom: 20px; }
+    .location-capacity h4 { color: var(--primary-dark); margin-bottom: 10px; }
+    .capacity-item { margin-bottom: 10px; }
+    .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 20px; margin-top: 5px; }
+    .capacity-fill { height: 100%; background-color: var(--primary); transition: width 0.5s; text-align: right; color: white; font-size: 0.8rem; line-height: 20px; padding-right: 5px; box-sizing: border-box; }
+    .reservation-list-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+    .reservation-list-item:last-child { border-bottom: none; }
 
-        header h1 {
-            font-size: 2em;
-            color: var(--primary-color);
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        header p {
-            color: #666;
-            font-size: 1.1em;
-        }
+    .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
+    .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
+    .data-transfer p { font-size: 0.9rem; color: #666; }
+    textarea { width: 95%; min-height: 120px; margin: 10px auto; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; }
+    button { background-color: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
+    button.danger { background-color: var(--danger); }
+    footer { text-align: center; margin-top: 20px; padding: 15px; background-color: var(--primary-dark); color: white; font-size: 0.9rem; }
+  </style>
 
-        #reader-container {
-            background-color: #000;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            overflow: hidden; /* Penting agar video tidak keluar dari border-radius */
-            margin-bottom: 25px;
-            position: relative;
-        }
-        
-        #reader {
-            width: 100%;
-            border: none;
-            display: block;
-        }
-
-        #result-card {
-            background-color: var(--card-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 25px;
-        }
-        
-        #result-label {
-            font-weight: 600;
-            font-size: 1.1em;
-            color: var(--text-color);
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        #result-display {
-            background-color: #e9ecef;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 1em;
-            color: #495057;
-            word-wrap: break-word;
-            min-height: 24px;
-            margin-bottom: 20px;
-        }
-        
-        #result-display a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        
-        #result-display a:hover {
-            text-decoration: underline;
-        }
-
-        #action-button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            font-weight: 600;
-            color: var(--light-text-color);
-            background-color: var(--secondary-color);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        #action-button:hover {
-            background-color: #218838; /* Hijau lebih gelap */
-            transform: translateY(-2px);
-        }
-        
-        #action-button:disabled {
-            background-color: #a1a1a1;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        footer {
-            margin-top: 30px;
-            color: #888;
-            font-size: 0.9em;
-        }
-
-        /* Penyesuaian untuk layar lebih kecil */
-        @media (max-width: 540px) {
-            body {
-                padding: 15px;
-            }
-            header h1 {
-                font-size: 1.5em;
-            }
-            header p {
-                font-size: 1em;
-            }
-        }
-    </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <header>
-            <h1><i class="fas fa-crown"></i> Aplikasi VIP Dolan Sawah</h1>
-            <p>Pindai kode QR untuk validasi member.</p>
-        </header>
+  <header>
+    <h2><i class="fas fa-eye"></i> Viewer Reservasi Dolan Sawah</h2>
+    <small>Data Tersinkronisasi Secara Real-time</small>
+  </header>
 
-        <div id="reader-container">
-            <div id="reader"></div>
-        </div>
-        
-        <div id="result-card">
-            <label id="result-label" for="result-display">Kode QR Hasil Pindaian</label>
-            <div id="result-display">Belum ada kode yang dipindai...</div>
-            <button id="action-button" disabled><i class="fas fa-copy"></i> Salin Kode & Buka Aplikasi</button>
-        </div>
+  <div class="container">
+    <div class="calendar-header">
+      <div class="month-year" id="monthYear">...</div>
+      <div class="calendar-nav">
+        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+      </div>
     </div>
 
-    <footer>
-        &copy; 2025 Dolan Sawah Restaurant Group
-    </footer>
+    <div class="calendar-weekdays">
+      <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+    </div>
 
-    <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+    <div class="calendar-days" id="calendar"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <div class="summary" id="detailsView" style="display:none;">
+      <h3><i class="far fa-calendar-alt"></i> Detail Reservasi untuk <span id="selectedDate"></span></h3>
+      <div id="detailsContent"></div>
+    </div>
 
-            const resultDisplay = document.getElementById('result-display');
-            const actionButton = document.getElementById('action-button');
-            const targetUrl = 'https://dewatalaptop.github.io/restaurant-vip-member/index.html';
-            let lastResult = '';
+    <div class="admin-section">
+        <button id="adminLoginBtn"><i class="fas fa-user-shield"></i> Menu Admin</button>
+        <div class="data-transfer" id="adminPanel" style="display:none;">
+          <h3><i class="fas fa-file-import"></i> Import Data dari Sistem Lama</h3>
+          <p>Salin kode ekspor dari website lama dan tempel di bawah ini.</p>
+          <textarea id="dataImportCode" placeholder="Tempel kode ekspor di sini..."></textarea>
+          <button id="importBtn"><i class="fas fa-check-circle"></i> Proses Import</button>
+          <button id="cancelImportBtn" class="danger"><i class="fas fa-times-circle"></i> Batal</button>
+        </div>
+    </div>
+  </div>
 
-            // Fungsi saat pemindaian berhasil
-            function onScanSuccess(decodedText, decodedResult) {
-                if (decodedText !== lastResult) {
-                    lastResult = decodedText;
-                    
-                    // Menampilkan hasil
-                    resultDisplay.textContent = decodedText;
-                    try {
-                        new URL(decodedText);
-                        resultDisplay.innerHTML = `<a href="${decodedText}" target="_blank" rel="noopener noreferrer">${decodedText}</a>`;
-                    } catch (_) {
-                        // Bukan URL, biarkan sebagai teks
-                    }
-                    
-                    // Mengaktifkan tombol
-                    actionButton.disabled = false;
-                    console.log(`Scan Selesai: ${decodedText}`);
-                }
-            }
+  <footer>
+    <p>Viewer ditenagai oleh Firebase & GitHub Pages.</p>
+  </footer>
 
-            // Fungsi saat pemindaian gagal (opsional, bisa diabaikan)
-            function onScanFailure(error) {
-                // Biarkan kosong untuk UI yang lebih bersih
-            }
+  <script>
+    // =================================================================
+    // KONFIGURASI FIREBASE
+    // GANTI BAGIAN DI BAWAH INI DENGAN KODE KONFIGURASI DARI PROJECT FIREBASE ANDA
+    // =================================================================
+    const firebaseConfig = {
+      apiKey: "PASTE_API_KEY_ANDA_DI_SINI",
+      authDomain: "PASTE_AUTH_DOMAIN_ANDA_DI_SINI",
+      projectId: "PASTE_PROJECT_ID_ANDA_DI_SINI",
+      storageBucket: "PASTE_STORAGE_BUCKET_ANDA_DI_SINI",
+      messagingSenderId: "PASTE_MESSAGING_SENDER_ID_ANDA_DI_SINI",
+      appId: "PASTE_APP_ID_ANDA_DI_SINI"
+    };
 
-            // Inisialisasi pemindai
-            const html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { 
-                    fps: 10, 
-                    qrbox: (viewfinderWidth, viewfinderHeight) => {
-                        // Membuat kotak pemindaian responsif
-                        const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                        const qrboxSize = Math.floor(minEdge * 0.7); // 70% dari sisi terkecil
-                        return { width: qrboxSize, height: qrboxSize };
-                    },
-                    rememberLastUsedCamera: true,
-                    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-                },
-                false // verbose = false
-            );
-            
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-            // Fungsi untuk tombol aksi
-            actionButton.addEventListener('click', () => {
-                if (!lastResult) return;
+    // =================================================================
+    // VARIABEL GLOBAL & ELEMENT DOM
+    // =================================================================
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const kapasitasTempat = {
+      "Lantai 1": 240, "Lantai 2": 64, "Lantai 3": 112,
+      "Gubug 1": 40, "Gubug 2": 15, "Gubug 3": 110,
+    };
 
-                navigator.clipboard.writeText(lastResult)
-                    .then(() => {
-                        // Teks berhasil disalin
-                        console.log('Kode berhasil disalin ke clipboard:', lastResult);
-                        
-                        // Beri feedback visual ke pengguna
-                        actionButton.innerHTML = '<i class="fas fa-check"></i> Kode Disalin!';
-                        
-                        // Buka tab baru
-                        window.open(targetUrl, '_blank');
-                        
-                        // Kembalikan teks tombol setelah 2 detik
-                        setTimeout(() => {
-                            actionButton.innerHTML = '<i class="fas fa-copy"></i> Salin Kode & Buka Aplikasi';
-                        }, 2000);
-                        
-                    })
-                    .catch(err => {
-                        console.error('Gagal menyalin teks: ', err);
-                        alert('Gagal menyalin kode. Pastikan situs ini berjalan di HTTPS.');
-                    });
-            });
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let allReservations = {}; // Objek untuk menyimpan semua data dari Firestore
+
+    const calendarEl = document.getElementById('calendar');
+    const monthYearEl = document.getElementById('monthYear');
+    const detailsViewEl = document.getElementById('detailsView');
+    const detailsContentEl = document.getElementById('detailsContent');
+    const selectedDateEl = document.getElementById('selectedDate');
+
+    // =================================================================
+    // FUNGSI UTAMA
+    // =================================================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Dengarkan perubahan data di Firestore secara real-time
+      db.collection("reservations").onSnapshot(snapshot => {
+        console.log("Data dari Firestore diterima!");
+        allReservations = {}; // Kosongkan data lama
+        snapshot.forEach(doc => {
+          allReservations[doc.id] = doc.data().reservations;
         });
-    </script>
+        buatKalender(); // Gambar ulang kalender dengan data baru
+        const selectedDayEl = document.querySelector('.calendar-day.selected');
+        if (selectedDayEl) {
+          tampilkanDetail(selectedDayEl.dataset.day, false);
+        }
+      });
+
+      document.getElementById('prevMonth').addEventListener('click', previousMonth);
+      document.getElementById('nextMonth').addEventListener('click', nextMonth);
+      setupAdminControls();
+    });
+
+    function buatKalender() {
+      calendarEl.innerHTML = '';
+      monthYearEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const today = new Date();
+
+      for (let i = 0; i < firstDay; i++) {
+        calendarEl.innerHTML += `<div class="calendar-day empty-day"></div>`;
+      }
+
+      for (let i = 1; i <= daysInMonth; i++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        dayEl.dataset.day = i;
+        
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = i;
+        dayEl.appendChild(dayNumber);
+
+        const monthStr = String(currentMonth + 1).padStart(2, '0');
+        const dayStr = String(i).padStart(2, '0');
+        const dateKey = `${monthStr}-${dayStr}`;
+
+        if (allReservations[dateKey] && allReservations[dateKey].length > 0) {
+          dayEl.classList.add('has-reservation');
+        }
+
+        if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+          dayEl.classList.add('today');
+        }
+
+        dayEl.addEventListener('click', () => tampilkanDetail(i));
+        calendarEl.appendChild(dayEl);
+      }
+    }
+
+    function tampilkanDetail(day, scroll = true) {
+      document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('selected'));
+      const dayElement = document.querySelector(`.calendar-day[data-day='${day}']`);
+      if (dayElement) {
+        dayElement.classList.add('selected');
+      }
+
+      selectedDateEl.textContent = `${day} ${monthNames[currentMonth]} ${currentYear}`;
+      detailsViewEl.style.display = 'block';
+      
+      const monthStr = String(currentMonth + 1).padStart(2, '0');
+      const dayStr = String(day).padStart(2, '0');
+      const dateKey = `${monthStr}-${dayStr}`;
+      const reservations = allReservations[dateKey] || [];
+
+      if (reservations.length === 0) {
+        detailsContentEl.innerHTML = '<p style="text-align:center;">Tidak ada reservasi untuk tanggal ini.</p>';
+        return;
+      }
+
+      const occupancy = {};
+      Object.keys(kapasitasTempat).forEach(loc => occupancy[loc] = 0);
+      reservations.forEach(res => {
+        if (occupancy.hasOwnProperty(res.tempat)) {
+          occupancy[res.tempat] += parseInt(res.jumlah) || 0;
+        }
+      });
+
+      let capacityHTML = '<div class="location-capacity">';
+      Object.keys(kapasitasTempat).forEach(loc => {
+        const current = occupancy[loc];
+        const max = kapasitasTempat[loc];
+        const percentage = max > 0 ? Math.round((current / max) * 100) : 0;
+        capacityHTML += `
+          <div class="capacity-item">
+            <strong>${loc}</strong> (${current} / ${max} orang)
+            <div class="capacity-bar">
+              <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};">${percentage}%</div>
+            </div>
+          </div>
+        `;
+      });
+      capacityHTML += '</div><hr>';
+
+      let listHTML = '<h4>Daftar Reservasi:</h4>';
+      reservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach(res => {
+        listHTML += `
+          <div class="reservation-list-item">
+            <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
+            <br>
+            <small><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'} - <i class="fas fa-map-marker-alt"></i> ${res.tempat || 'Tanpa Lokasi'}</small>
+          </div>
+        `;
+      });
+
+      detailsContentEl.innerHTML = capacityHTML + listHTML;
+      if (scroll) {
+        detailsViewEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function previousMonth() {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      detailsViewEl.style.display = 'none';
+      buatKalender();
+    }
+
+    function nextMonth() {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      detailsViewEl.style.display = 'none';
+      buatKalender();
+    }
+
+    // =================================================================
+    // FUNGSI ADMIN
+    // =================================================================
+
+    function setupAdminControls() {
+      const adminLoginBtn = document.getElementById('adminLoginBtn');
+      const adminPanel = document.getElementById('adminPanel');
+      const importBtn = document.getElementById('importBtn');
+      const cancelImportBtn = document.getElementById('cancelImportBtn');
+      const dataImportCode = document.getElementById('dataImportCode');
+
+      adminLoginBtn.addEventListener('click', () => {
+        const password = prompt("Masukkan password admin:");
+        // Ganti 'PASSWORD_RAHASIA_ANDA' dengan password yang Anda inginkan
+        if (password === 'fusion437666') {
+          adminPanel.style.display = 'block';
+        } else if (password) {
+          alert("Password salah!");
+        }
+      });
+
+      cancelImportBtn.addEventListener('click', () => {
+        adminPanel.style.display = 'none';
+        dataImportCode.value = '';
+      });
+
+      importBtn.addEventListener('click', async () => {
+        const code = dataImportCode.value.trim();
+        if (!code) return alert('Kolom kode tidak boleh kosong!');
+        if (!confirm('Apakah Anda yakin? Mengimpor data akan MENIMPA semua data reservasi yang ada di database online.')) return;
+
+        try {
+          const jsonString = decodeURIComponent(escape(atob(code)));
+          const importData = JSON.parse(jsonString);
+          if (!importData.data || !importData.version) throw new Error('Format data tidak valid');
+
+          importBtn.textContent = 'Mengimpor...';
+          importBtn.disabled = true;
+
+          const batch = db.batch();
+          const oldDocs = await db.collection('reservations').get();
+          oldDocs.forEach(doc => batch.delete(doc.ref));
+
+          for (const dateKey in importData.data) {
+            if (importData.data.hasOwnProperty(dateKey)) {
+              const docRef = db.collection("reservations").doc(dateKey);
+              batch.set(docRef, { reservations: importData.data[dateKey] });
+            }
+          }
+
+          await batch.commit();
+          alert('Import berhasil! Data akan segera diperbarui secara otomatis.');
+          adminPanel.style.display = 'none';
+          dataImportCode.value = '';
+        } catch (error) {
+          alert('Gagal mengimpor data! Error: ' + error.message);
+          console.error(error);
+        } finally {
+          importBtn.textContent = 'Proses Import';
+          importBtn.disabled = false;
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>
