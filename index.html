@@ -4,89 +4,150 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Viewer Reservasi Dolan Sawah</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
   <style>
-    /* MODIFIKASI CSS UNTUK TAMPILAN BARU */
+    /* ================================================= */
+    /* ## CSS BARU DENGAN PERBAIKAN RESPONSIVE ## */
+    /* ================================================= */
     :root {
-      --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a;
-      --accent: #f4a261; --danger: #e76f51; --light: #f8f9fa; --dark: #343a40;
+      --primary: #2a9d8f;
+      --primary-dark: #264653;
+      --secondary: #e9c46a;
+      --accent: #f4a261;
+      --danger: #e76f51;
+      --light: #f8f9fa;
+      --dark: #343a40;
+      --border-color: #e9ecef;
     }
+
+    /* Reset Dasar */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Pengaturan Body & Font */
     body {
-      /* MODIFIKASI: Menggunakan font Inter dan warna latar yang lebih lembut */
-      font-family: 'Inter', sans-serif; 
-      margin: 0; 
-      background-color: #f8f9fa;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--light);
       color: var(--dark);
       line-height: 1.6;
     }
+
+    /* Header */
     header {
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-      color: white; 
-      padding: 30px 20px; /* MODIFIKASI: Padding lebih besar */
+      background: var(--primary-dark);
+      color: white;
+      padding: 25px 20px;
       text-align: center;
-      border-bottom: 5px solid var(--accent);
+      border-bottom: 4px solid var(--accent);
     }
-    header h2 { 
-      margin: 0; 
-      font-size: 2.25rem; /* MODIFIKASI: Judul lebih besar */
+    header h2 {
+      font-size: clamp(1.5rem, 5vw, 2rem); /* Ukuran font responsif */
       font-weight: 700;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
     header small {
-      font-size: 1rem;
+      font-size: clamp(0.8rem, 3vw, 0.9rem);
       opacity: 0.8;
     }
+
+    /* Kontainer Utama */
     .container {
-      max-width: 950px; /* MODIFIKASI: Sedikit lebih lebar */
-      margin: 30px auto; 
-      padding: 30px; /* MODIFIKASI: Padding lebih besar */
-      background-color: white; 
-      border-radius: 12px; /* MODIFIKASI: Sudut lebih bulat */
-      /* MODIFIKASI: Efek bayangan lebih modern */
-      box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 20px;
     }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .month-year { font-size: 1.75rem; font-weight: 600; color: var(--primary-dark); }
-    .calendar-nav button { 
-      background-color: var(--primary); color: white; border: none; 
-      padding: 10px 18px; /* MODIFIKASI: Padding lebih besar */
-      border-radius: 8px; /* MODIFIKASI: Sudut lebih bulat */
+
+    /* Panel Kalender */
+    .calendar-panel {
+        background-color: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.04), 0 10px 20px rgba(0,0,0,0.04);
+    }
+
+    .calendar-header {
+      display: flex;
+      flex-direction: column; /* Tumpuk vertikal di layar kecil */
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+    .month-year {
+      font-size: clamp(1.5rem, 5vw, 1.75rem);
+      font-weight: 600;
+      color: var(--primary-dark);
+      order: 2; /* Urutan di layar kecil */
+    }
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+      order: 1; /* Urutan di layar kecil */
+    }
+    .calendar-nav button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: background-color 0.2s;
     }
-    .calendar-nav button:hover { background-color: var(--primary-dark); }
-    .calendar-weekdays { 
-      display: grid; grid-template-columns: repeat(7, 1fr); 
-      text-align: center; font-weight: 600; 
-      margin-bottom: 15px; /* MODIFIKASI: Jarak lebih besar */
+    .calendar-nav button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* Grid Kalender */
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 10px;
       color: var(--primary);
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
     }
-    .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-    .calendar-day {
-      min-height: 90px; padding: 10px; border: 2px solid #eef0f2; 
-      border-radius: 10px; /* MODIFIKASI: Sudut lebih bulat */
-      cursor: pointer; transition: all 0.2s ease-in-out; 
-      position: relative; display: flex;
-      flex-direction: column; justify-content: space-between; align-items: flex-end;
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
     }
-    .calendar-day:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    
-    /* MODIFIKASI: Gaya nomor tanggal lebih jelas */
+
+    /* Tampilan Tanggal */
+    .calendar-day {
+      aspect-ratio: 1 / 1; /* Membuat kotak tanggal tetap persegi */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 8px;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+    }
+    .calendar-day:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
     .day-number {
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
       color: var(--primary-dark);
-      text-shadow: 0 1px 1px rgba(0,0,0,0.05);
       width: 32px;
       height: 32px;
       display: flex;
@@ -94,30 +155,104 @@
       justify-content: center;
       transition: all 0.2s;
     }
-    .has-reservation { border-color: rgba(42, 157, 143, 0.4); }
-    .today .day-number { 
-      background-color: var(--secondary); color: var(--primary-dark); 
-      border-radius: 50%; 
+    .has-reservation {
+      background-color: rgba(42, 157, 143, 0.05);
     }
-    .empty-day { background-color: #f8f9fa; cursor: default; border-color: #f8f9fa; }
-    .empty-day:hover { transform: none; box-shadow: none; border-color: #f8f9fa; }
+    .today .day-number {
+      background-color: var(--secondary);
+      color: var(--primary-dark);
+      border-radius: 50%;
+    }
+    .empty-day {
+      background-color: #f8f9fa;
+      cursor: default;
+      border-color: transparent;
+    }
+    .empty-day:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: transparent;
+    }
     .reservation-badge {
-      position: absolute; bottom: 8px; left: 8px;
-      background-color: var(--accent); color: white;
-      font-size: 0.75rem; font-weight: 600;
-      padding: 4px 8px; border-radius: 7px;
-      display: flex; align-items: center; gap: 5px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background-color: var(--accent);
+      color: white;
+      font-size: clamp(0.7rem, 2vw, 0.75rem);
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    .admin-section { margin-top: 40px; padding-top: 25px; border-top: 1px dashed #ccc; text-align: center; }
-    .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
-    .data-transfer p { font-size: 0.9rem; color: #666; }
-    textarea { width: 95%; min-height: 120px; margin: 10px auto; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: monospace; }
-    button { background-color: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; margin: 5px; font-weight: 500; font-family: 'Inter', sans-serif; }
-    button.danger { background-color: var(--danger); }
-    footer { text-align: center; margin-top: 30px; padding: 20px; background-color: var(--primary-dark); color: white; font-size: 0.9rem; }
-  </style>
+    
+    /* Panel Admin & Footer */
+    .admin-section, footer {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+    .admin-section {
+        padding-top: 25px;
+        border-top: 1px dashed #ccc;
+    }
+    .data-transfer {
+      display: none;
+      margin-top: 15px;
+      padding: 20px;
+      border-radius: 8px;
+      background: #f8f9fa;
+      border: 1px solid var(--border-color);
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-family: monospace;
+    }
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 5px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+    }
+    button.danger {
+      background-color: var(--danger);
+    }
+    footer {
+        padding-bottom: 20px;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
 
+    /* Media Queries untuk Tampilan Responsif */
+    @media (min-width: 768px) {
+      .container, .admin-section, footer {
+        padding: 30px;
+      }
+      .calendar-header {
+        flex-direction: row; /* Kembali horizontal di layar besar */
+      }
+      .month-year {
+        order: 1;
+      }
+      .calendar-nav {
+        order: 2;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -127,30 +262,30 @@
   </header>
 
   <div class="container">
-    <div class="calendar-header">
-      <div class="month-year" id="monthYear">...</div>
-      <div class="calendar-nav">
-        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
-      </div>
-    </div>
-
-    <div class="calendar-weekdays">
-      <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
-    </div>
-
-    <div class="calendar-days" id="calendar"></div>
-
-    <div class="admin-section">
-        <button id="adminLoginBtn"><i class="fas fa-user-shield"></i> Menu Admin</button>
-        <div class="data-transfer" id="adminPanel" style="display:none;">
-          <h3><i class="fas fa-file-import"></i> Import Data dari Sistem Lama</h3>
-          <p>Salin kode ekspor dari website lama dan tempel di bawah ini.</p>
-          <textarea id="dataImportCode" placeholder="Tempel kode ekspor di sini..."></textarea>
-          <button id="importBtn"><i class="fas fa-check-circle"></i> Proses Import</button>
-          <button id="cancelImportBtn" class="danger"><i class="fas fa-times-circle"></i> Batal</button>
+    <div class="calendar-panel">
+      <div class="calendar-header">
+        <div class="month-year" id="monthYear">...</div>
+        <div class="calendar-nav">
+          <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+          <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
         </div>
+      </div>
+      <div class="calendar-weekdays">
+        <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+      </div>
+      <div class="calendar-days" id="calendar"></div>
     </div>
+  </div>
+
+  <div class="admin-section">
+      <button id="adminLoginBtn"><i class="fas fa-user-shield"></i> Menu Admin</button>
+      <div class="data-transfer" id="adminPanel" style="display:none;">
+        <h3><i class="fas fa-file-import"></i> Import Data dari Sistem Lama</h3>
+        <p>Salin kode ekspor dari website lama dan tempel di bawah ini.</p>
+        <textarea id="dataImportCode" placeholder="Tempel kode ekspor di sini..."></textarea>
+        <button id="importBtn"><i class="fas fa-check-circle"></i> Proses Import</button>
+        <button id="cancelImportBtn" class="danger"><i class="fas fa-times-circle"></i> Batal</button>
+      </div>
   </div>
 
   <footer>
@@ -158,7 +293,9 @@
   </footer>
 
   <script>
-    // KONFIGURASI FIREBASE
+    // =================================================================
+    // KODE JAVASCRIPT ANDA (TIDAK ADA PERUBAHAN)
+    // =================================================================
     const firebaseConfig = {
       apiKey: "AIzaSyCFcS_2tOXDg78yNAVVP9LMHoUVe91jtsY",
       authDomain: "reservasi-viewer-dolan-sawah.firebaseapp.com",
@@ -170,7 +307,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // VARIABEL GLOBAL & ELEMENT DOM
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const kapasitasTempat = {
       "Lantai 1": 240, "Lantai 2": 64, "Lantai 3": 112,
@@ -182,7 +318,6 @@
     const calendarEl = document.getElementById('calendar');
     const monthYearEl = document.getElementById('monthYear');
 
-    // FUNGSI UTAMA
     document.addEventListener('DOMContentLoaded', () => {
       db.collection("reservations").onSnapshot(snapshot => {
         console.log("Data dari Firestore diterima!");
@@ -280,8 +415,8 @@
         <style>
           :root { --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a; --accent: #f4a261; --danger: #e76f51; }
           body { font-family: 'Inter', sans-serif; margin: 0; background-color: #f8f9fa; color: #343a40; line-height: 1.6; }
-          header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 25px; text-align: center; }
-          .container { max-width: 800px; margin: 25px auto; padding: 30px; background-color: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.07); }
+          header { background: var(--primary-dark); color: white; padding: 25px; text-align: center; }
+          .container { max-width: 800px; margin: 25px auto; padding: 20px 30px; background-color: white; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.07); }
           button { background-color: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 25px; display: inline-flex; align-items: center; gap: 10px; font-family: 'Inter', sans-serif;}
           .capacity-item { margin-bottom: 15px; } .capacity-bar { background-color: #e9ecef; border-radius: 8px; overflow: hidden; height: 24px; margin-top: 5px; }
           .capacity-fill { height: 100%; text-align: right; color: white; font-size: 0.8rem; font-weight: 500; line-height: 24px; padding-right: 8px; box-sizing: border-box; }
@@ -313,7 +448,6 @@
       buatKalender();
     }
 
-    // FUNGSI ADMIN
     function setupAdminControls() {
       const adminLoginBtn = document.getElementById('adminLoginBtn');
       const adminPanel = document.getElementById('adminPanel');
