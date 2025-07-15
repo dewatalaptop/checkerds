@@ -37,16 +37,28 @@
     .calendar-day {
       min-height: 80px; padding: 8px; border: 1px solid #eee; border-radius: 6px; 
       cursor: pointer; transition: all 0.2s; position: relative; display: flex;
-      flex-direction: column; justify-content: space-between; align-items: flex-end;
+      flex-direction: column; justify-content: space-between; align-items: center; /* Diubah untuk menengahkan */
     }
     .calendar-day:hover { border-color: var(--primary); transform: translateY(-2px); }
-    .day-number { font-weight: 600; }
+    
+    /* PERBAIKAN: Tampilan Angka Tanggal Lebih Tebal */
+    .day-number { 
+        font-weight: 700; /* Dibuat lebih tebal */
+        font-size: 1.1rem; /* Sedikit lebih besar */
+        width: 100%;
+        text-align: right;
+        padding-right: 5px;
+        box-sizing: border-box;
+    }
+
     .has-reservation { background-color: rgba(42, 157, 143, 0.1); }
-    .today .day-number { background-color: var(--secondary); color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; }
+    .today .day-number { 
+        background-color: var(--secondary); color: white; border-radius: 50%; width: 30px; height: 30px; 
+        display: flex; justify-content: center; align-items: center; padding-right: 0;
+    }
     .empty-day { background-color: #f9f9f9; cursor: default; }
     .empty-day:hover { transform: none; border-color: #eee; }
 
-    /* BARU: Gaya untuk badge jumlah reservasi */
     .reservation-badge {
       position: absolute;
       bottom: 5px;
@@ -62,13 +74,68 @@
       gap: 4px;
     }
 
+    /* BARU: Gaya untuk Notifikasi "PENUH" */
+    .full-notice {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        color: var(--danger);
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+    .is-full {
+        background-color: rgba(231, 111, 81, 0.15); /* Latar merah muda */
+        border-color: var(--danger);
+    }
+    .is-full.has-reservation {
+        background-color: rgba(231, 111, 81, 0.25);
+    }
+
     .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
     .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
     .data-transfer p { font-size: 0.9rem; color: #666; }
     textarea { width: 95%; min-height: 120px; margin: 10px auto; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; }
     button { background-color: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
     button.danger { background-color: var(--danger); }
+    button.success { background-color: #2a9d8f; }
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
     footer { text-align: center; margin-top: 20px; padding: 15px; background-color: var(--primary-dark); color: white; font-size: 0.9rem; }
+    
+    /* BARU: CSS untuk admin panel yang disempurnakan */
+    .admin-actions {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+    }
+    .admin-actions input[type="date"] {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+
+    /* BARU: CSS untuk Tampilan Responsif */
+    @media (max-width: 600px) {
+      .container {
+        margin: 10px;
+        padding: 15px;
+      }
+      .calendar-day {
+        min-height: 70px;
+        gap: 5px;
+      }
+      .month-year { font-size: 1.2rem; }
+      .calendar-nav button { padding: 6px 12px; }
+      .calendar-weekdays div { font-size: 0.8rem; }
+      .day-number { font-size: 1rem; }
+      .today .day-number { width: 26px; height: 26px; }
+      .admin-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+    }
   </style>
 
 </head>
@@ -76,7 +143,7 @@
 
   <header>
     <h2><i class="fas fa-eye"></i> Kalender Reservasi Dolan Sawah</h2>
-    <small>Periksa Tanggal Reservasi,dan Pastikan Ketersediaan Tempat</small>
+    <small>Periksa Tanggal Reservasi dan Pastikan Ketersediaan Tempat</small>
   </header>
 
   <div class="container">
@@ -101,7 +168,16 @@
           <p>Salin kode ekspor dari website lama dan tempel di bawah ini.</p>
           <textarea id="dataImportCode" placeholder="Tempel kode ekspor di sini..."></textarea>
           <button id="importBtn"><i class="fas fa-check-circle"></i> Proses Import</button>
-          <button id="cancelImportBtn" class="danger"><i class="fas fa-times-circle"></i> Batal</button>
+          
+          <div class="admin-actions">
+             <h3><i class="fas fa-calendar-check"></i> Kelola Status Tanggal</h3>
+             <input type="date" id="dateSelector">
+             <button id="markFullBtn" class="danger"><i class="fas fa-calendar-times"></i> Tandai Penuh</button>
+             <button id="markAvailableBtn" class="success"><i class="fas fa-calendar-plus"></i> Jadikan Tersedia</button>
+          </div>
+          
+          <hr style="margin: 20px 0;">
+          <button id="closeAdminBtn" class="danger"><i class="fas fa-times-circle"></i> Tutup Panel</button>
         </div>
     </div>
   </div>
@@ -113,17 +189,15 @@
   <script>
     // =================================================================
     // KONFIGURASI FIREBASE
-    // GANTI BAGIAN DI BAWAH INI DENGAN KODE KONFIGURASI DARI PROJECT FIREBASE ANDA
     // =================================================================
     const firebaseConfig = {
-  apiKey: "AIzaSyCFcS_2tOXDg78yNAVVP9LMHoUVe91jtsY",
-  authDomain: "reservasi-viewer-dolan-sawah.firebaseapp.com",
-  projectId: "reservasi-viewer-dolan-sawah",
-  storageBucket: "reservasi-viewer-dolan-sawah.firebasestorage.app",
-  messagingSenderId: "932937427518",
-  appId: "1:932937427518:web:806e241519b718cc21ff6f"
-};
-    // Inisialisasi Firebase
+      apiKey: "AIzaSyCFcS_2tOXDg78yNAVVP9LMHoUVe91jtsY",
+      authDomain: "reservasi-viewer-dolan-sawah.firebaseapp.com",
+      projectId: "reservasi-viewer-dolan-sawah",
+      storageBucket: "reservasi-viewer-dolan-sawah.firebasestorage.app",
+      messagingSenderId: "932937427518",
+      appId: "1:932937427518:web:806e241519b718cc21ff6f"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
@@ -138,22 +212,20 @@
 
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
-    let allReservations = {}; // Objek untuk menyimpan semua data dari Firestore
+    let allReservations = {}; 
 
     const calendarEl = document.getElementById('calendar');
     const monthYearEl = document.getElementById('monthYear');
-    // DIHAPUS: Variabel untuk 'detailsView' tidak lagi dibutuhkan di sini
-
+    
     // =================================================================
     // FUNGSI UTAMA
     // =================================================================
-
     document.addEventListener('DOMContentLoaded', () => {
       db.collection("reservations").onSnapshot(snapshot => {
         console.log("Data dari Firestore diterima!");
         allReservations = {};
         snapshot.forEach(doc => {
-          allReservations[doc.id] = doc.data().reservations;
+          allReservations[doc.id] = doc.data(); // Simpan seluruh objek, termasuk flag 'isFull'
         });
         buatKalender();
       });
@@ -163,7 +235,6 @@
       setupAdminControls();
     });
 
-    // MODIFIKASI: Fungsi untuk membuat kalender
     function buatKalender() {
       calendarEl.innerHTML = '';
       monthYearEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
@@ -188,11 +259,21 @@
         const monthStr = String(currentMonth + 1).padStart(2, '0');
         const dayStr = String(i).padStart(2, '0');
         const dateKey = `${monthStr}-${dayStr}`;
+        const dateData = allReservations[dateKey];
+        const reservationsOnDate = dateData?.reservations || [];
 
-        // BARU: Tambahkan badge jika ada reservasi
-        if (allReservations[dateKey] && allReservations[dateKey].length > 0) {
+        // BARU: Cek jika tanggal ditandai Penuh
+        if (dateData?.isFull) {
+            dayEl.classList.add('is-full');
+            const fullNotice = document.createElement('div');
+            fullNotice.className = 'full-notice';
+            fullNotice.innerHTML = `<i class="fas fa-ban"></i> PENUH`;
+            dayEl.appendChild(fullNotice);
+        }
+
+        if (reservationsOnDate.length > 0) {
           dayEl.classList.add('has-reservation');
-          const reservationCount = allReservations[dateKey].length;
+          const reservationCount = reservationsOnDate.length;
           const badge = document.createElement('div');
           badge.className = 'reservation-badge';
           badge.innerHTML = `<i class="fas fa-users"></i> ${reservationCount}`;
@@ -208,15 +289,20 @@
       }
     }
 
-    // MODIFIKASI TOTAL: Fungsi ini sekarang membuka tab baru
     function tampilkanDetailDiJendelaBaru(day) {
       const monthStr = String(currentMonth + 1).padStart(2, '0');
       const dayStr = String(day).padStart(2, '0');
       const dateKey = `${monthStr}-${dayStr}`;
-      const reservations = allReservations[dateKey] || [];
+
+      // BARU: Cek jika tanggal ditandai penuh, tampilkan alert dan hentikan fungsi
+      if (allReservations[dateKey]?.isFull) {
+          alert(`Peringatan!\n\nReservasi untuk tanggal ${day} ${monthNames[currentMonth]} ${currentYear} sudah penuh atau ditutup.`);
+          return;
+      }
+
+      const reservations = allReservations[dateKey]?.reservations || [];
       const formattedDate = `${day} ${monthNames[currentMonth]} ${currentYear}`;
 
-      // --- Membuat HTML untuk kapasitas ---
       let capacityHTML = '<h2><i class="fas fa-chart-pie"></i> Kapasitas Tempat</h2>';
       const occupancy = {};
       Object.keys(kapasitasTempat).forEach(loc => occupancy[loc] = 0);
@@ -239,15 +325,17 @@
         `;
       });
 
-      // --- Membuat HTML untuk daftar reservasi ---
       let listHTML = `<h2><i class="fas fa-users"></i> Daftar Reservasi (${reservations.length})</h2>`;
       if (reservations.length > 0) {
         reservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach(res => {
           listHTML += `
             <div class="reservation-list-item">
-              <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
-              <br>
-              <small><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'} - <i class="fas fa-map-marker-alt"></i> ${res.tempat || 'Tanpa Lokasi'}</small>
+              <div class="res-info">
+                 <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
+              </div>
+              <div class="res-details">
+                <small><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'} - <i class="fas fa-map-marker-alt"></i> ${res.tempat || 'Tanpa Lokasi'}</small>
+              </div>
             </div>
           `;
         });
@@ -255,16 +343,15 @@
         listHTML += '<p>Tidak ada reservasi untuk tanggal ini.</p>';
       }
       
-      // --- Membuat seluruh halaman HTML untuk jendela baru ---
       const detailPageHTML = `
         <!DOCTYPE html>
         <html lang="id">
         <head>
-          <meta charset="UTF-8">
+          <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Detail Reservasi - ${formattedDate}</title>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
           <style>
-            :root { --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a; --accent: #f4a261; --danger: #e76f51; }
+            :root { --primary: #2a9d8f; --primary-dark: #264653; --accent: #f4a261; --danger: #e76f51; }
             body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5; color: #343a40; }
             header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 20px; text-align: center; }
             .container { max-width: 800px; margin: 20px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -272,23 +359,27 @@
             .capacity-item { margin-bottom: 15px; }
             .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 22px; margin-top: 5px; }
             .capacity-fill { height: 100%; text-align: right; color: white; font-size: 0.8rem; line-height: 22px; padding-right: 5px; box-sizing: border-box; }
-            .reservation-list-item { border-bottom: 1px solid #eee; padding: 12px 0; }
+            /* PERBAIKAN: Layout item reservasi agar tidak tumpang tindih */
+            .reservation-list-item { 
+                border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; align-items: center; 
+                justify-content: space-between; flex-wrap: wrap; gap: 10px;
+            }
+            .res-info { flex-grow: 1; }
+            .res-details { color: #555; }
             hr { border: 0; border-top: 1px dashed #ccc; margin: 20px 0; }
+            @media (max-width: 480px) { .reservation-list-item { flex-direction: column; align-items: flex-start; } }
           </style>
         </head>
         <body>
           <header><h1>Detail Reservasi</h1><h3>${formattedDate}</h3></header>
           <div class="container">
-            ${capacityHTML}
-            <hr>
-            ${listHTML}
+            ${capacityHTML} <hr> ${listHTML}
             <button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button>
           </div>
         </body>
         </html>
       `;
       
-      // --- Buka jendela baru dan tulis HTML ke dalamnya ---
       const detailWindow = window.open('', '_blank');
       detailWindow.document.write(detailPageHTML);
       detailWindow.document.close();
@@ -307,65 +398,108 @@
     }
 
     // =================================================================
-    // FUNGSI ADMIN (Tidak ada perubahan)
+    // FUNGSI ADMIN
     // =================================================================
     function setupAdminControls() {
-      const adminLoginBtn = document.getElementById('adminLoginBtn');
-      const adminPanel = document.getElementById('adminPanel');
-      const importBtn = document.getElementById('importBtn');
-      const cancelImportBtn = document.getElementById('cancelImportBtn');
-      const dataImportCode = document.getElementById('dataImportCode');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const importBtn = document.getElementById('importBtn');
+        const closeAdminBtn = document.getElementById('closeAdminBtn'); // Diubah dari cancelImportBtn
+        const dataImportCode = document.getElementById('dataImportCode');
+        
+        // BARU: Elemen untuk fitur Tandai Penuh
+        const dateSelector = document.getElementById('dateSelector');
+        const markFullBtn = document.getElementById('markFullBtn');
+        const markAvailableBtn = document.getElementById('markAvailableBtn');
 
-      adminLoginBtn.addEventListener('click', () => {
-        const password = prompt("Masukkan password admin:");
-        if (password === 'fusion437666') {
-          adminPanel.style.display = 'block';
-        } else if (password) {
-          alert("Password salah!");
-        }
-      });
-
-      cancelImportBtn.addEventListener('click', () => {
-        adminPanel.style.display = 'none';
-        dataImportCode.value = '';
-      });
-
-      importBtn.addEventListener('click', async () => {
-        const code = dataImportCode.value.trim();
-        if (!code) return alert('Kolom kode tidak boleh kosong!');
-        if (!confirm('Apakah Anda yakin? Mengimpor data akan MENIMPA semua data reservasi yang ada di database online.')) return;
-
-        try {
-          const jsonString = decodeURIComponent(escape(atob(code)));
-          const importData = JSON.parse(jsonString);
-          if (!importData.data || !importData.version) throw new Error('Format data tidak valid');
-
-          importBtn.textContent = 'Mengimpor...';
-          importBtn.disabled = true;
-
-          const batch = db.batch();
-          const oldDocs = await db.collection('reservations').get();
-          oldDocs.forEach(doc => batch.delete(doc.ref));
-
-          for (const dateKey in importData.data) {
-            if (importData.data.hasOwnProperty(dateKey)) {
-              const docRef = db.collection("reservations").doc(dateKey);
-              batch.set(docRef, { reservations: importData.data[dateKey] });
+        adminLoginBtn.addEventListener('click', () => {
+            const password = prompt("Masukkan password admin:");
+            if (password === 'fusion437666') {
+                adminPanel.style.display = 'block';
+            } else if (password) {
+                alert("Password salah!");
             }
-          }
+        });
 
-          await batch.commit();
-          alert('Import berhasil! Data akan segera diperbarui secara otomatis.');
-          adminPanel.style.display = 'none';
-          dataImportCode.value = '';
-        } catch (error) {
-          alert('Gagal mengimpor data! Error: ' + error.message);
-          console.error(error);
-        } finally {
-          importBtn.textContent = 'Proses Import';
-          importBtn.disabled = false;
-        }
-      });
+        closeAdminBtn.addEventListener('click', () => {
+            adminPanel.style.display = 'none';
+            dataImportCode.value = '';
+        });
+
+        const updateDateStatus = async (isFull) => {
+            const dateValue = dateSelector.value;
+            if (!dateValue) {
+                alert('Silakan pilih tanggal terlebih dahulu!');
+                return;
+            }
+            const [year, month, day] = dateValue.split('-');
+            const dateKey = `${month}-${day}`;
+            const docRef = db.collection("reservations").doc(dateKey);
+            const actionText = isFull ? "menandai penuh" : "menjadikan tersedia";
+
+            try {
+                markFullBtn.disabled = true;
+                markAvailableBtn.disabled = true;
+                alert(`Memproses permintaan untuk ${actionText} tanggal ${day}/${month}/${year}...`);
+
+                // Menggunakan .set dengan merge:true agar tidak menghapus data reservasi yang sudah ada
+                // Atau .update jika dokumennya pasti sudah ada. Set lebih aman.
+                await docRef.set({ isFull: isFull }, { merge: true });
+                
+                alert(`Berhasil! Status untuk tanggal ${day}/${month}/${year} telah diperbarui.`);
+            } catch (error) {
+                alert('Gagal memperbarui status. Error: ' + error.message);
+                console.error(error);
+            } finally {
+                markFullBtn.disabled = false;
+                markAvailableBtn.disabled = false;
+            }
+        };
+        
+        markFullBtn.addEventListener('click', () => updateDateStatus(true));
+        markAvailableBtn.addEventListener('click', () => updateDateStatus(false));
+
+        importBtn.addEventListener('click', async () => {
+            // Logika import tetap sama
+            const code = dataImportCode.value.trim();
+            if (!code) return alert('Kolom kode tidak boleh kosong!');
+            if (!confirm('Apakah Anda yakin? Mengimpor data akan MENIMPA semua data reservasi yang ada di database online.')) return;
+            try {
+                importBtn.disabled = true;
+                importBtn.textContent = 'Mengimpor...';
+                const jsonString = decodeURIComponent(escape(atob(code)));
+                const importData = JSON.parse(jsonString);
+                if (!importData.data || !importData.version) throw new Error('Format data tidak valid');
+                
+                const batch = db.batch();
+                // Hati-hati: Baris di bawah ini akan menghapus semua dokumen.
+                // Jika ingin hanya menimpa, hapus bagian penghapusan ini.
+                const oldDocs = await db.collection('reservations').get();
+                oldDocs.forEach(doc => batch.delete(doc.ref));
+
+                for (const dateKey in importData.data) {
+                    if (importData.data.hasOwnProperty(dateKey)) {
+                        const docRef = db.collection("reservations").doc(dateKey);
+                        // Saat import, pastikan flag isFull tidak ikut terhapus
+                        const existingData = allReservations[dateKey] || {};
+                        const newData = { 
+                            reservations: importData.data[dateKey],
+                            isFull: existingData.isFull || false // Pertahankan status 'isFull' jika ada
+                        };
+                        batch.set(docRef, newData);
+                    }
+                }
+                await batch.commit();
+                alert('Import berhasil! Data akan segera diperbarui.');
+                dataImportCode.value = '';
+            } catch (error) {
+                alert('Gagal mengimpor data! Error: ' + error.message);
+                console.error(error);
+            } finally {
+                importBtn.disabled = false;
+                importBtn.textContent = 'Proses Import';
+            }
+        });
     }
   </script>
 
