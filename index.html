@@ -104,13 +104,13 @@
       align-items: center;
       gap: 8px;
       transition: background-color 0.3s, transform 0.2s;
+      text-decoration: none; /* BARU: Menghilangkan garis bawah pada link */
     }
     .floating-back-btn:hover {
       background-color: var(--danger);
       transform: scale(1.05);
     }
     
-    /* BARU: CSS untuk Modal Pop-up Kustom */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -221,9 +221,9 @@
     <p>Viewer ditenagai oleh Firebase & GitHub Pages.</p>
   </footer>
 
-  <button onclick="window.history.back()" class="floating-back-btn">
+  <a href="https://www.dolansawah.my.id" class="floating-back-btn">
     <i class="fas fa-home"></i> Kembali
-  </button>
+  </a>
 
   <div id="customModal" class="modal-overlay">
     <div class="modal-content">
@@ -269,11 +269,9 @@
     // FUNGSI UTAMA
     // =================================================================
     document.addEventListener('DOMContentLoaded', () => {
-      // BARU: Logika untuk menampilkan dan menutup modal kustom
       const modalOverlay = document.getElementById('customModal');
       const closeModalBtn = document.getElementById('closeModalBtn');
       
-      // Tampilkan modal
       modalOverlay.classList.add('show');
       
       const closeModal = () => modalOverlay.classList.remove('show');
