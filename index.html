@@ -86,12 +86,11 @@
       padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-right: 10px;
     }
 
-    /* BARU: CSS untuk Tombol Floating Kembali */
     .floating-back-btn {
       position: fixed;
       bottom: 20px;
       left: 20px;
-      background-color: var(--accent); /* Warna oranye */
+      background-color: var(--accent);
       color: white;
       border: none;
       border-radius: 50px;
@@ -100,15 +99,64 @@
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      z-index: 1000; /* Memastikan di atas elemen lain */
+      z-index: 1000;
       display: flex;
       align-items: center;
       gap: 8px;
       transition: background-color 0.3s, transform 0.2s;
     }
     .floating-back-btn:hover {
-      background-color: var(--danger); /* Oranye lebih gelap saat hover */
+      background-color: var(--danger);
       transform: scale(1.05);
+    }
+    
+    /* BARU: CSS untuk Modal Pop-up Kustom */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 2000;
+      visibility: hidden; opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-overlay.show {
+        visibility: visible;
+        opacity: 1;
+    }
+    .modal-content {
+      background-color: white;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 90%;
+      width: 400px;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.show .modal-content {
+        transform: scale(1);
+    }
+    .modal-title {
+      color: var(--danger);
+      margin-top: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .modal-body {
+      color: var(--dark);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+    .modal-close-btn {
+      background-color: var(--primary);
+      padding: 10px 25px;
+      font-weight: 600;
+    }
+    .modal-close-btn:hover {
+        background-color: var(--primary-dark);
     }
 
     /* CSS untuk Tampilan Responsif */
@@ -177,6 +225,15 @@
     <i class="fas fa-home"></i> Kembali
   </button>
 
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="modal-title">PENTING</h3>
+      <p class="modal-body">Silahkan klik pada tanggal untuk mengetahui ketersediaan tempat.</p>
+      <button id="closeModalBtn" class="modal-close-btn">Mengerti</button>
+    </div>
+  </div>
+
+
   <script>
     // =================================================================
     // KONFIGURASI FIREBASE
@@ -212,8 +269,21 @@
     // FUNGSI UTAMA
     // =================================================================
     document.addEventListener('DOMContentLoaded', () => {
-      // BARU: Menampilkan pop-up sambutan saat halaman dimuat
-      alert("Silahkan klik pada tanggal untuk mengetahui ketersediaan tempat.");
+      // BARU: Logika untuk menampilkan dan menutup modal kustom
+      const modalOverlay = document.getElementById('customModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      
+      // Tampilkan modal
+      modalOverlay.classList.add('show');
+      
+      const closeModal = () => modalOverlay.classList.remove('show');
+      
+      closeModalBtn.addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', (event) => {
+          if (event.target === modalOverlay) {
+              closeModal();
+          }
+      });
       
       db.collection("reservations").onSnapshot(snapshot => {
         console.log("Data dari Firestore diterima!");
@@ -307,9 +377,7 @@
         const current = occupancy[loc];
         const max = kapasitasTempat[loc];
         const percentage = max > 0 ? Math.round((current / max) * 100) : 0;
-
-        // BARU: Modifikasi Tampilan Kapasitas
-        const sisa = max - current; // Hitung sisa kursi
+        const sisa = max - current;
 
         capacityHTML += `
           <div class="capacity-item">
