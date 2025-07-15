@@ -37,18 +37,13 @@
     .calendar-day {
       min-height: 80px; padding: 8px; border: 1px solid #eee; border-radius: 6px; 
       cursor: pointer; transition: all 0.2s; position: relative; display: flex;
-      flex-direction: column; justify-content: space-between; align-items: center; /* Diubah untuk menengahkan */
+      flex-direction: column; justify-content: space-between; align-items: center;
     }
     .calendar-day:hover { border-color: var(--primary); transform: translateY(-2px); }
     
-    /* PERBAIKAN: Tampilan Angka Tanggal Lebih Tebal */
     .day-number { 
-        font-weight: 700; /* Dibuat lebih tebal */
-        font-size: 1.1rem; /* Sedikit lebih besar */
-        width: 100%;
-        text-align: right;
-        padding-right: 5px;
-        box-sizing: border-box;
+        font-weight: 700; font-size: 1.1rem; width: 100%;
+        text-align: right; padding-right: 5px; box-sizing: border-box;
     }
 
     .has-reservation { background-color: rgba(42, 157, 143, 0.1); }
@@ -60,36 +55,19 @@
     .empty-day:hover { transform: none; border-color: #eee; }
 
     .reservation-badge {
-      position: absolute;
-      bottom: 5px;
-      left: 5px;
-      background-color: var(--accent);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: bold;
-      padding: 3px 6px;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      position: absolute; bottom: 5px; left: 5px; background-color: var(--accent);
+      color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 6px;
+      border-radius: 5px; display: flex; align-items: center; gap: 4px;
     }
 
-    /* BARU: Gaya untuk Notifikasi "PENUH" */
     .full-notice {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        color: var(--danger);
-        font-size: 0.75rem;
-        font-weight: 700;
+        position: absolute; bottom: 5px; right: 5px; color: var(--danger);
+        font-size: 0.75rem; font-weight: 700;
     }
     .is-full {
-        background-color: rgba(231, 111, 81, 0.15); /* Latar merah muda */
-        border-color: var(--danger);
+        background-color: rgba(231, 111, 81, 0.15); border-color: var(--danger);
     }
-    .is-full.has-reservation {
-        background-color: rgba(231, 111, 81, 0.25);
-    }
+    .is-full.has-reservation { background-color: rgba(231, 111, 81, 0.25); }
 
     .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
     .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
@@ -101,40 +79,49 @@
     button:disabled { background-color: #ccc; cursor: not-allowed; }
     footer { text-align: center; margin-top: 20px; padding: 15px; background-color: var(--primary-dark); color: white; font-size: 0.9rem; }
     
-    /* BARU: CSS untuk admin panel yang disempurnakan */
     .admin-actions {
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
+      margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd;
     }
     .admin-actions input[type="date"] {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-right: 10px;
+      padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-right: 10px;
     }
 
-    /* BARU: CSS untuk Tampilan Responsif */
+    /* BARU: CSS untuk Tombol Floating Kembali */
+    .floating-back-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: var(--accent); /* Warna oranye */
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 1000; /* Memastikan di atas elemen lain */
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .floating-back-btn:hover {
+      background-color: var(--danger); /* Oranye lebih gelap saat hover */
+      transform: scale(1.05);
+    }
+
+    /* CSS untuk Tampilan Responsif */
     @media (max-width: 600px) {
-      .container {
-        margin: 10px;
-        padding: 15px;
-      }
-      .calendar-day {
-        min-height: 70px;
-        gap: 5px;
-      }
+      .container { margin: 10px; padding: 15px; }
+      .calendar-day { min-height: 70px; gap: 5px; }
       .month-year { font-size: 1.2rem; }
       .calendar-nav button { padding: 6px 12px; }
       .calendar-weekdays div { font-size: 0.8rem; }
       .day-number { font-size: 1rem; }
       .today .day-number { width: 26px; height: 26px; }
-      .admin-actions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-      }
+      .admin-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+      .floating-back-btn { padding: 10px 15px; font-size: 0.9rem; }
     }
   </style>
 
@@ -186,6 +173,10 @@
     <p>Viewer ditenagai oleh Firebase & GitHub Pages.</p>
   </footer>
 
+  <button onclick="window.history.back()" class="floating-back-btn">
+    <i class="fas fa-home"></i> Kembali
+  </button>
+
   <script>
     // =================================================================
     // KONFIGURASI FIREBASE
@@ -221,11 +212,14 @@
     // FUNGSI UTAMA
     // =================================================================
     document.addEventListener('DOMContentLoaded', () => {
+      // BARU: Menampilkan pop-up sambutan saat halaman dimuat
+      alert("Silahkan klik pada tanggal untuk mengetahui ketersediaan tempat.");
+      
       db.collection("reservations").onSnapshot(snapshot => {
         console.log("Data dari Firestore diterima!");
         allReservations = {};
         snapshot.forEach(doc => {
-          allReservations[doc.id] = doc.data(); // Simpan seluruh objek, termasuk flag 'isFull'
+          allReservations[doc.id] = doc.data();
         });
         buatKalender();
       });
@@ -262,7 +256,6 @@
         const dateData = allReservations[dateKey];
         const reservationsOnDate = dateData?.reservations || [];
 
-        // BARU: Cek jika tanggal ditandai Penuh
         if (dateData?.isFull) {
             dayEl.classList.add('is-full');
             const fullNotice = document.createElement('div');
@@ -294,7 +287,6 @@
       const dayStr = String(day).padStart(2, '0');
       const dateKey = `${monthStr}-${dayStr}`;
 
-      // BARU: Cek jika tanggal ditandai penuh, tampilkan alert dan hentikan fungsi
       if (allReservations[dateKey]?.isFull) {
           alert(`Peringatan!\n\nReservasi untuk tanggal ${day} ${monthNames[currentMonth]} ${currentYear} sudah penuh atau ditutup.`);
           return;
@@ -315,9 +307,13 @@
         const current = occupancy[loc];
         const max = kapasitasTempat[loc];
         const percentage = max > 0 ? Math.round((current / max) * 100) : 0;
+
+        // BARU: Modifikasi Tampilan Kapasitas
+        const sisa = max - current; // Hitung sisa kursi
+
         capacityHTML += `
           <div class="capacity-item">
-            <strong>${loc}</strong> (${current} / ${max} orang)
+            <strong>${loc}</strong> (Terpakai ${current} / Tersisa ${sisa}) Kapasitas ${max}
             <div class="capacity-bar">
               <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};">${percentage}%</div>
             </div>
@@ -359,7 +355,6 @@
             .capacity-item { margin-bottom: 15px; }
             .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 22px; margin-top: 5px; }
             .capacity-fill { height: 100%; text-align: right; color: white; font-size: 0.8rem; line-height: 22px; padding-right: 5px; box-sizing: border-box; }
-            /* PERBAIKAN: Layout item reservasi agar tidak tumpang tindih */
             .reservation-list-item { 
                 border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; align-items: center; 
                 justify-content: space-between; flex-wrap: wrap; gap: 10px;
@@ -404,10 +399,9 @@
         const adminLoginBtn = document.getElementById('adminLoginBtn');
         const adminPanel = document.getElementById('adminPanel');
         const importBtn = document.getElementById('importBtn');
-        const closeAdminBtn = document.getElementById('closeAdminBtn'); // Diubah dari cancelImportBtn
+        const closeAdminBtn = document.getElementById('closeAdminBtn');
         const dataImportCode = document.getElementById('dataImportCode');
         
-        // BARU: Elemen untuk fitur Tandai Penuh
         const dateSelector = document.getElementById('dateSelector');
         const markFullBtn = document.getElementById('markFullBtn');
         const markAvailableBtn = document.getElementById('markAvailableBtn');
@@ -441,11 +435,7 @@
                 markFullBtn.disabled = true;
                 markAvailableBtn.disabled = true;
                 alert(`Memproses permintaan untuk ${actionText} tanggal ${day}/${month}/${year}...`);
-
-                // Menggunakan .set dengan merge:true agar tidak menghapus data reservasi yang sudah ada
-                // Atau .update jika dokumennya pasti sudah ada. Set lebih aman.
                 await docRef.set({ isFull: isFull }, { merge: true });
-                
                 alert(`Berhasil! Status untuk tanggal ${day}/${month}/${year} telah diperbarui.`);
             } catch (error) {
                 alert('Gagal memperbarui status. Error: ' + error.message);
@@ -460,7 +450,6 @@
         markAvailableBtn.addEventListener('click', () => updateDateStatus(false));
 
         importBtn.addEventListener('click', async () => {
-            // Logika import tetap sama
             const code = dataImportCode.value.trim();
             if (!code) return alert('Kolom kode tidak boleh kosong!');
             if (!confirm('Apakah Anda yakin? Mengimpor data akan MENIMPA semua data reservasi yang ada di database online.')) return;
@@ -472,19 +461,16 @@
                 if (!importData.data || !importData.version) throw new Error('Format data tidak valid');
                 
                 const batch = db.batch();
-                // Hati-hati: Baris di bawah ini akan menghapus semua dokumen.
-                // Jika ingin hanya menimpa, hapus bagian penghapusan ini.
                 const oldDocs = await db.collection('reservations').get();
                 oldDocs.forEach(doc => batch.delete(doc.ref));
 
                 for (const dateKey in importData.data) {
                     if (importData.data.hasOwnProperty(dateKey)) {
                         const docRef = db.collection("reservations").doc(dateKey);
-                        // Saat import, pastikan flag isFull tidak ikut terhapus
                         const existingData = allReservations[dateKey] || {};
                         const newData = { 
                             reservations: importData.data[dateKey],
-                            isFull: existingData.isFull || false // Pertahankan status 'isFull' jika ada
+                            isFull: existingData.isFull || false
                         };
                         batch.set(docRef, newData);
                     }
