@@ -42,9 +42,9 @@
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.2s;
-      display: flex;
-      flex-direction: column; 
-      justify-content: space-between; 
+      position: relative; /* PERBAIKAN: Diperlukan untuk position: absolute pada child */
+      display: flex; /* Tetap menggunakan flex untuk alignment nomor */
+      flex-direction: column;
     }
     .calendar-day:hover { border-color: var(--primary); transform: translateY(-2px); }
     
@@ -63,30 +63,27 @@
     .empty-day { background-color: #f9f9f9; cursor: default; }
     .empty-day:hover { transform: none; border-color: #eee; }
 
-    .day-info {
-      display: flex;
-      justify-content: space-between; 
-      align-items: center;
-      width: 100%;
-      gap: 4px;
-    }
-
+    /* PERBAIKAN: Mengembalikan position: absolute agar tidak mempengaruhi lebar kolom */
     .reservation-badge {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
       background-color: var(--accent);
       color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 6px;
       border-radius: 5px; display: flex; align-items: center; gap: 4px;
-      white-space: nowrap;
     }
 
-    /* PERBAIKAN: Ukuran font diperkecil agar tidak memperbesar kolom */
+    /* PERBAIKAN: Mengembalikan position: absolute agar tidak mempengaruhi lebar kolom */
     .full-notice {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
       color: var(--danger);
-      font-size: 0.7rem; /* Ukuran font diperkecil */
+      font-size: 0.7rem;
       font-weight: 700;
       display: flex;
       align-items: center;
-      gap: 3px; /* Jarak dengan ikon disesuaikan */
-      white-space: nowrap;
+      gap: 3px;
     }
     
     .is-full {
@@ -94,9 +91,9 @@
     }
     .is-full.has-reservation { background-color: rgba(231, 111, 81, 0.25); }
     
+    /* Style lainnya tetap sama */
     .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
     .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
-    .data-transfer p { font-size: 0.9rem; color: #666; }
     textarea { width: 95%; min-height: 120px; margin: 10px auto; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; }
     button { background-color: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
     button.danger { background-color: var(--danger); }
@@ -264,26 +261,23 @@
         const dateData = allReservations[dateKey];
         const reservationsOnDate = dateData?.reservations || [];
         
-        const dayInfo = document.createElement('div');
-        dayInfo.className = 'day-info';
-
-        let badgeHTML = '<div></div>'; 
-        let fullNoticeHTML = '<div></div>';
+        // PERBAIKAN: Menghapus .day-info dan kembali ke metode awal dengan CSS yang lebih baik
+        if (dateData?.isFull) {
+            dayEl.classList.add('is-full');
+            const fullNotice = document.createElement('div');
+            fullNotice.className = 'full-notice';
+            fullNotice.innerHTML = `<i class="fas fa-ban"></i> FULL`;
+            dayEl.appendChild(fullNotice);
+        }
 
         if (reservationsOnDate.length > 0) {
           dayEl.classList.add('has-reservation');
           const reservationCount = reservationsOnDate.length;
-          badgeHTML = `<div class="reservation-badge"><i class="fas fa-users"></i> ${reservationCount}</div>`;
+          const badge = document.createElement('div');
+          badge.className = 'reservation-badge';
+          badge.innerHTML = `<i class="fas fa-users"></i> ${reservationCount}`;
+          dayEl.appendChild(badge);
         }
-        
-        if (dateData?.isFull) {
-          dayEl.classList.add('is-full');
-          // PERBAIKAN: Teks diubah menjadi "FULL"
-          fullNoticeHTML = `<div class="full-notice"><i class="fas fa-ban"></i> FULL</div>`;
-        }
-
-        dayInfo.innerHTML = badgeHTML + fullNoticeHTML;
-        dayEl.appendChild(dayInfo);
 
         if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
           dayEl.classList.add('today');
