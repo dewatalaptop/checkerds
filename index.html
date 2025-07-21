@@ -41,12 +41,12 @@
       border: 1px solid #eee;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s;
-      position: relative; /* PERBAIKAN: Diperlukan untuk position: absolute pada child */
-      display: flex; /* Tetap menggunakan flex untuk alignment nomor */
+      transition: background-color 0.3s, border-color 0.3s;
+      position: relative;
+      display: flex;
       flex-direction: column;
     }
-    .calendar-day:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .calendar-day:hover { border-color: var(--primary); }
     
     .day-number { 
       font-weight: 700;
@@ -63,34 +63,49 @@
     .empty-day { background-color: #f9f9f9; cursor: default; }
     .empty-day:hover { transform: none; border-color: #eee; }
 
-    /* PERBAIKAN: Mengembalikan position: absolute agar tidak mempengaruhi lebar kolom */
     .reservation-badge {
       position: absolute;
       bottom: 5px;
-      left: 5px;
+      left: 50%; /* Pusatkan badge jika tidak ada tanda seru */
+      transform: translateX(-50%);
       background-color: var(--accent);
       color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 6px;
       border-radius: 5px; display: flex; align-items: center; gap: 4px;
     }
+    
+    /* PERBAIKAN: Keyframes untuk animasi berdetak */
+    @keyframes pulse-animation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
 
-    /* PERBAIKAN: Mengembalikan position: absolute agar tidak mempengaruhi lebar kolom */
-    .full-notice {
+    /* PERBAIKAN: Style baru untuk tanggal yang penuh */
+    .is-full-animated {
+      background-color: rgba(231, 111, 81, 0.7);
+      border-color: var(--danger);
+      animation: pulse-animation 1.5s infinite ease-in-out;
+      color: white;
+    }
+    
+    /* PERBAIKAN: Menambahkan tanda seru (!) menggunakan pseudo-element */
+    .is-full-animated::after {
+      content: '!';
       position: absolute;
-      bottom: 5px;
-      right: 5px;
-      color: var(--danger);
-      font-size: 0.7rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 3px;
+      bottom: 2px;
+      right: 8px;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 0 5px rgba(0,0,0,0.4);
     }
     
-    .is-full {
-      background-color: rgba(231, 111, 81, 0.15); border-color: var(--danger);
+    /* PERBAIKAN: Menyesuaikan posisi badge jika tanggal juga penuh */
+    .is-full-animated .reservation-badge {
+      left: 5px;
+      transform: translateX(0); /* Kembalikan ke posisi normal */
     }
-    .is-full.has-reservation { background-color: rgba(231, 111, 81, 0.25); }
-    
+
     /* Style lainnya tetap sama */
     .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
     .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
@@ -120,7 +135,8 @@
       .calendar-weekdays div { font-size: 0.8rem; }
       .day-number { font-size: 0.9rem; }
       .today .day-number { width: 24px; height: 24px; }
-      .reservation-badge, .full-notice { font-size: 0.6rem; padding: 2px 4px; gap: 2px; }
+      .reservation-badge { font-size: 0.6rem; padding: 2px 4px; gap: 2px; }
+      .is-full-animated::after { font-size: 1rem; right: 5px; }
       .admin-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
       .floating-back-btn { padding: 10px 15px; font-size: 0.9rem; }
     }
@@ -261,13 +277,9 @@
         const dateData = allReservations[dateKey];
         const reservationsOnDate = dateData?.reservations || [];
         
-        // PERBAIKAN: Menghapus .day-info dan kembali ke metode awal dengan CSS yang lebih baik
+        // PERBAIKAN: Menerapkan class animasi jika tanggal penuh
         if (dateData?.isFull) {
-            dayEl.classList.add('is-full');
-            const fullNotice = document.createElement('div');
-            fullNotice.className = 'full-notice';
-            fullNotice.innerHTML = `<i class="fas fa-ban"></i> FULL`;
-            dayEl.appendChild(fullNotice);
+            dayEl.classList.add('is-full-animated');
         }
 
         if (reservationsOnDate.length > 0) {
@@ -294,7 +306,7 @@
       const dateKey = `${monthStr}-${dayStr}`;
 
       if (allReservations[dateKey]?.isFull) {
-          alert(`Peringatan!\n\nReservasi untuk tanggal ${day} ${monthNames[currentMonth]} ${currentYear} sudah penuh atau ditutup.`);
+          alert(`Peringatan!\n\nReservasi untuk tanggal ${day} ${monthNames[currentMonth]} ${currentYear} sudah PENUH atau ditutup.`);
           return;
       }
 
