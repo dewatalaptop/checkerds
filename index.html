@@ -66,29 +66,32 @@
     .reservation-badge {
       position: absolute;
       bottom: 5px;
-      left: 50%; /* Pusatkan badge jika tidak ada tanda seru */
+      left: 50%; 
       transform: translateX(-50%);
       background-color: var(--accent);
       color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 6px;
       border-radius: 5px; display: flex; align-items: center; gap: 4px;
     }
     
-    /* PERBAIKAN: Keyframes untuk animasi berdetak */
+    /* PERBAIKAN: Animasi disesuaikan untuk mengubah warna dan ukuran */
     @keyframes pulse-animation {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+      0%, 100% {
+        transform: scale(1);
+        background-color: rgba(231, 111, 81, 0.6); /* Warna awal lebih soft */
+        color: var(--danger); /* Warna teks awal */
+      }
+      50% {
+        transform: scale(1.05);
+        background-color: rgba(231, 111, 81, 1); /* Warna puncak lebih pekat */
+        color: white; /* Warna teks puncak */
+      }
     }
 
-    /* PERBAIKAN: Style baru untuk tanggal yang penuh */
     .is-full-animated {
-      background-color: rgba(231, 111, 81, 0.7);
       border-color: var(--danger);
       animation: pulse-animation 1.5s infinite ease-in-out;
-      color: white;
     }
     
-    /* PERBAIKAN: Menambahkan tanda seru (!) menggunakan pseudo-element */
     .is-full-animated::after {
       content: '!';
       position: absolute;
@@ -96,14 +99,16 @@
       right: 8px;
       font-size: 1.2rem;
       font-weight: 900;
-      color: white;
+      color: inherit; /* Mengikuti warna dari .is-full-animated */
       text-shadow: 0 0 5px rgba(0,0,0,0.4);
     }
     
-    /* PERBAIKAN: Menyesuaikan posisi badge jika tanggal juga penuh */
     .is-full-animated .reservation-badge {
       left: 5px;
-      transform: translateX(0); /* Kembalikan ke posisi normal */
+      transform: translateX(0); 
+    }
+    .is-full-animated .day-number {
+        font-weight: 900; /* Menebalkan angka tanggal */
     }
 
     /* Style lainnya tetap sama */
@@ -277,7 +282,6 @@
         const dateData = allReservations[dateKey];
         const reservationsOnDate = dateData?.reservations || [];
         
-        // PERBAIKAN: Menerapkan class animasi jika tanggal penuh
         if (dateData?.isFull) {
             dayEl.classList.add('is-full-animated');
         }
@@ -448,6 +452,5 @@
         });
     }
   </script>
-
 </body>
 </html>
