@@ -34,41 +34,68 @@
     .calendar-nav button:hover { background-color: var(--primary-dark); }
     .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 600; margin-bottom: 10px; color: var(--primary-dark); }
     .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+
+    /* PERBAIKAN: Tata letak utama untuk setiap kotak tanggal */
     .calendar-day {
-      min-height: 80px; padding: 8px; border: 1px solid #eee; border-radius: 6px; 
-      cursor: pointer; transition: all 0.2s; position: relative; display: flex;
-      flex-direction: column; justify-content: space-between; align-items: center;
+      min-height: 90px;
+      padding: 8px;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column; /* Mengatur item secara vertikal */
+      justify-content: space-between; /* Mendorong nomor ke atas dan info ke bawah */
     }
     .calendar-day:hover { border-color: var(--primary); transform: translateY(-2px); }
     
+    /* PERBAIKAN: Nomor tanggal didorong ke kanan menggunakan flexbox */
     .day-number { 
-        font-weight: 700; font-size: 1.1rem; width: 100%;
-        text-align: right; padding-right: 5px; box-sizing: border-box;
+      font-weight: 700;
+      font-size: 1.1rem;
+      align-self: flex-end; /* Mendorong elemen ini ke ujung kanan container flex */
     }
 
     .has-reservation { background-color: rgba(42, 157, 143, 0.1); }
     .today .day-number { 
-        background-color: var(--secondary); color: white; border-radius: 50%; width: 30px; height: 30px; 
-        display: flex; justify-content: center; align-items: center; padding-right: 0;
+      background-color: var(--secondary); color: white; border-radius: 50%; width: 30px; height: 30px; 
+      display: flex; justify-content: center; align-items: center;
+      align-self: flex-end; /* Tetap di kanan */
     }
     .empty-day { background-color: #f9f9f9; cursor: default; }
     .empty-day:hover { transform: none; border-color: #eee; }
 
+    /* PERBAIKAN: Container untuk info di bagian bawah (badge dan status penuh) */
+    .day-info {
+      display: flex;
+      justify-content: space-between; /* Menempatkan badge di kiri dan status di kanan */
+      align-items: center;
+      width: 100%;
+      gap: 4px; /* Memberi sedikit jarak jika teksnya panjang */
+    }
+
+    /* PERBAIKAN: Badge tidak lagi menggunakan position: absolute */
     .reservation-badge {
-      position: absolute; bottom: 5px; left: 5px; background-color: var(--accent);
+      background-color: var(--accent);
       color: white; font-size: 0.7rem; font-weight: bold; padding: 3px 6px;
       border-radius: 5px; display: flex; align-items: center; gap: 4px;
+      white-space: nowrap; /* Mencegah teks turun baris */
     }
 
+    /* PERBAIKAN: Status "Penuh" tidak lagi menggunakan position: absolute */
     .full-notice {
-        position: absolute; bottom: 5px; right: 5px; color: var(--danger);
-        font-size: 0.75rem; font-weight: 700;
+      color: var(--danger);
+      font-size: 0.75rem; font-weight: 700;
+      display: flex; align-items: center; gap: 4px;
+      white-space: nowrap;
     }
+    
     .is-full {
-        background-color: rgba(231, 111, 81, 0.15); border-color: var(--danger);
+      background-color: rgba(231, 111, 81, 0.15); border-color: var(--danger);
     }
     .is-full.has-reservation { background-color: rgba(231, 111, 81, 0.25); }
-
+    
+    /* Sisanya tetap sama */
     .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
     .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
     .data-transfer p { font-size: 0.9rem; color: #666; }
@@ -78,96 +105,27 @@
     button.success { background-color: #2a9d8f; }
     button:disabled { background-color: #ccc; cursor: not-allowed; }
     footer { text-align: center; margin-top: 20px; padding: 15px; background-color: var(--primary-dark); color: white; font-size: 0.9rem; }
-    
-    .admin-actions {
-      margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd;
-    }
-    .admin-actions input[type="date"] {
-      padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-right: 10px;
-    }
-
-    .floating-back-btn {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 12px 20px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: background-color 0.3s, transform 0.2s;
-      text-decoration: none; /* BARU: Menghilangkan garis bawah pada link */
-    }
-    .floating-back-btn:hover {
-      background-color: var(--danger);
-      transform: scale(1.05);
-    }
-    
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 2000;
-      visibility: hidden; opacity: 0;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .modal-overlay.show {
-        visibility: visible;
-        opacity: 1;
-    }
-    .modal-content {
-      background-color: white;
-      padding: 25px 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-      text-align: center;
-      max-width: 90%;
-      width: 400px;
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
-    }
-    .modal-overlay.show .modal-content {
-        transform: scale(1);
-    }
-    .modal-title {
-      color: var(--danger);
-      margin-top: 0;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-    .modal-body {
-      color: var(--dark);
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 25px;
-    }
-    .modal-close-btn {
-      background-color: var(--primary);
-      padding: 10px 25px;
-      font-weight: 600;
-    }
-    .modal-close-btn:hover {
-        background-color: var(--primary-dark);
-    }
-
-    /* CSS untuk Tampilan Responsif */
+    .admin-actions { margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd; }
+    .admin-actions input[type="date"] { padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-right: 10px; }
+    .floating-back-btn { position: fixed; bottom: 20px; left: 20px; background-color: var(--accent); color: white; border: none; border-radius: 50px; padding: 12px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 1000; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; text-decoration: none; }
+    .floating-back-btn:hover { background-color: var(--danger); transform: scale(1.05); }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; visibility: hidden; opacity: 0; transition: opacity 0.3s ease, visibility 0.3s ease; }
+    .modal-overlay.show { visibility: visible; opacity: 1; }
+    .modal-content { background-color: white; padding: 25px 30px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-align: center; max-width: 90%; width: 400px; transform: scale(0.9); transition: transform 0.3s ease; }
+    .modal-overlay.show .modal-content { transform: scale(1); }
+    .modal-title { color: var(--danger); margin-top: 0; font-size: 1.8rem; font-weight: 700; }
+    .modal-body { color: var(--dark); font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; }
+    .modal-close-btn { background-color: var(--primary); padding: 10px 25px; font-weight: 600; }
+    .modal-close-btn:hover { background-color: var(--primary-dark); }
     @media (max-width: 600px) {
       .container { margin: 10px; padding: 15px; }
-      .calendar-day { min-height: 70px; gap: 5px; }
+      .calendar-day { min-height: 70px; padding: 5px; }
       .month-year { font-size: 1.2rem; }
       .calendar-nav button { padding: 6px 12px; }
       .calendar-weekdays div { font-size: 0.8rem; }
-      .day-number { font-size: 1rem; }
-      .today .day-number { width: 26px; height: 26px; }
+      .day-number { font-size: 0.9rem; }
+      .today .day-number { width: 24px; height: 24px; }
+      .reservation-badge, .full-notice { font-size: 0.6rem; padding: 2px 4px; gap: 2px; }
       .admin-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
       .floating-back-btn { padding: 10px 15px; font-size: 0.9rem; }
     }
@@ -236,7 +194,7 @@
 
   <script>
     // =================================================================
-    // KONFIGURASI FIREBASE
+    // KONFIGURASI FIREBASE (Tidak ada perubahan)
     // =================================================================
     const firebaseConfig = {
       apiKey: "AIzaSyCFcS_2tOXDg78yNAVVP9LMHoUVe91jtsY",
@@ -250,7 +208,7 @@
     const db = firebase.firestore();
 
     // =================================================================
-    // VARIABEL GLOBAL & ELEMENT DOM
+    // VARIABEL GLOBAL & ELEMENT DOM (Tidak ada perubahan)
     // =================================================================
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const kapasitasTempat = {
@@ -323,23 +281,28 @@
         const dateKey = `${monthStr}-${dayStr}`;
         const dateData = allReservations[dateKey];
         const reservationsOnDate = dateData?.reservations || [];
+        
+        // PERBAIKAN: Membuat container untuk info di bagian bawah
+        const dayInfo = document.createElement('div');
+        dayInfo.className = 'day-info';
 
-        if (dateData?.isFull) {
-            dayEl.classList.add('is-full');
-            const fullNotice = document.createElement('div');
-            fullNotice.className = 'full-notice';
-            fullNotice.innerHTML = `<i class="fas fa-ban"></i> PENUH`;
-            dayEl.appendChild(fullNotice);
-        }
+        let badgeHTML = '<div></div>'; // Placeholder agar justify-content berfungsi
+        let fullNoticeHTML = '<div></div>'; // Placeholder
 
         if (reservationsOnDate.length > 0) {
           dayEl.classList.add('has-reservation');
           const reservationCount = reservationsOnDate.length;
-          const badge = document.createElement('div');
-          badge.className = 'reservation-badge';
-          badge.innerHTML = `<i class="fas fa-users"></i> ${reservationCount}`;
-          dayEl.appendChild(badge);
+          badgeHTML = `<div class="reservation-badge"><i class="fas fa-users"></i> ${reservationCount}</div>`;
         }
+        
+        if (dateData?.isFull) {
+          dayEl.classList.add('is-full');
+          fullNoticeHTML = `<div class="full-notice"><i class="fas fa-ban"></i> PENUH</div>`;
+        }
+
+        // PERBAIKAN: Menambahkan badge dan status penuh ke dalam container .day-info
+        dayInfo.innerHTML = badgeHTML + fullNoticeHTML;
+        dayEl.appendChild(dayInfo);
 
         if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
           dayEl.classList.add('today');
@@ -459,7 +422,7 @@
     }
 
     // =================================================================
-    // FUNGSI ADMIN
+    // FUNGSI ADMIN (Tidak ada perubahan)
     // =================================================================
     function setupAdminControls() {
         const adminLoginBtn = document.getElementById('adminLoginBtn');
