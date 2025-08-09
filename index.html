@@ -73,17 +73,16 @@
       border-radius: 5px; display: flex; align-items: center; gap: 4px;
     }
     
-    /* PERBAIKAN: Animasi disesuaikan untuk mengubah warna dan ukuran */
     @keyframes pulse-animation {
       0%, 100% {
         transform: scale(1);
-        background-color: rgba(231, 111, 81, 0.6); /* Warna awal lebih soft */
-        color: var(--danger); /* Warna teks awal */
+        background-color: rgba(231, 111, 81, 0.6);
+        color: var(--danger);
       }
       50% {
         transform: scale(1.05);
-        background-color: rgba(231, 111, 81, 1); /* Warna puncak lebih pekat */
-        color: white; /* Warna teks puncak */
+        background-color: rgba(231, 111, 81, 1);
+        color: white;
       }
     }
 
@@ -99,7 +98,7 @@
       right: 8px;
       font-size: 1.2rem;
       font-weight: 900;
-      color: inherit; /* Mengikuti warna dari .is-full-animated */
+      color: inherit;
       text-shadow: 0 0 5px rgba(0,0,0,0.4);
     }
     
@@ -108,10 +107,9 @@
       transform: translateX(0); 
     }
     .is-full-animated .day-number {
-        font-weight: 900; /* Menebalkan angka tanggal */
+        font-weight: 900;
     }
 
-    /* Style lainnya tetap sama */
     .admin-section { margin-top: 30px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
     .data-transfer { display: none; margin-top: 15px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
     textarea { width: 95%; min-height: 120px; margin: 10px auto; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-family: monospace; }
@@ -122,7 +120,7 @@
     footer { text-align: center; margin-top: 20px; padding: 15px; background-color: var(--primary-dark); color: white; font-size: 0.9rem; }
     .admin-actions { margin-top: 25px; padding-top: 20px; border-top: 1px solid #ddd; }
     .admin-actions input[type="date"] { padding: 8px; border-radius: 5px; border: 1px solid #ccc; margin-right: 10px; }
-    .floating-back-btn { position: fixed; bottom: 20px; left: 20px; background-color: var(--accent); color: white; border: none; border-radius: 50px; padding: 12px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 1000; display: flex; align-items: center; gap: 8px; transition: background-color 0.3s, transform 0.2s; text-decoration: none; }
+    .floating-back-btn { position: fixed; bottom: 20px; left: 20px; background-color: var(--accent); color: white; border: none; border-radius: 50px; padding: 12px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 1000; display: flex; align-items: center; gap: 8px; text-decoration: none; }
     .floating-back-btn:hover { background-color: var(--danger); transform: scale(1.05); }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; visibility: hidden; opacity: 0; transition: opacity 0.3s ease, visibility 0.3s ease; }
     .modal-overlay.show { visibility: visible; opacity: 1; }
@@ -209,7 +207,7 @@
 
 
   <script>
-    // Konfigurasi Firebase (Tidak berubah)
+    // Konfigurasi Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCFcS_2tOXDg78yNAVVP9LMHoUVe91jtsY",
       authDomain: "reservasi-viewer-dolan-sawah.firebaseapp.com",
@@ -221,7 +219,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Variabel Global & Element DOM (Tidak berubah)
+    // Variabel Global & Element DOM
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const kapasitasTempat = {
       "Lantai 1": 240, "Lantai 2": 64, "Lantai 3": 112,
@@ -379,7 +377,6 @@
       buatKalender();
     }
 
-    // Fungsi Admin (Tidak berubah)
     function setupAdminControls() {
         const adminLoginBtn = document.getElementById('adminLoginBtn');
         const adminPanel = document.getElementById('adminPanel');
@@ -389,6 +386,7 @@
         const dateSelector = document.getElementById('dateSelector');
         const markFullBtn = document.getElementById('markFullBtn');
         const markAvailableBtn = document.getElementById('markAvailableBtn');
+
         adminLoginBtn.addEventListener('click', () => {
             const password = prompt("Masukkan password admin:");
             if (password === 'fusion437666') {
@@ -397,10 +395,12 @@
                 alert("Password salah!");
             }
         });
+
         closeAdminBtn.addEventListener('click', () => {
             adminPanel.style.display = 'none';
             dataImportCode.value = '';
         });
+
         const updateDateStatus = async (isFull) => {
             const dateValue = dateSelector.value;
             if (!dateValue) return alert('Silakan pilih tanggal terlebih dahulu!');
@@ -408,6 +408,7 @@
             const dateKey = `${month}-${day}`;
             const docRef = db.collection("reservations").doc(dateKey);
             const actionText = isFull ? "menandai penuh" : "menjadikan tersedia";
+
             try {
                 markFullBtn.disabled = true; markAvailableBtn.disabled = true;
                 alert(`Memproses permintaan untuk ${actionText} tanggal ${day}/${month}/${year}...`);
@@ -419,33 +420,59 @@
                 markFullBtn.disabled = false; markAvailableBtn.disabled = false;
             }
         };
+
         markFullBtn.addEventListener('click', () => updateDateStatus(true));
         markAvailableBtn.addEventListener('click', () => updateDateStatus(false));
+
         importBtn.addEventListener('click', async () => {
             const code = dataImportCode.value.trim();
             if (!code) return alert('Kolom kode tidak boleh kosong!');
-            if (!confirm('Apakah Anda yakin? Mengimpor data akan MENIMPA semua data reservasi yang ada di database online.')) return;
+            // PERBAIKAN: Pesan konfirmasi diperjelas
+            if (!confirm('PERHATIAN!\n\nIni akan MENIMPA semua data RESERVASI dan MENU yang ada di database online dengan data dari kode ini. Anda yakin?')) return;
+
             try {
                 importBtn.disabled = true; importBtn.textContent = 'Mengimpor...';
                 const jsonString = decodeURIComponent(escape(atob(code)));
                 const importData = JSON.parse(jsonString);
-                if (!importData.data || !importData.version) throw new Error('Format data tidak valid');
+
+                if (!importData.data || !importData.version) throw new Error('Format data tidak valid. Pastikan kode ekspor berasal dari sistem terbaru.');
+
                 const batch = db.batch();
+
+                // 1. Hapus semua dokumen reservasi lama
                 const oldDocs = await db.collection('reservations').get();
                 oldDocs.forEach(doc => batch.delete(doc.ref));
+
+                // 2. Tambahkan dokumen reservasi baru
                 for (const dateKey in importData.data) {
                     if (importData.data.hasOwnProperty(dateKey)) {
                         const docRef = db.collection("reservations").doc(dateKey);
                         const existingData = allReservations[dateKey] || {};
-                        const newData = { reservations: importData.data[dateKey], isFull: existingData.isFull || false };
+                        const newData = { 
+                            reservations: importData.data[dateKey], 
+                            isFull: existingData.isFull || false 
+                        };
                         batch.set(docRef, newData);
                     }
                 }
+                
+                // 3. PENINGKATAN: Tambahkan/update dokumen menu
+                if (importData.menus && typeof importData.menus === 'object') {
+                    // Menyimpan semua menu dalam satu dokumen untuk efisiensi
+                    const menuDocRef = db.collection("systemConfig").doc("menus");
+                    batch.set(menuDocRef, importData.menus);
+                }
+
+                // Jalankan semua operasi secara bersamaan
                 await batch.commit();
-                alert('Import berhasil! Data akan segera diperbarui.');
+
+                // PERBAIKAN: Pesan sukses diperjelas
+                alert('Import berhasil! Data reservasi dan menu telah diperbarui di database online.');
                 dataImportCode.value = '';
+
             } catch (error) {
-                alert('Gagal mengimpor data! Error: ' + error.message);
+                alert('Gagal mengimpor data! Pastikan kode valid. Error: ' + error.message);
+                console.error(error);
             } finally {
                 importBtn.disabled = false; importBtn.textContent = 'Proses Import';
             }
