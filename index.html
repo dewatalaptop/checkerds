@@ -10,7 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
   <style>
-    /* CSS Styles */
+    /* CSS Styles (Tidak ada perubahan) */
     :root {
       --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a;
       --accent: #f4a261; --danger: #e76f51; --light: #f8f9fa; --dark: #343a40;
@@ -207,7 +207,7 @@
 
 
   <script>
-    // Konfigurasi Firebase
+    // Konfigurasi Firebase (Tidak ada perubahan)
     const firebaseConfig = {
       apiKey: "AIzaSyCFcS_2tOXDg78yNAVVP9LMHoUVe91jtsY",
       authDomain: "reservasi-viewer-dolan-sawah.firebaseapp.com",
@@ -219,7 +219,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Variabel Global & Element DOM
+    // Variabel Global & Element DOM (Tidak ada perubahan)
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const kapasitasTempat = {
       "Lantai 1": 240, "Lantai 2": 64, "Lantai 3": 112,
@@ -231,7 +231,7 @@
     const calendarEl = document.getElementById('calendar');
     const monthYearEl = document.getElementById('monthYear');
     
-    // Fungsi Utama
+    // Fungsi Utama (Tidak ada perubahan)
     document.addEventListener('DOMContentLoaded', () => {
       const modalOverlay = document.getElementById('customModal');
       const closeModalBtn = document.getElementById('closeModalBtn');
@@ -377,6 +377,7 @@
       buatKalender();
     }
 
+    // ### KODE DENGAN PERBAIKAN ###
     function setupAdminControls() {
         const adminLoginBtn = document.getElementById('adminLoginBtn');
         const adminPanel = document.getElementById('adminPanel');
@@ -424,57 +425,94 @@
         markFullBtn.addEventListener('click', () => updateDateStatus(true));
         markAvailableBtn.addEventListener('click', () => updateDateStatus(false));
 
+        // PERBAIKAN: Fungsi impor ditulis ulang agar lebih andal dan tidak melebihi limit Firebase
         importBtn.addEventListener('click', async () => {
             const code = dataImportCode.value.trim();
             if (!code) return alert('Kolom kode tidak boleh kosong!');
-            // PERBAIKAN: Pesan konfirmasi diperjelas
             if (!confirm('PERHATIAN!\n\nIni akan MENIMPA semua data RESERVASI dan MENU yang ada di database online dengan data dari kode ini. Anda yakin?')) return;
 
             try {
-                importBtn.disabled = true; importBtn.textContent = 'Mengimpor...';
+                importBtn.disabled = true;
+                importBtn.textContent = 'Memvalidasi...';
+                
                 const jsonString = decodeURIComponent(escape(atob(code)));
                 const importData = JSON.parse(jsonString);
 
-                if (!importData.data || !importData.version) throw new Error('Format data tidak valid. Pastikan kode ekspor berasal dari sistem terbaru.');
-
-                const batch = db.batch();
-
-                // 1. Hapus semua dokumen reservasi lama
-                const oldDocs = await db.collection('reservations').get();
-                oldDocs.forEach(doc => batch.delete(doc.ref));
-
-                // 2. Tambahkan dokumen reservasi baru
-                for (const dateKey in importData.data) {
-                    if (importData.data.hasOwnProperty(dateKey)) {
-                        const docRef = db.collection("reservations").doc(dateKey);
-                        const existingData = allReservations[dateKey] || {};
-                        const newData = { 
-                            reservations: importData.data[dateKey], 
-                            isFull: existingData.isFull || false 
-                        };
-                        batch.set(docRef, newData);
-                    }
+                if (!importData.data || !importData.version) {
+                    throw new Error('Format data tidak valid. Pastikan kode ekspor berasal dari sistem terbaru.');
                 }
                 
-                // 3. PENINGKATAN: Tambahkan/update dokumen menu
-                if (importData.menus && typeof importData.menus === 'object') {
-                    // Menyimpan semua menu dalam satu dokumen untuk efisiensi
-                    const menuDocRef = db.collection("systemConfig").doc("menus");
-                    batch.set(menuDocRef, importData.menus);
+                const BATCH_SIZE = 400; // Batas aman operasi per batch
+
+                // --- FASE 1: Menghapus data lama ---
+                importBtn.textContent = 'Menghapus data lama...';
+                const oldDocsSnapshot = await db.collection('reservations').get();
+                if (!oldDocsSnapshot.empty) {
+                    const deletionPromises = [];
+                    let deleteBatch = db.batch();
+                    let deleteCount = 0;
+                    
+                    oldDocsSnapshot.forEach(doc => {
+                        deleteBatch.delete(doc.ref);
+                        deleteCount++;
+                        if (deleteCount === BATCH_SIZE) {
+                            deletionPromises.push(deleteBatch.commit());
+                            deleteBatch = db.batch();
+                            deleteCount = 0;
+                        }
+                    });
+
+                    if (deleteCount > 0) {
+                        deletionPromises.push(deleteBatch.commit());
+                    }
+                    await Promise.all(deletionPromises);
                 }
 
-                // Jalankan semua operasi secara bersamaan
-                await batch.commit();
+                // --- FASE 2: Menambahkan data reservasi baru ---
+                importBtn.textContent = 'Mengimpor reservasi...';
+                const reservationKeys = Object.keys(importData.data);
+                if (reservationKeys.length > 0) {
+                    const additionPromises = [];
+                    let addBatch = db.batch();
+                    let addCount = 0;
 
-                // PERBAIKAN: Pesan sukses diperjelas
-                alert('Import berhasil! Data reservasi dan menu telah diperbarui di database online.');
+                    for (const dateKey of reservationKeys) {
+                        const docRef = db.collection("reservations").doc(dateKey);
+                        const newData = {
+                            reservations: importData.data[dateKey],
+                            isFull: allReservations[dateKey]?.isFull || false // Pertahankan status 'isFull' jika ada
+                        };
+                        addBatch.set(docRef, newData);
+                        addCount++;
+                        if (addCount === BATCH_SIZE) {
+                            additionPromises.push(addBatch.commit());
+                            addBatch = db.batch();
+                            addCount = 0;
+                        }
+                    }
+
+                    if (addCount > 0) {
+                        additionPromises.push(addBatch.commit());
+                    }
+                    await Promise.all(additionPromises);
+                }
+
+                // --- FASE 3: Memperbarui data menu ---
+                importBtn.textContent = 'Mengimpor menu...';
+                if (importData.menus && typeof importData.menus === 'object') {
+                    const menuDocRef = db.collection("systemConfig").doc("menus");
+                    await menuDocRef.set(importData.menus);
+                }
+                
+                alert('PROSES SELESAI!\n\nData reservasi dan menu telah berhasil diimpor sepenuhnya.');
                 dataImportCode.value = '';
 
             } catch (error) {
-                alert('Gagal mengimpor data! Pastikan kode valid. Error: ' + error.message);
-                console.error(error);
+                alert('GAGAL MENGIMPOR DATA!\n\nPastikan kode yang dimasukkan valid.\nError: ' + error.message);
+                console.error("Import Error:", error);
             } finally {
-                importBtn.disabled = false; importBtn.textContent = 'Proses Import';
+                importBtn.disabled = false;
+                importBtn.textContent = 'Proses Import';
             }
         });
     }
