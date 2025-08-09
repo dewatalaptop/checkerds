@@ -8,6 +8,7 @@
   
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
   <style>
     /* CSS Styles */
@@ -25,14 +26,14 @@
     }
     header h2 { 
       margin: 0; 
-      cursor: pointer; /* MODIFIKASI: Menambahkan kursor pointer pada judul */
-      display: inline-block; /* Agar cursor hanya aktif di area teks */
+      cursor: pointer;
+      display: inline-block;
       padding: 5px 10px;
       border-radius: 8px;
       transition: background-color 0.3s;
     }
     header h2:hover {
-        background-color: rgba(255,255,255,0.1); /* Efek hover untuk menandakan bisa diklik */
+        background-color: rgba(255,255,255,0.1);
     }
     .container {
       max-width: 900px; margin: 20px auto; padding: 20px;
@@ -136,7 +137,7 @@
     .modal-overlay.show { visibility: visible; opacity: 1; }
     .modal-content { background-color: white; padding: 25px 30px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-align: center; max-width: 90%; width: 400px; transform: scale(0.9); transition: transform 0.3s ease; }
     .modal-overlay.show .modal-content { transform: scale(1); }
-    .modal-title { color: var(--danger); margin-top: 0; font-size: 1.8rem; font-weight: 700; }
+    .modal-title { color: var(--primary-dark); margin-top: 0; font-size: 1.8rem; font-weight: 700; }
     .modal-body { color: var(--dark); font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; }
     .modal-close-btn { background-color: var(--primary); padding: 10px 25px; font-weight: 600; }
     .modal-close-btn:hover { background-color: var(--primary-dark); }
@@ -193,7 +194,7 @@
           </div>
           
           <hr style="margin: 20px 0;">
-          <button id="closeAdminBtn" class="danger"><i class="fas fa-times-circle"></i> Tutup Panel</button>
+          <button id="logoutBtn" class="danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </div>
   </div>
@@ -208,9 +209,22 @@
 
   <div id="customModal" class="modal-overlay">
     <div class="modal-content">
-      <h3 class="modal-title">PENTING</h3>
+      <h3 class="modal-title" style="color: var(--danger);">PENTING</h3>
       <p class="modal-body">Silahkan klik pada tanggal untuk mengetahui ketersediaan tempat.</p>
       <button id="closeModalBtn" class="modal-close-btn">Mengerti</button>
+    </div>
+  </div>
+
+  <div id="adminLoginModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="modal-title"><i class="fas fa-user-shield"></i> Login Admin</h3>
+      <div id="loginForm">
+          <input type="email" id="adminEmail" placeholder="Email Admin" style="width: 90%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box;">
+          <input type="password" id="adminPassword" placeholder="Password" style="width: 90%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box;">
+          <button id="loginBtn" class="success" style="width: 90%;">Login</button>
+          <button id="closeLoginModalBtn" class="danger" style="margin-top: 10px;">Batal</button>
+      </div>
+      <p id="loginError" style="color: var(--danger); display: none; margin-top: 10px;"></p>
     </div>
   </div>
 
@@ -227,6 +241,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth(); // Inisialisasi Firebase Auth
 
     // Variabel Global & Element DOM
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -259,6 +274,7 @@
       });
       document.getElementById('prevMonth').addEventListener('click', previousMonth);
       document.getElementById('nextMonth').addEventListener('click', nextMonth);
+      // Panggil fungsi setup admin yang sudah dimodifikasi
       setupAdminControls();
     });
 
@@ -386,33 +402,96 @@
       buatKalender();
     }
 
-    // ### KODE DENGAN MODIFIKASI ###
+    // ### KODE KONTROL ADMIN DENGAN FIREBASE AUTHENTICATION ###
     function setupAdminControls() {
-        // MODIFIKASI: Pemicu login diubah ke judul header
-        const adminLoginTrigger = document.getElementById('adminLoginTrigger'); 
+        const adminLoginTrigger = document.getElementById('adminLoginTrigger');
         const adminPanel = document.getElementById('adminPanel');
+        
+        // Element untuk Modal Login
+        const loginModal = document.getElementById('adminLoginModal');
+        const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const adminEmail = document.getElementById('adminEmail');
+        const adminPassword = document.getElementById('adminPassword');
+        const loginError = document.getElementById('loginError');
+
+        // Element untuk Fungsi Admin
+        const logoutBtn = document.getElementById('logoutBtn');
         const importBtn = document.getElementById('importBtn');
-        const closeAdminBtn = document.getElementById('closeAdminBtn');
         const dataImportCode = document.getElementById('dataImportCode');
         const dateSelector = document.getElementById('dateSelector');
         const markFullBtn = document.getElementById('markFullBtn');
         const markAvailableBtn = document.getElementById('markAvailableBtn');
 
-        // MODIFIKASI: Event listener dipindahkan ke pemicu yang baru
+        // Fungsi untuk membuka/menutup modal login
+        const openLoginModal = () => loginModal.classList.add('show');
+        const closeLoginModal = () => {
+            loginModal.classList.remove('show');
+            loginError.style.display = 'none';
+            adminEmail.value = '';
+            adminPassword.value = '';
+        };
+
         adminLoginTrigger.addEventListener('click', () => {
-            const password = prompt("Masukkan password admin:");
-            if (password === 'fusion437666') {
+            if (auth.currentUser) {
                 adminPanel.style.display = 'block';
-            } else if (password) { // Munculkan pesan jika password diisi tapi salah
-                alert("Password salah!");
+            } else {
+                openLoginModal();
+            }
+        });
+        
+        closeLoginModalBtn.addEventListener('click', closeLoginModal);
+        loginModal.addEventListener('click', (event) => {
+          if (event.target === loginModal) closeLoginModal();
+        });
+
+
+        // Proses Login
+        loginBtn.addEventListener('click', () => {
+            const email = adminEmail.value;
+            const password = adminPassword.value;
+            
+            if (!email || !password) {
+                loginError.textContent = "Email dan Password tidak boleh kosong.";
+                loginError.style.display = 'block';
+                return;
+            }
+
+            loginError.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Memproses...';
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    closeLoginModal();
+                    adminPanel.style.display = 'block';
+                })
+                .catch((error) => {
+                    loginError.textContent = "Login Gagal: Email atau Password salah.";
+                    loginError.style.display = 'block';
+                })
+                .finally(() => {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                });
+        });
+
+        // Proses Logout
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                adminPanel.style.display = 'none';
+                alert('Anda telah berhasil logout.');
+            });
+        });
+
+        // Cek status login setiap kali halaman dimuat
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                adminPanel.style.display = 'none';
             }
         });
 
-        closeAdminBtn.addEventListener('click', () => {
-            adminPanel.style.display = 'none';
-            dataImportCode.value = '';
-        });
-
+        // --- Logika untuk import dan kelola tanggal ---
         const updateDateStatus = async (isFull) => {
             const dateValue = dateSelector.value;
             if (!dateValue) return alert('Silakan pilih tanggal terlebih dahulu!');
@@ -439,7 +518,7 @@
         importBtn.addEventListener('click', async () => {
             const code = dataImportCode.value.trim();
             if (!code) return alert('Kolom kode tidak boleh kosong!');
-            if (!confirm('PERHATIAN!\n\nIni akan MENIMPA semua data RESERVASI dan MENU yang ada di database online dengan data dari kode ini. Anda yakin?')) return;
+            if (!confirm('PERHATIAN!\n\nIni akan MENIMPA semua data RESERVASI yang ada di database online dengan data dari kode ini. Anda yakin?')) return;
 
             try {
                 importBtn.disabled = true;
@@ -452,9 +531,8 @@
                     throw new Error('Format data tidak valid. Pastikan kode ekspor berasal dari sistem terbaru.');
                 }
                 
-                const BATCH_SIZE = 400; // Batas aman operasi per batch
+                const BATCH_SIZE = 400;
 
-                // --- FASE 1: Menghapus data lama ---
                 importBtn.textContent = 'Menghapus data lama...';
                 const oldDocsSnapshot = await db.collection('reservations').get();
                 if (!oldDocsSnapshot.empty) {
@@ -478,7 +556,6 @@
                     await Promise.all(deletionPromises);
                 }
 
-                // --- FASE 2: Menambahkan data reservasi baru ---
                 importBtn.textContent = 'Mengimpor reservasi...';
                 const reservationKeys = Object.keys(importData.data);
                 if (reservationKeys.length > 0) {
@@ -506,15 +583,8 @@
                     }
                     await Promise.all(additionPromises);
                 }
-
-                // --- FASE 3: Memperbarui data menu ---
-                importBtn.textContent = 'Mengimpor menu...';
-                if (importData.menus && typeof importData.menus === 'object') {
-                    const menuDocRef = db.collection("systemConfig").doc("menus");
-                    await menuDocRef.set(importData.menus);
-                }
                 
-                alert('PROSES SELESAI!\n\nData reservasi dan menu telah berhasil diimpor sepenuhnya.');
+                alert('PROSES SELESAI!\n\nData reservasi telah berhasil diimpor sepenuhnya.');
                 dataImportCode.value = '';
 
             } catch (error) {
