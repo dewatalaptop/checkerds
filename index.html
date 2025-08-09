@@ -10,7 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
   <style>
-    /* CSS Styles (Tidak ada perubahan) */
+    /* CSS Styles */
     :root {
       --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a;
       --accent: #f4a261; --danger: #e76f51; --light: #f8f9fa; --dark: #343a40;
@@ -23,7 +23,17 @@
       background: linear-gradient(135deg, var(--primary-dark), var(--primary));
       color: white; padding: 20px; text-align: center;
     }
-    header h2 { margin: 0; }
+    header h2 { 
+      margin: 0; 
+      cursor: pointer; /* MODIFIKASI: Menambahkan kursor pointer pada judul */
+      display: inline-block; /* Agar cursor hanya aktif di area teks */
+      padding: 5px 10px;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+    header h2:hover {
+        background-color: rgba(255,255,255,0.1); /* Efek hover untuk menandakan bisa diklik */
+    }
     .container {
       max-width: 900px; margin: 20px auto; padding: 20px;
       background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -149,7 +159,7 @@
 <body>
 
   <header>
-    <h2><i class="fas fa-eye"></i> Kalender Reservasi Dolan Sawah</h2>
+    <h2 id="adminLoginTrigger"><i class="fas fa-eye"></i> Kalender Reservasi Dolan Sawah</h2>
     <small>Periksa Tanggal Reservasi dan Pastikan Ketersediaan Tempat</small>
   </header>
 
@@ -169,7 +179,6 @@
     <div class="calendar-days" id="calendar"></div>
 
     <div class="admin-section">
-        <button id="adminLoginBtn"><i class="fas fa-user-shield"></i> Menu Admin</button>
         <div class="data-transfer" id="adminPanel" style="display:none;">
           <h3><i class="fas fa-file-import"></i> Import Data dari Sistem Lama</h3>
           <p>Salin kode ekspor dari website lama dan tempel di bawah ini.</p>
@@ -207,7 +216,7 @@
 
 
   <script>
-    // Konfigurasi Firebase (Tidak ada perubahan)
+    // Konfigurasi Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCFcS_2tOXDg78yNAVVP9LMHoUVe91jtsY",
       authDomain: "reservasi-viewer-dolan-sawah.firebaseapp.com",
@@ -219,7 +228,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Variabel Global & Element DOM (Tidak ada perubahan)
+    // Variabel Global & Element DOM
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const kapasitasTempat = {
       "Lantai 1": 240, "Lantai 2": 64, "Lantai 3": 112,
@@ -231,7 +240,7 @@
     const calendarEl = document.getElementById('calendar');
     const monthYearEl = document.getElementById('monthYear');
     
-    // Fungsi Utama (Tidak ada perubahan)
+    // Fungsi Utama
     document.addEventListener('DOMContentLoaded', () => {
       const modalOverlay = document.getElementById('customModal');
       const closeModalBtn = document.getElementById('closeModalBtn');
@@ -377,9 +386,10 @@
       buatKalender();
     }
 
-    // ### KODE DENGAN PERBAIKAN ###
+    // ### KODE DENGAN MODIFIKASI ###
     function setupAdminControls() {
-        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        // MODIFIKASI: Pemicu login diubah ke judul header
+        const adminLoginTrigger = document.getElementById('adminLoginTrigger'); 
         const adminPanel = document.getElementById('adminPanel');
         const importBtn = document.getElementById('importBtn');
         const closeAdminBtn = document.getElementById('closeAdminBtn');
@@ -388,11 +398,12 @@
         const markFullBtn = document.getElementById('markFullBtn');
         const markAvailableBtn = document.getElementById('markAvailableBtn');
 
-        adminLoginBtn.addEventListener('click', () => {
+        // MODIFIKASI: Event listener dipindahkan ke pemicu yang baru
+        adminLoginTrigger.addEventListener('click', () => {
             const password = prompt("Masukkan password admin:");
             if (password === 'fusion437666') {
                 adminPanel.style.display = 'block';
-            } else if (password) {
+            } else if (password) { // Munculkan pesan jika password diisi tapi salah
                 alert("Password salah!");
             }
         });
@@ -425,7 +436,6 @@
         markFullBtn.addEventListener('click', () => updateDateStatus(true));
         markAvailableBtn.addEventListener('click', () => updateDateStatus(false));
 
-        // PERBAIKAN: Fungsi impor ditulis ulang agar lebih andal dan tidak melebihi limit Firebase
         importBtn.addEventListener('click', async () => {
             const code = dataImportCode.value.trim();
             if (!code) return alert('Kolom kode tidak boleh kosong!');
@@ -480,7 +490,7 @@
                         const docRef = db.collection("reservations").doc(dateKey);
                         const newData = {
                             reservations: importData.data[dateKey],
-                            isFull: allReservations[dateKey]?.isFull || false // Pertahankan status 'isFull' jika ada
+                            isFull: allReservations[dateKey]?.isFull || false
                         };
                         addBatch.set(docRef, newData);
                         addCount++;
