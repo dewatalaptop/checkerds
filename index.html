@@ -384,9 +384,21 @@
         `;
       });
 
-      let listHTML = `<h2><i class="fas fa-users"></i> Daftar Reservasi (${reservations.length})</h2>`;
+            let listHTML = `<h2><i class="fas fa-users"></i> Daftar Reservasi (${reservations.length})</h2>`;
       if (reservations.length > 0) {
         reservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach(res => {
+          
+          // --- Logika Baru untuk membuat daftar menu ---
+          let menuDetailHtml = '<small><em>(Tidak ada detail menu)</em></small>'; // Teks default
+          if (res.menus && Array.isArray(res.menus) && res.menus.length > 0) {
+              menuDetailHtml = '<ul class="menu-detail-list">';
+              res.menus.forEach(item => {
+                  menuDetailHtml += `<li><strong>${item.quantity}x</strong> ${item.name || 'Menu tdk diketahui'}</li>`;
+              });
+              menuDetailHtml += '</ul>';
+          }
+          // --- Akhir Logika Baru ---
+
           listHTML += `
             <div class="reservation-list-item">
               <div class="res-info">
@@ -395,15 +407,42 @@
               <div class="res-details">
                 <small><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'} - <i class="fas fa-map-marker-alt"></i> ${res.tempat || 'Tanpa Lokasi'}</small>
               </div>
-            </div>
+              
+              <div class="res-menus">
+                ${menuDetailHtml}
+              </div>
+              </div>
           `;
         });
       } else {
         listHTML += '<p>Tidak ada reservasi untuk tanggal ini.</p>';
       }
+
       
       const detailPageHTML = `
-        <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detail Reservasi - ${formattedDate}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>:root { --primary: #2a9d8f; --primary-dark: #264653; --accent: #f4a261; --danger: #e76f51; } body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5; color: #343a40; } header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 20px; text-align: center; } .container { max-width: 800px; margin: 20px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); } button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 20px; display: inline-flex; align-items: center; gap: 8px;} .capacity-item { margin-bottom: 15px; } .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 22px; margin-top: 5px; } .capacity-fill { height: 100%; text-align: right; color: white; font-size: 0.8rem; line-height: 22px; padding-right: 5px; box-sizing: border-box; } .reservation-list-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; } .res-info { flex-grow: 1; } .res-details { color: #555; } hr { border: 0; border-top: 1px dashed #ccc; margin: 20px 0; } @media (max-width: 480px) { .reservation-list-item { flex-direction: column; align-items: flex-start; } }</style></head><body><header><h1>Detail Reservasi</h1><h3>${formattedDate}</h3></header><div class="container">${capacityHTML} <hr> ${listHTML}<button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button></div></body></html>`;
+        <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detail Reservasi - ${formattedDate}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>:root { --primary: #2a9d8f; --primary-dark: #264653; --accent: #f4a261; --danger: #e76f51; } body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5; color: #343a40; } header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 20px; text-align: center; } .container { max-width: 800px; margin: 20px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); } button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 20px; display: inline-flex; align-items: center; gap: 8px;} .capacity-item { margin-bottom: 15px; } .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 22px; margin-top: 5px; } .capacity-fill { height: 100%; text-align: right; color: white; font-size: 0.8rem; line-height: 22px; padding-right: 5px; box-sizing: border-box; } .reservation-list-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; } .res-info { flex-grow: 1; } .res-details { color: #555; } hr { border: 0; border-top: 1px dashed #ccc; margin: 20px 0; }
+         .res-menus {
+    width: 100%;
+    background-color: #f8f9fa;
+    border-left: 3px solid var(--primary);
+    padding: 8px 12px;
+    margin-top: 8px;
+    box-sizing: border-box;
+}
+.menu-detail-list {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 0.9rem;
+    color: #333;
+}
+.menu-detail-list li {
+    margin-bottom: 4px;
+}
+.menu-detail-list li:last-child {
+    margin-bottom: 0;
+}
+
+           @media (max-width: 480px) { .reservation-list-item { flex-direction: column; align-items: flex-start; } }</style></head><body><header><h1>Detail Reservasi</h1><h3>${formattedDate}</h3></header><div class="container">${capacityHTML} <hr> ${listHTML}<button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button></div></body></html>`;
       
       const detailWindow = window.open('', '_blank');
       detailWindow.document.write(detailPageHTML);
