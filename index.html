@@ -243,20 +243,34 @@
     const db = firebase.firestore();
     const auth = firebase.auth(); // Inisialisasi Firebase Auth
 
-    // Variabel Global & Element DOM
+        // Variabel Global & Element DOM
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    const kapasitasTempat = {
-      "Lantai 1": 240, "Lantai 2": 64, "Lantai 3": 112,
-      "Gubug 1": 40, "Gubug 2": 15, "Gubug 3": 110,
-    };
+    let kapasitasTempat = {}; // <-- DIUBAH DI SINI. Akan diisi dari Firestore
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let allReservations = {}; 
     const calendarEl = document.getElementById('calendar');
     const monthYearEl = document.getElementById('monthYear');
-    
-    // Fungsi Utama
-    document.addEventListener('DOMContentLoaded', () => {
+
+        // Fungsi baru untuk memuat konfigurasi lokasi dari Firestore Viewer
+    async function loadViewerLocations() {
+      try {
+        const docRef = db.collection("config").doc("locations");
+        const doc = await docRef.get();
+        if (doc.exists) {
+          kapasitasTempat = doc.data(); // Muat dari Firestore
+        } else {
+          console.warn("Belum ada data lokasi di viewer. Silakan import.");
+          kapasitasTempat = {}; // Kosongkan jika belum pernah diimpor
+        }
+      } catch (e) {
+        console.error("Gagal memuat data lokasi", e);
+        kapasitasTempat = {}; // Set ke kosong jika error
+      }
+    }
+
+        // Fungsi Utama
+    document.addEventListener('DOMContentLoaded', async () => { // <-- TAMBAH 'async'
       const modalOverlay = document.getElementById('customModal');
       const closeModalBtn = document.getElementById('closeModalBtn');
       modalOverlay.classList.add('show');
@@ -265,6 +279,10 @@
       modalOverlay.addEventListener('click', (event) => {
           if (event.target === modalOverlay) closeModal();
       });
+      
+      // BARIS INI DITAMBAHKAN
+      await loadViewerLocations(); // Memuat data lokasi sebelum render kalender
+
       db.collection("reservations").onSnapshot(snapshot => {
         allReservations = {};
         snapshot.forEach(doc => {
@@ -277,6 +295,8 @@
       // Panggil fungsi setup admin yang sudah dimodifikasi
       setupAdminControls();
     });
+
+
 
     function buatKalender() {
       calendarEl.innerHTML = '';
@@ -515,10 +535,10 @@
         markFullBtn.addEventListener('click', () => updateDateStatus(true));
         markAvailableBtn.addEventListener('click', () => updateDateStatus(false));
 
-        importBtn.addEventListener('click', async () => {
+                importBtn.addEventListener('click', async () => {
             const code = dataImportCode.value.trim();
             if (!code) return alert('Kolom kode tidak boleh kosong!');
-            if (!confirm('PERHATIAN!\n\nIni akan MENIMPA semua data RESERVASI yang ada di database online dengan data dari kode ini. Anda yakin?')) return;
+            if (!confirm('PERHATIAN!\n\nIni akan MENIMPA semua data RESERVASI dan LOKASI yang ada di database online dengan data dari kode ini. Anda yakin?')) return;
 
             try {
                 importBtn.disabled = true;
@@ -527,13 +547,39 @@
                 const jsonString = decodeURIComponent(escape(atob(code)));
                 const importData = JSON.parse(jsonString);
 
-                if (!importData.data || !importData.version) {
-                    throw new Error('Format data tidak valid. Pastikan kode ekspor berasal dari sistem terbaru.');
+                // --- LOGIKA BARU DIMULAI DI SINI ---
+                
+                // 1. Validasi baru: Pastikan data lokasi ada
+                if (!importData.data || !importData.locations) {
+                    throw new Error('Format data tidak valid. Pastikan kode ekspor (V5.3+) menyertakan data lokasi.');
                 }
                 
+                // 2. Logika baru: Impor data lokasi
+                importBtn.textContent = 'Mengimpor lokasi...';
+                
+                // Ubah format data lokasi dari Admin (berbasis docId)
+                // menjadi format yang dibutuhkan Viewer (berbasis nama: kapasitas)
+                const newLocationConfig = {};
+                for (const docId in importData.locations) {
+                    const location = importData.locations[docId];
+                    // Hanya simpan nama dan kapasitas
+                    if(location.name && location.capacity) {
+                         newLocationConfig[location.name] = location.capacity;
+                    }
+                }
+                
+                // Simpan data lokasi baru ke Firestore Viewer
+                const locationDocRef = db.collection("config").doc("locations");
+                await locationDocRef.set(newLocationConfig);
+                
+                // Update variabel global di memori agar UI langsung sinkron
+                kapasitasTempat = newLocationConfig;
+                
+                // --- AKHIR LOGIKA BARU ---
+
                 const BATCH_SIZE = 400;
 
-                importBtn.textContent = 'Menghapus data lama...';
+                importBtn.textContent = 'Menghapus data reservasi lama...';
                 const oldDocsSnapshot = await db.collection('reservations').get();
                 if (!oldDocsSnapshot.empty) {
                     const deletionPromises = [];
@@ -584,7 +630,8 @@
                     await Promise.all(additionPromises);
                 }
                 
-                alert('PROSES SELESAI!\n\nData reservasi telah berhasil diimpor sepenuhnya.');
+                // Pesan sukses yang baru
+                alert('PROSES SELESAI!\n\nData RESERVASI dan LOKASI telah berhasil diimpor sepenuhnya.');
                 dataImportCode.value = '';
 
             } catch (error) {
@@ -595,6 +642,7 @@
                 importBtn.textContent = 'Proses Import';
             }
         });
+
     }
   </script>
 </body>
