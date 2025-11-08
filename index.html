@@ -11,7 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
   <style>
-    /* CSS Styles */
+    /* CSS Styles (Tidak berubah) */
     :root {
       --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a;
       --accent: #f4a261; --danger: #e76f51; --light: #f8f9fa; --dark: #343a40;
@@ -347,6 +347,9 @@
       }
     }
 
+    // ===================================================================
+    // ============= FUNGSI YANG DIMODIFIKASI SECARA TOTAL ===============
+    // ===================================================================
     function tampilkanDetailDiJendelaBaru(day) {
       const monthStr = String(currentMonth + 1).padStart(2, '0');
       const dayStr = String(day).padStart(2, '0');
@@ -359,8 +362,15 @@
 
       const reservations = allReservations[dateKey]?.reservations || [];
       const formattedDate = `${day} ${monthNames[currentMonth]} ${currentYear}`;
+      
+      // Hitung total tamu
+      const totalTamu = reservations.reduce((sum, res) => sum + (parseInt(res.jumlah) || 0), 0);
 
-      let capacityHTML = '<h2><i class="fas fa-chart-pie"></i> Kapasitas Tempat</h2>';
+      // --- 1. MEMBUAT BLOK KAPASITAS (VERSI BARU) ---
+      let capacityHTML = `
+        <div class="module-card">
+          <h2><i class="fas fa-chart-pie"></i> Kapasitas Tempat</h2>`;
+      
       const occupancy = {};
       Object.keys(kapasitasTempat).forEach(loc => occupancy[loc] = 0);
       reservations.forEach(res => {
@@ -368,86 +378,267 @@
           occupancy[res.tempat] += parseInt(res.jumlah) || 0;
         }
       });
-      Object.keys(kapasitasTempat).forEach(loc => {
-        const current = occupancy[loc];
-        const max = kapasitasTempat[loc];
-        const percentage = max > 0 ? Math.round((current / max) * 100) : 0;
-        const sisa = max - current;
 
-        capacityHTML += `
-          <div class="capacity-item">
-            <strong>${loc}</strong> (Terpakai ${current} / Tersisa ${sisa}) Kapasitas ${max}
-            <div class="capacity-bar">
-              <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};">${percentage}%</div>
-            </div>
+      if (Object.keys(kapasitasTempat).length === 0) {
+          capacityHTML += '<p>Data kapasitas lokasi belum diimpor oleh admin.</p>';
+      } else {
+          Object.keys(kapasitasTempat).sort().forEach(loc => {
+            const current = occupancy[loc] || 0;
+            const max = kapasitasTempat[loc] || 0;
+            const percentage = max > 0 ? Math.round((current / max) * 100) : 0;
+            const sisa = max - current;
+
+            capacityHTML += `
+              <div class="capacity-item">
+                <div class="capacity-info">
+                  <strong>${loc}</strong>
+                  <span class="capacity-count">${current} / ${max}</span>
+                </div>
+                <div class="capacity-bar">
+                  <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};"></div>
+                </div>
+                <small class="capacity-sisa">Sisa: ${sisa}</small>
+              </div>
+            `;
+          });
+      }
+      capacityHTML += `</div>`;
+
+      // --- 2. MEMBUAT BLOK DAFTAR RESERVASI (VERSI BARU) ---
+      let listHTML = `
+        <div class="module-card">
+          <h2><i class="fas fa-users"></i> Daftar Reservasi</h2>
+          <div class="reservation-summary">
+              Total <strong>${reservations.length}</strong> reservasi dengan <strong>${totalTamu}</strong> tamu.
           </div>
-        `;
-      });
-
-            let listHTML = `<h2><i class="fas fa-users"></i> Daftar Reservasi (${reservations.length})</h2>`;
+      `;
+      
       if (reservations.length > 0) {
-        reservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach(res => {
+        reservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach((res, index) => {
           
-          // --- Logika Baru untuk membuat daftar menu ---
-          let menuDetailHtml = '<small><em>(Tidak ada detail menu)</em></small>'; // Teks default
-          if (res.menus && Array.isArray(res.menus) && res.menus.length > 0) {
+          let menuDetailHtml = '<small><em>(Tidak ada detail menu)</em></small>';
+          const hasMenu = res.menus && Array.isArray(res.menus) && res.menus.length > 0;
+
+          if (hasMenu) {
               menuDetailHtml = '<ul class="menu-detail-list">';
               res.menus.forEach(item => {
                   menuDetailHtml += `<li><strong>${item.quantity}x</strong> ${item.name || 'Menu tdk diketahui'}</li>`;
               });
               menuDetailHtml += '</ul>';
           }
-          // --- Akhir Logika Baru ---
 
           listHTML += `
             <div class="reservation-list-item">
-              <div class="res-info">
-                 <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
+              <div class="res-header">
+                <div class="res-info">
+                  <i class="fas fa-user-circle"></i>
+                  <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
+                </div>
+                ${hasMenu ? `<button class="toggle-menu-btn" data-target="menu-${index}"><i class="fas fa-utensils"></i> Menu <i class="fas fa-chevron-down"></i></button>` : ''}
               </div>
               <div class="res-details">
-                <small><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'} - <i class="fas fa-map-marker-alt"></i> ${res.tempat || 'Tanpa Lokasi'}</small>
+                <span><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${res.tempat || 'Tanpa Lokasi'}</span>
               </div>
               
-              <div class="res-menus">
+              ${hasMenu ? `
+              <div class="res-menus" id="menu-${index}" style="display: none;">
                 ${menuDetailHtml}
               </div>
-              </div>
+              ` : ''}
+            </div>
           `;
         });
       } else {
         listHTML += '<p>Tidak ada reservasi untuk tanggal ini.</p>';
       }
+      listHTML += `</div>`;
 
       
+      // --- 3. MERAKIT HALAMAN HTML (VERSI BARU DENGAN CSS & JS) ---
       const detailPageHTML = `
-        <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detail Reservasi - ${formattedDate}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>:root { --primary: #2a9d8f; --primary-dark: #264653; --accent: #f4a261; --danger: #e76f51; } body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5; color: #343a40; } header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 20px; text-align: center; } .container { max-width: 800px; margin: 20px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); } button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 20px; display: inline-flex; align-items: center; gap: 8px;} .capacity-item { margin-bottom: 15px; } .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 22px; margin-top: 5px; } .capacity-fill { height: 100%; text-align: right; color: white; font-size: 0.8rem; line-height: 22px; padding-right: 5px; box-sizing: border-box; } .reservation-list-item { border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; } .res-info { flex-grow: 1; } .res-details { color: #555; } hr { border: 0; border-top: 1px dashed #ccc; margin: 20px 0; }
-         .res-menus {
-    width: 100%;
-    background-color: #f8f9fa;
-    border-left: 3px solid var(--primary);
-    padding: 8px 12px;
-    margin-top: 8px;
-    box-sizing: border-box;
-}
-.menu-detail-list {
-    margin: 0;
-    padding-left: 18px;
-    font-size: 0.9rem;
-    color: #333;
-}
-.menu-detail-list li {
-    margin-bottom: 4px;
-}
-.menu-detail-list li:last-child {
-    margin-bottom: 0;
-}
+        <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detail Reservasi - ${formattedDate}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+          :root { --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a; --accent: #f4a261; --danger: #e76f51; } 
+          body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5; color: #343a40; } 
+          header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 20px; text-align: center; } 
+          .container { max-width: 800px; margin: 20px auto; padding: 20px; } 
+          button.print-btn { background-color: var(--secondary); margin-left: 10px; }
+          button.back-btn { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 20px; display: inline-flex; align-items: center; gap: 8px;}
+          
+          /* (BARU) Card Module Styling */
+          .module-card {
+              background-color: #ffffff;
+              border-radius: 10px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+              margin-bottom: 25px;
+              padding: 20px 25px;
+              overflow: hidden;
+          }
+          .module-card h2 {
+              margin-top: 0;
+              margin-bottom: 15px;
+              color: var(--primary-dark);
+              border-bottom: 2px solid #f0f0f0;
+              padding-bottom: 10px;
+          }
 
-           @media (max-width: 480px) { .reservation-list-item { flex-direction: column; align-items: flex-start; } }</style></head><body><header><h1>Detail Reservasi</h1><h3>${formattedDate}</h3></header><div class="container">${capacityHTML} <hr> ${listHTML}<button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button></div></body></html>`;
+          /* (BARU) Revised Capacity Styling */
+          .capacity-item { 
+              margin-bottom: 15px; 
+              border: 1px solid #eee;
+              border-radius: 8px;
+              padding: 12px;
+          }
+          .capacity-item:last-child { margin-bottom: 0; }
+          .capacity-info {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 5px;
+              font-size: 1.1rem;
+          }
+          .capacity-count { font-weight: 600; color: var(--primary-dark); }
+          .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 18px; }
+          .capacity-fill { height: 100%; transition: width 0.5s ease; }
+          .capacity-sisa {
+              font-size: 0.9rem;
+              color: #555;
+              margin-top: 5px;
+              display: inline-block;
+          }
+
+          /* (BARU) Reservation Summary */
+          .reservation-summary {
+              font-size: 1.1rem;
+              color: #333;
+              background-color: #f8f9fa;
+              border-radius: 6px;
+              padding: 12px 15px;
+              margin-bottom: 20px;
+              border-left: 4px solid var(--accent);
+          }
+
+          /* (BARU) Revised Reservation List Item */
+          .reservation-list-item { 
+              border: 1px solid #e0e0e0;
+              border-radius: 8px;
+              padding: 15px;
+              margin-bottom: 12px;
+              transition: box-shadow 0.3s ease;
+          }
+          .reservation-list-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+          .res-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 10px;
+              margin-bottom: 10px;
+          }
+          .res-info {
+              font-size: 1.2rem;
+              font-weight: 600;
+              color: var(--primary-dark);
+              display: flex;
+              align-items: center;
+              gap: 8px;
+          }
+          .res-info .fa-user-circle { font-size: 1.5rem; color: var(--primary); }
+          .res-details {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 15px 20px;
+              color: #555;
+              font-size: 0.95rem;
+              padding-left: 5px;
+          }
+          .res-details span { display: flex; align-items: center; gap: 6px; }
+
+          /* (BARU) Tombol Toggle Menu */
+          .toggle-menu-btn {
+              background-color: #f0f0f0;
+              color: #333;
+              border: 1px solid #ddd;
+              padding: 5px 12px;
+              font-size: 0.85rem;
+              font-weight: 600;
+              border-radius: 20px;
+              cursor: pointer;
+              transition: all 0.3s ease;
+          }
+          .toggle-menu-btn:hover { background-color: #e0e0e0; border-color: #ccc; }
+          .toggle-menu-btn .fa-chevron-down { transition: transform 0.3s ease; margin-left: 5px; }
+          .toggle-menu-btn.open { background-color: var(--primary-dark); color: white; border-color: var(--primary-dark); }
+          .toggle-menu-btn.open .fa-chevron-down { transform: rotate(180deg); }
+          
+          /* (BARU) Penataan Ulang Menu List */
+          .res-menus {
+              border-top: 1px dashed #ddd;
+              padding-top: 12px;
+              margin-top: 12px;
+              animation: fadeIn 0.3s ease;
+          }
+          @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+          .menu-detail-list {
+              margin: 0;
+              padding-left: 20px;
+              font-size: 0.9rem;
+              color: #333;
+          }
+          .menu-detail-list li { margin-bottom: 5px; }
+          .menu-detail-list li:last-child { margin-bottom: 0; }
+          
+          @media (max-width: 480px) { 
+            .res-header { flex-direction: column; align-items: flex-start; }
+            .res-details { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .module-card { padding: 15px; }
+          }
+          @media print {
+            body { background-color: white; }
+            header, .back-btn, .print-btn { display: none; }
+            .container { margin: 0; padding: 0; box-shadow: none; }
+            .module-card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; }
+            .res-menus { display: block !important; } /* Pastikan semua menu terlihat saat print */
+            .toggle-menu-btn { display: none; }
+          }
+        </style>
+        </head><body>
+          <header><h1>Detail Reservasi</h1><h3>${formattedDate}</h3></header>
+          <div class="container">
+            ${capacityHTML} 
+            ${listHTML}
+            <button onclick="window.close()" class="back-btn"><i class="fas fa-arrow-left"></i> Kembali</button>
+            <button onclick="window.print()" class="print-btn"><i class="fas fa-print"></i> Cetak</button>
+          </div>
+          
+          <script>
+            document.addEventListener('DOMContentLoaded', () => {
+              const toggleButtons = document.querySelectorAll('.toggle-menu-btn');
+              toggleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                  const targetId = button.getAttribute('data-target');
+                  const menuElement = document.getElementById(targetId);
+                  
+                  if (menuElement) {
+                    const isHidden = menuElement.style.display === 'none';
+                    menuElement.style.display = isHidden ? 'block' : 'none';
+                    button.classList.toggle('open', isHidden);
+                  }
+                });
+              });
+            });
+          <\/script>
+        </body></html>`;
       
       const detailWindow = window.open('', '_blank');
       detailWindow.document.write(detailPageHTML);
       detailWindow.document.close();
     }
+    // ===================================================================
+    // ============= AKHIR DARI FUNGSI YANG DIMODIFIKASI ===============
+    // ===================================================================
+
 
     function previousMonth() {
       currentMonth--;
