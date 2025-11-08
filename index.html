@@ -11,7 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
   <style>
-    /* CSS Styles (Tidak berubah) */
+    /* CSS Styles (Tidak berubah dari sebelumnya) */
     :root {
       --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a;
       --accent: #f4a261; --danger: #e76f51; --light: #f8f9fa; --dark: #343a40;
@@ -379,7 +379,6 @@
       });
 
       // --- 2. (BARU) DAPATKAN SEMUA NAMA LOKASI (DARI RESERVASI & KONFIGURASI) ---
-      // Ini agar lokasi yang ada di config tapi 'kosong' tetap muncul kartunya
       const allLocationNames = new Set([
         ...Object.keys(groupedReservations),
         ...Object.keys(kapasitasTempat)
@@ -390,8 +389,16 @@
       // Urutkan nama lokasi berdasarkan abjad
       const sortedLocationNames = Array.from(allLocationNames).sort();
 
+      // Warna gradasi untuk kartu (disesuaikan dengan tema)
+      const gradientColors = [
+        'linear-gradient(135deg, var(--primary), #3db0a4)', // Primary
+        'linear-gradient(135deg, var(--accent), #f7b47e)',  // Accent
+        'linear-gradient(135deg, var(--secondary), #f1d585)',// Secondary
+        'linear-gradient(135deg, #4b6e7a, var(--primary-dark))', // Darker shade of primary
+      ];
+
       // --- 3. (BARU) BUAT KARTU HTML UNTUK SETIAP LOKASI ---
-      sortedLocationNames.forEach(locationName => {
+      sortedLocationNames.forEach((locationName, idx) => {
         const groupData = groupedReservations[locationName] || { reservations: [], totalTamu: 0 };
         const locationReservations = groupData.reservations;
         const totalTamuInLocation = groupData.totalTamu;
@@ -439,11 +446,14 @@
           reservationsListHTML = '<p class="empty-state">Tidak ada reservasi di area ini.</p>';
         }
 
+        // Pilih warna gradasi berdasarkan indeks (agar berganti)
+        const currentGradient = gradientColors[idx % gradientColors.length];
+
         // Rakit Kartu untuk lokasi ini
         cardsHTML += `
-          <div class="location-card">
+          <div class="location-card" style="background-image: ${currentGradient};">
             <div class="location-header">
-              <h2><i class="fas fa-map-pin"></i> ${locationName}</h2>
+              <h2><i class="fas fa-map-marker-alt"></i> ${locationName}</h2>
             </div>
             
             <div class="capacity-block">
@@ -452,7 +462,7 @@
                 <span class="capacity-count">${totalTamuInLocation} / ${maxCapacityDisplay}</span>
               </div>
               <div class="capacity-bar">
-                <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};"></div>
+                <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary-dark)'};"></div>
               </div>
               <small class="capacity-sisa">Sisa: ${sisa}</small>
             </div>
@@ -470,132 +480,188 @@
       const detailPageHTML = `
         <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detail Reservasi - ${formattedDate}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
-          :root { --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a; --accent: #f4a261; --danger: #e76f51; } 
-          body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5; color: #343a40; } 
+          /* Global & Base Styles */
+          :root { 
+            --primary: #2a9d8f; --primary-light: #4ECDC4;
+            --primary-dark: #264653; 
+            --secondary: #e9c46a; --secondary-light: #FFD272;
+            --accent: #f4a261; --accent-light: #F7B18A;
+            --danger: #e76f51; --danger-light: #FF8B72;
+            --light: #f8f9fa; --dark: #343a40;
+          } 
+          * { box-sizing: border-box; }
+          body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            background: linear-gradient(180deg, #e0f2f1 0%, #f5fcfb 100%); /* Latar belakang gradasi ringan */
+            color: var(--dark); 
+            min-height: 100vh;
+          } 
           header { 
             background: linear-gradient(135deg, var(--primary-dark), var(--primary)); 
             color: white; 
             padding: 20px; 
             text-align: center; 
-            margin-bottom: 20px;
-          }
-          header h1 { margin: 0; }
-          header h3 { margin: 5px 0 0 0; font-weight: 400; }
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+          } 
+          header h1 { margin: 0; font-size: 2.2rem; }
+          header h3 { margin: 5px 0 0 0; font-weight: 300; font-size: 1.3rem; opacity: 0.9; }
+          
           .summary-bar {
-              background-color: white;
+              background-color: rgba(255, 255, 255, 0.95); /* Semi-transparan putih */
               color: var(--dark);
-              padding: 15px 20px;
-              margin: -20px auto 20px auto;
+              padding: 15px 25px;
+              margin: -20px auto 20px auto; /* Overlap dengan header */
               width: 90%;
               max-width: 800px;
-              border-radius: 8px;
-              box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-              font-size: 1.1rem;
+              border-radius: 12px;
+              box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+              font-size: 1.2rem;
               text-align: center;
+              font-weight: 500;
+              border: 1px solid rgba(0,0,0,0.05);
+              position: relative; /* Agar di atas header shadow */
+              z-index: 50;
           }
+          .summary-bar strong {
+              color: var(--primary-dark);
+              font-weight: 700;
+          }
+
           .controls {
             text-align: center;
-            margin: 20px;
+            margin: 20px 0 30px 0;
           }
           button {
-              background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; margin: 5px; display: inline-flex; align-items: center; gap: 8px;
+              background-color: var(--primary); 
+              color: white; 
+              border: none; 
+              padding: 12px 25px; 
+              border-radius: 8px; 
+              cursor: pointer; 
+              font-size: 1rem; 
+              margin: 8px; 
+              display: inline-flex; 
+              align-items: center; 
+              gap: 8px;
+              font-weight: 600;
+              box-shadow: 0 4px 10px rgba(42, 157, 143, 0.3);
+              transition: all 0.3s ease;
           }
-          button.print-btn { background-color: var(--secondary); }
+          button:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 15px rgba(42, 157, 143, 0.4);
+          }
+          button.print-btn { 
+            background-color: var(--secondary); 
+            box-shadow: 0 4px 10px rgba(233, 196, 106, 0.3);
+          }
+          button.print-btn:hover {
+            box-shadow: 0 6px 15px rgba(233, 196, 106, 0.4);
+          }
           
-          /* (BARU) Card Container Layout */
+          /* (BARU) iPad-style Card Container */
           .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 0 20px;
-            max-width: 1200px;
+            display: grid;
+            /* Buat 2 kolom dengan lebar min 350px, maks 1fr (sama rata) */
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 0 30px 30px 30px;
+            max-width: 1000px; /* Batas maks untuk tampilan iPad */
             margin: 0 auto;
           }
 
-          /* (BARU) Location Card Styling */
+          /* (BARU) Location Card 3D Gradient Styling */
           .location-card {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
-            border-top: 4px solid var(--primary);
-            flex-basis: 450px;
-            flex-grow: 1;
-            padding: 20px;
-            box-sizing: border-box;
+            color: white;
+            border-radius: 16px;
+            /* Bayangan kompleks untuk efek 3D */
+            box-shadow: 
+              0 2.8px 2.2px rgba(0, 0, 0, 0.02),
+              0 6.7px 5.3px rgba(0, 0, 0, 0.028),
+              0 12.5px 10px rgba(0, 0, 0, 0.035),
+              0 22.3px 17.9px rgba(0, 0, 0, 0.042),
+              0 41.8px 33.4px rgba(0, 0, 0, 0.05),
+              0 100px 80px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
           }
           .location-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
           }
+          
           .location-header {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
+            padding: 20px 20px 15px 20px;
+            /* Latar belakang sedikit transparan untuk memisahkan dari gradasi */
+            background-color: rgba(0,0,0,0.1); 
+            border-bottom: 1px solid rgba(255,255,255,0.2);
           }
           .location-header h2 {
             margin: 0;
-            color: var(--primary-dark);
+            color: white;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.6rem;
-          }
-          .location-header h2 .fa-map-pin {
-            color: var(--primary);
+            gap: 12px;
+            font-size: 1.7rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Teks shadow agar mudah terbaca */
           }
           
-          /* (BARU) Capacity Block Styling */
+          /* (BARU) Capacity Block (di dalam kartu gradasi) */
           .capacity-block {
-            background: #f8f9fa;
-            border-radius: 8px;
+            background: rgba(0,0,0,0.1); /* Sedikit lebih gelap */
+            margin: 20px;
+            border-radius: 12px;
             padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #eee;
           }
           .capacity-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-size: 1.1rem;
-            color: var(--dark);
+            color: white;
           }
-          .capacity-info .fa-users { color: var(--accent); }
-          .capacity-count { font-weight: 700; font-size: 1.2rem; color: var(--primary-dark); }
-          .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 18px; }
+          .capacity-info .fa-users { opacity: 0.8; }
+          .capacity-count { font-weight: 700; font-size: 1.2rem; }
+          .capacity-bar { background-color: rgba(0,0,0,0.2); border-radius: 5px; overflow: hidden; height: 16px; }
           .capacity-fill { height: 100%; transition: width 0.5s ease; }
           .capacity-sisa {
             font-size: 0.9rem;
-            color: #555;
+            color: white;
+            opacity: 0.8;
             margin-top: 8px;
             display: inline-block;
           }
 
-          /* (BARU) Reservation List (dalam card) */
+          /* (BARU) Reservation List (di dalam kartu gradasi) */
           .reservation-list {
-            max-height: 400px; /* Batasi tinggi agar tidak terlalu panjang */
+            max-height: 350px;
             overflow-y: auto;
-            padding-right: 5px; /* untuk scrollbar */
+            padding: 0 20px 20px 20px;
           }
           .empty-state {
-            color: #777;
+            color: white;
+            opacity: 0.8;
             text-align: center;
             padding: 20px;
             font-style: italic;
           }
           
-          /* (Di-porting) Reservation List Item */
+          /* (BARU) Reservation List Item (di dalam kartu gradasi) */
           .reservation-list-item { 
-              border: 1px solid #e0e0e0;
-              border-radius: 8px;
+              border: 1px solid rgba(255,255,255,0.2);
+              border-radius: 10px;
               padding: 15px;
               margin-bottom: 12px;
-              transition: box-shadow 0.3s ease;
-              background: #fff;
+              background: rgba(255,255,255,0.1); /* Latar belakang item semi-transparan */
+              backdrop-filter: blur(5px); /* Efek glassmorphism */
+              -webkit-backdrop-filter: blur(5px);
           }
           .reservation-list-item:last-child { margin-bottom: 0; }
+          
           .res-header {
               display: flex;
               justify-content: space-between;
@@ -605,47 +671,57 @@
               margin-bottom: 10px;
           }
           .res-info {
-              font-size: 1.2rem;
+              font-size: 1.1rem;
               font-weight: 600;
-              color: var(--primary-dark);
+              color: white;
               display: flex;
               align-items: center;
               gap: 8px;
           }
-          .res-info .fa-user-circle { font-size: 1.5rem; color: var(--primary); }
+          .res-info .fa-user-circle { font-size: 1.4rem; }
           .res-details {
               display: flex;
               gap: 15px 20px;
-              color: #555;
+              color: white;
+              opacity: 0.9;
               font-size: 0.95rem;
-              padding-left: 33px; /* Sejajar dengan nama */
+              padding-left: 31px; /* Sejajar dengan nama */
           }
           .res-details span { display: flex; align-items: center; gap: 6px; }
 
-          /* (Di-porting) Tombol Toggle Menu */
+          /* (BARU) Tombol Toggle Menu (di dalam kartu gradasi) */
           .toggle-menu-btn {
-              background-color: #f0f0f0;
-              color: #333;
-              border: 1px solid #ddd;
+              background-color: rgba(255,255,255,0.2);
+              color: white;
+              border: 1px solid rgba(255,255,255,0.3);
               padding: 5px 12px;
               font-size: 0.85rem;
               font-weight: 600;
               border-radius: 20px;
               cursor: pointer;
               transition: all 0.3s ease;
+              box-shadow: none; /* Reset shadow dari button global */
           }
-          .toggle-menu-btn:hover { background-color: #e0e0e0; border-color: #ccc; }
+          .toggle-menu-btn:hover { 
+            background-color: rgba(255,255,255,0.3); 
+            transform: none; /* Reset transform */
+            box-shadow: none;
+          }
           .toggle-menu-btn .fa-chevron-down { transition: transform 0.3s ease; margin-left: 5px; }
-          .toggle-menu-btn.open { background-color: var(--primary-dark); color: white; border-color: var(--primary-dark); }
+          .toggle-menu-btn.open { 
+            background-color: var(--primary-dark); 
+            color: white; 
+            border-color: var(--primary-dark); 
+          }
           .toggle-menu-btn.open .fa-chevron-down { transform: rotate(180deg); }
           
-          /* (Di-porting) Penataan Ulang Menu List */
+          /* (BARU) Menu List (di dalam kartu gradasi) */
           .res-menus {
-              border-top: 1px dashed #ddd;
+              border-top: 1px dashed rgba(255,255,255,0.3);
               padding-top: 12px;
               margin-top: 12px;
               animation: fadeIn 0.3s ease;
-              background-color: #fdfdfd;
+              background-color: rgba(0,0,0,0.1);
               padding: 10px 15px;
               border-radius: 6px;
           }
@@ -654,21 +730,48 @@
               margin: 0;
               padding-left: 20px;
               font-size: 0.9rem;
-              color: #333;
+              color: white;
           }
           .menu-detail-list li { margin-bottom: 5px; }
           
-          @media (max-width: 600px) { 
-            .location-card { flex-basis: 100%; } /* Kartu jadi full width */
+          @media (max-width: 800px) { 
+            .card-container {
+              /* Kembali ke 1 kolom di layar HP */
+              grid-template-columns: 1fr;
+              padding: 0 20px 20px 20px;
+            }
+          }
+          
+          @media (max-width: 600px) {
+            header h1 { font-size: 1.8rem; }
+            header h3 { font-size: 1.1rem; }
+            .summary-bar { width: 90%; font-size: 1rem; }
             .res-header { flex-direction: column; align-items: flex-start; }
             .res-details { padding-left: 5px; }
-            .summary-bar { width: 85%; }
           }
+          
           @media print {
-            body { background-color: white; }
-            header, .controls { display: none; }
-            .card-container { gap: 15px; padding: 0; }
-            .location-card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; transform: none !important; }
+            body { background: white; }
+            header, .controls, .summary-bar { display: none; }
+            .card-container { 
+              grid-template-columns: 1fr; /* 1 kolom saat print */
+              gap: 15px; padding: 0; margin: 0;
+            }
+            .location-card { 
+              box-shadow: none; 
+              border: 1px solid #ccc; 
+              margin-bottom: 15px; 
+              padding: 15px; 
+              transform: none !important;
+              background: white !important; /* Hapus gradasi */
+              color: black; /* Teks jadi hitam */
+            }
+            .location-header, .capacity-block, .res-info, .res-details, .menu-detail-list, .empty-state {
+              color: black !important;
+            }
+            .location-header { background: #eee; }
+            .capacity-block { background: #f9f9f9; }
+            .reservation-list-item { background: #fff; border-color: #ddd; }
             .reservation-list { max-height: none; overflow: visible; }
             .res-menus { display: block !important; } /* Pastikan semua menu terlihat saat print */
             .toggle-menu-btn { display: none; }
