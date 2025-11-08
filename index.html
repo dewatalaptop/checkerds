@@ -362,172 +362,240 @@
 
       const reservations = allReservations[dateKey]?.reservations || [];
       const formattedDate = `${day} ${monthNames[currentMonth]} ${currentYear}`;
-      
-      // Hitung total tamu
       const totalTamu = reservations.reduce((sum, res) => sum + (parseInt(res.jumlah) || 0), 0);
 
-      // --- 1. MEMBUAT BLOK KAPASITAS (VERSI BARU) ---
-      let capacityHTML = `
-        <div class="module-card">
-          <h2><i class="fas fa-chart-pie"></i> Kapasitas Tempat</h2>`;
-      
-      const occupancy = {};
-      Object.keys(kapasitasTempat).forEach(loc => occupancy[loc] = 0);
+      // --- 1. (BARU) KELOMPOKKAN RESERVASI BERDASARKAN TEMPAT ---
+      const groupedReservations = {};
       reservations.forEach(res => {
-        if (occupancy.hasOwnProperty(res.tempat)) {
-          occupancy[res.tempat] += parseInt(res.jumlah) || 0;
+        const location = res.tempat || 'Tanpa Lokasi'; // Kelompokkan yg kosong
+        if (!groupedReservations[location]) {
+          groupedReservations[location] = {
+            reservations: [],
+            totalTamu: 0
+          };
         }
+        groupedReservations[location].reservations.push(res);
+        groupedReservations[location].totalTamu += (parseInt(res.jumlah) || 0);
       });
 
-      if (Object.keys(kapasitasTempat).length === 0) {
-          capacityHTML += '<p>Data kapasitas lokasi belum diimpor oleh admin.</p>';
-      } else {
-          Object.keys(kapasitasTempat).sort().forEach(loc => {
-            const current = occupancy[loc] || 0;
-            const max = kapasitasTempat[loc] || 0;
-            const percentage = max > 0 ? Math.round((current / max) * 100) : 0;
-            const sisa = max - current;
+      // --- 2. (BARU) DAPATKAN SEMUA NAMA LOKASI (DARI RESERVASI & KONFIGURASI) ---
+      // Ini agar lokasi yang ada di config tapi 'kosong' tetap muncul kartunya
+      const allLocationNames = new Set([
+        ...Object.keys(groupedReservations),
+        ...Object.keys(kapasitasTempat)
+      ]);
 
-            capacityHTML += `
-              <div class="capacity-item">
-                <div class="capacity-info">
-                  <strong>${loc}</strong>
-                  <span class="capacity-count">${current} / ${max}</span>
+      let cardsHTML = '';
+      
+      // Urutkan nama lokasi berdasarkan abjad
+      const sortedLocationNames = Array.from(allLocationNames).sort();
+
+      // --- 3. (BARU) BUAT KARTU HTML UNTUK SETIAP LOKASI ---
+      sortedLocationNames.forEach(locationName => {
+        const groupData = groupedReservations[locationName] || { reservations: [], totalTamu: 0 };
+        const locationReservations = groupData.reservations;
+        const totalTamuInLocation = groupData.totalTamu;
+        
+        const maxCapacity = kapasitasTempat[locationName] || 0;
+        const maxCapacityDisplay = maxCapacity > 0 ? maxCapacity : '??';
+        const percentage = maxCapacity > 0 ? Math.round((totalTamuInLocation / maxCapacity) * 100) : 0;
+        const sisa = maxCapacity > 0 ? maxCapacity - totalTamuInLocation : '??';
+
+        let reservationsListHTML = '';
+        if (locationReservations.length > 0) {
+          // Urutkan reservasi di dalam lokasi berdasarkan jam
+          locationReservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach((res, index) => {
+            let menuDetailHtml = '<small><em>(Tidak ada detail menu)</em></small>';
+            const hasMenu = res.menus && Array.isArray(res.menus) && res.menus.length > 0;
+
+            if (hasMenu) {
+                menuDetailHtml = '<ul class="menu-detail-list">';
+                res.menus.forEach(item => {
+                    menuDetailHtml += `<li><strong>${item.quantity}x</strong> ${item.name || 'Menu tdk diketahui'}</li>`;
+                });
+                menuDetailHtml += '</ul>';
+            }
+
+            // ID unik untuk menu toggle, sekarang perlu menyertakan nama lokasi
+            const menuId = `menu-${locationName.replace(/\s+/g, '-')}-${index}`;
+
+            reservationsListHTML += `
+              <div class="reservation-list-item">
+                <div class="res-header">
+                  <div class="res-info">
+                    <i class="fas fa-user-circle"></i>
+                    <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
+                  </div>
+                  ${hasMenu ? `<button class="toggle-menu-btn" data-target="${menuId}"><i class="fas fa-utensils"></i> Menu <i class="fas fa-chevron-down"></i></button>` : ''}
                 </div>
-                <div class="capacity-bar">
-                  <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};"></div>
+                <div class="res-details">
+                  <span><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'}</span>
                 </div>
-                <small class="capacity-sisa">Sisa: ${sisa}</small>
+                ${hasMenu ? `<div class="res-menus" id="${menuId}" style="display: none;">${menuDetailHtml}</div>` : ''}
               </div>
             `;
           });
-      }
-      capacityHTML += `</div>`;
+        } else {
+          reservationsListHTML = '<p class="empty-state">Tidak ada reservasi di area ini.</p>';
+        }
 
-      // --- 2. MEMBUAT BLOK DAFTAR RESERVASI (VERSI BARU) ---
-      let listHTML = `
-        <div class="module-card">
-          <h2><i class="fas fa-users"></i> Daftar Reservasi</h2>
-          <div class="reservation-summary">
-              Total <strong>${reservations.length}</strong> reservasi dengan <strong>${totalTamu}</strong> tamu.
-          </div>
-      `;
-      
-      if (reservations.length > 0) {
-        reservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach((res, index) => {
-          
-          let menuDetailHtml = '<small><em>(Tidak ada detail menu)</em></small>';
-          const hasMenu = res.menus && Array.isArray(res.menus) && res.menus.length > 0;
-
-          if (hasMenu) {
-              menuDetailHtml = '<ul class="menu-detail-list">';
-              res.menus.forEach(item => {
-                  menuDetailHtml += `<li><strong>${item.quantity}x</strong> ${item.name || 'Menu tdk diketahui'}</li>`;
-              });
-              menuDetailHtml += '</ul>';
-          }
-
-          listHTML += `
-            <div class="reservation-list-item">
-              <div class="res-header">
-                <div class="res-info">
-                  <i class="fas fa-user-circle"></i>
-                  <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
-                </div>
-                ${hasMenu ? `<button class="toggle-menu-btn" data-target="menu-${index}"><i class="fas fa-utensils"></i> Menu <i class="fas fa-chevron-down"></i></button>` : ''}
-              </div>
-              <div class="res-details">
-                <span><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'}</span>
-                <span><i class="fas fa-map-marker-alt"></i> ${res.tempat || 'Tanpa Lokasi'}</span>
-              </div>
-              
-              ${hasMenu ? `
-              <div class="res-menus" id="menu-${index}" style="display: none;">
-                ${menuDetailHtml}
-              </div>
-              ` : ''}
+        // Rakit Kartu untuk lokasi ini
+        cardsHTML += `
+          <div class="location-card">
+            <div class="location-header">
+              <h2><i class="fas fa-map-pin"></i> ${locationName}</h2>
             </div>
-          `;
-        });
-      } else {
-        listHTML += '<p>Tidak ada reservasi untuk tanggal ini.</p>';
-      }
-      listHTML += `</div>`;
+            
+            <div class="capacity-block">
+              <div class="capacity-info">
+                <strong><i class="fas fa-users"></i> Kapasitas</strong>
+                <span class="capacity-count">${totalTamuInLocation} / ${maxCapacityDisplay}</span>
+              </div>
+              <div class="capacity-bar">
+                <div class="capacity-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};"></div>
+              </div>
+              <small class="capacity-sisa">Sisa: ${sisa}</small>
+            </div>
+            
+            <div class="reservation-list">
+              ${reservationsListHTML}
+            </div>
+          </div>
+        `;
+      });
+
 
       
-      // --- 3. MERAKIT HALAMAN HTML (VERSI BARU DENGAN CSS & JS) ---
+      // --- 4. MERAKIT HALAMAN HTML (VERSI BARU DENGAN CSS & JS) ---
       const detailPageHTML = `
         <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detail Reservasi - ${formattedDate}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
           :root { --primary: #2a9d8f; --primary-dark: #264653; --secondary: #e9c46a; --accent: #f4a261; --danger: #e76f51; } 
           body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f5f5f5; color: #343a40; } 
-          header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; padding: 20px; text-align: center; } 
-          .container { max-width: 800px; margin: 20px auto; padding: 20px; } 
-          button.print-btn { background-color: var(--secondary); margin-left: 10px; }
-          button.back-btn { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 20px; display: inline-flex; align-items: center; gap: 8px;}
-          
-          /* (BARU) Card Module Styling */
-          .module-card {
-              background-color: #ffffff;
-              border-radius: 10px;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-              margin-bottom: 25px;
-              padding: 20px 25px;
-              overflow: hidden;
+          header { 
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary)); 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            margin-bottom: 20px;
           }
-          .module-card h2 {
-              margin-top: 0;
-              margin-bottom: 15px;
-              color: var(--primary-dark);
-              border-bottom: 2px solid #f0f0f0;
-              padding-bottom: 10px;
+          header h1 { margin: 0; }
+          header h3 { margin: 5px 0 0 0; font-weight: 400; }
+          .summary-bar {
+              background-color: white;
+              color: var(--dark);
+              padding: 15px 20px;
+              margin: -20px auto 20px auto;
+              width: 90%;
+              max-width: 800px;
+              border-radius: 8px;
+              box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+              font-size: 1.1rem;
+              text-align: center;
+          }
+          .controls {
+            text-align: center;
+            margin: 20px;
+          }
+          button {
+              background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; margin: 5px; display: inline-flex; align-items: center; gap: 8px;
+          }
+          button.print-btn { background-color: var(--secondary); }
+          
+          /* (BARU) Card Container Layout */
+          .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
           }
 
-          /* (BARU) Revised Capacity Styling */
-          .capacity-item { 
-              margin-bottom: 15px; 
-              border: 1px solid #eee;
-              border-radius: 8px;
-              padding: 12px;
+          /* (BARU) Location Card Styling */
+          .location-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+            border-top: 4px solid var(--primary);
+            flex-basis: 450px;
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
           }
-          .capacity-item:last-child { margin-bottom: 0; }
+          .location-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+          }
+          .location-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+          }
+          .location-header h2 {
+            margin: 0;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.6rem;
+          }
+          .location-header h2 .fa-map-pin {
+            color: var(--primary);
+          }
+          
+          /* (BARU) Capacity Block Styling */
+          .capacity-block {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+          }
           .capacity-info {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 5px;
-              font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: var(--dark);
           }
-          .capacity-count { font-weight: 600; color: var(--primary-dark); }
+          .capacity-info .fa-users { color: var(--accent); }
+          .capacity-count { font-weight: 700; font-size: 1.2rem; color: var(--primary-dark); }
           .capacity-bar { background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 18px; }
           .capacity-fill { height: 100%; transition: width 0.5s ease; }
           .capacity-sisa {
-              font-size: 0.9rem;
-              color: #555;
-              margin-top: 5px;
-              display: inline-block;
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 8px;
+            display: inline-block;
           }
 
-          /* (BARU) Reservation Summary */
-          .reservation-summary {
-              font-size: 1.1rem;
-              color: #333;
-              background-color: #f8f9fa;
-              border-radius: 6px;
-              padding: 12px 15px;
-              margin-bottom: 20px;
-              border-left: 4px solid var(--accent);
+          /* (BARU) Reservation List (dalam card) */
+          .reservation-list {
+            max-height: 400px; /* Batasi tinggi agar tidak terlalu panjang */
+            overflow-y: auto;
+            padding-right: 5px; /* untuk scrollbar */
           }
-
-          /* (BARU) Revised Reservation List Item */
+          .empty-state {
+            color: #777;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+          }
+          
+          /* (Di-porting) Reservation List Item */
           .reservation-list-item { 
               border: 1px solid #e0e0e0;
               border-radius: 8px;
               padding: 15px;
               margin-bottom: 12px;
               transition: box-shadow 0.3s ease;
+              background: #fff;
           }
-          .reservation-list-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+          .reservation-list-item:last-child { margin-bottom: 0; }
           .res-header {
               display: flex;
               justify-content: space-between;
@@ -547,15 +615,14 @@
           .res-info .fa-user-circle { font-size: 1.5rem; color: var(--primary); }
           .res-details {
               display: flex;
-              flex-wrap: wrap;
               gap: 15px 20px;
               color: #555;
               font-size: 0.95rem;
-              padding-left: 5px;
+              padding-left: 33px; /* Sejajar dengan nama */
           }
           .res-details span { display: flex; align-items: center; gap: 6px; }
 
-          /* (BARU) Tombol Toggle Menu */
+          /* (Di-porting) Tombol Toggle Menu */
           .toggle-menu-btn {
               background-color: #f0f0f0;
               color: #333;
@@ -572,12 +639,15 @@
           .toggle-menu-btn.open { background-color: var(--primary-dark); color: white; border-color: var(--primary-dark); }
           .toggle-menu-btn.open .fa-chevron-down { transform: rotate(180deg); }
           
-          /* (BARU) Penataan Ulang Menu List */
+          /* (Di-porting) Penataan Ulang Menu List */
           .res-menus {
               border-top: 1px dashed #ddd;
               padding-top: 12px;
               margin-top: 12px;
               animation: fadeIn 0.3s ease;
+              background-color: #fdfdfd;
+              padding: 10px 15px;
+              border-radius: 6px;
           }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
           .menu-detail-list {
@@ -587,29 +657,41 @@
               color: #333;
           }
           .menu-detail-list li { margin-bottom: 5px; }
-          .menu-detail-list li:last-child { margin-bottom: 0; }
           
-          @media (max-width: 480px) { 
+          @media (max-width: 600px) { 
+            .location-card { flex-basis: 100%; } /* Kartu jadi full width */
             .res-header { flex-direction: column; align-items: flex-start; }
-            .res-details { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .module-card { padding: 15px; }
+            .res-details { padding-left: 5px; }
+            .summary-bar { width: 85%; }
           }
           @media print {
             body { background-color: white; }
-            header, .back-btn, .print-btn { display: none; }
-            .container { margin: 0; padding: 0; box-shadow: none; }
-            .module-card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; }
+            header, .controls { display: none; }
+            .card-container { gap: 15px; padding: 0; }
+            .location-card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; transform: none !important; }
+            .reservation-list { max-height: none; overflow: visible; }
             .res-menus { display: block !important; } /* Pastikan semua menu terlihat saat print */
             .toggle-menu-btn { display: none; }
           }
         </style>
-        </head><body>
-          <header><h1>Detail Reservasi</h1><h3>${formattedDate}</h3></header>
-          <div class="container">
-            ${capacityHTML} 
-            ${listHTML}
-            <button onclick="window.close()" class="back-btn"><i class="fas fa-arrow-left"></i> Kembali</button>
-            <button onclick="window.print()" class="print-btn"><i class="fas fa-print"></i> Cetak</button>
+        </head>
+        <body>
+          <header>
+            <h1>Detail Reservasi</h1>
+            <h3>${formattedDate}</h3>
+          </header>
+          
+          <div class="summary-bar">
+            Ringkasan Hari Ini: <strong>${reservations.length}</strong> Reservasi / <strong>${totalTamu}</strong> Total Tamu
+          </div>
+
+          <div class="controls">
+            <button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button>
+            <button onclick="window.print()" class="print-btn"><i class="fas fa-print"></i> Cetak Halaman</button>
+          </div>
+          
+          <div class="card-container">
+            ${cardsHTML}
           </div>
           
           <script>
