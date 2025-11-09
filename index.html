@@ -203,7 +203,7 @@
     <p>Viewer ditenagai oleh Firebase & GitHub Pages.</p>
   </footer>
 
-  <a href="https.www.dolansawah.my.id" class="floating-back-btn">
+  <a href="https://www.dolansawah.my.id" class="floating-back-btn">
     <i class="fas fa-home"></i> Kembali
   </a>
 
@@ -385,6 +385,9 @@
       ]);
       const sortedLocationNames = Array.from(allLocationNames).sort();
 
+      // --- [BARU] Palet Warna untuk Lokasi ---
+      const locationColors = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#008080', '#E6BEFF'];
+
       
       // --- 3. BUAT HTML UNTUK NAVIGASI KIRI (MASTER) ---
       let masterNavHTML = '';
@@ -396,10 +399,13 @@
         const maxCapacityDisplay = maxCapacity > 0 ? maxCapacity : '??';
         const percentage = maxCapacity > 0 ? Math.round((totalTamuInLocation / maxCapacity) * 100) : 0;
         
+        // [MODIFIKASI] Ambil warna
+        const color = locationColors[idx % locationColors.length];
+        
         masterNavHTML += `
           <button class="location-nav-item" data-target="panel-${idx}">
             <div class="nav-item-header">
-              <h3 class="nav-item-title"><i class="fas fa-map-marker-alt"></i> ${locationName}</h3>
+              <h3 class="nav-item-title"><i class="fas fa-map-marker-alt" style="color: ${color};"></i> ${locationName}</h3>
               <span class="nav-item-count">${totalTamuInLocation} / ${maxCapacityDisplay}</span>
             </div>
             <div class="nav-item-bar">
@@ -431,6 +437,9 @@
       sortedLocationNames.forEach((locationName, idx) => {
         const groupData = groupedReservations[locationName] || { reservations: [], totalTamu: 0 };
         const locationReservations = groupData.reservations;
+        
+        // [MODIFIKASI] Ambil warna
+        const color = locationColors[idx % locationColors.length];
 
         let reservationsListHTML = '';
         if (locationReservations.length > 0) {
@@ -469,10 +478,11 @@
         }
 
         // Rakit panel tersembunyi
+        // [MODIFIKASI] Tambahkan style border dan warna pada .panel-header
         detailContentHTML += `
           <div class="detail-panel" id="panel-${idx}" style="display: none;">
-            <div class="panel-header">
-              <h2><i class="fas fa-list-ul"></i> Daftar Reservasi: ${locationName}</h2>
+            <div class="panel-header" style="border-left: 5px solid ${color}; padding-left: 10px;">
+              <h2><i class="fas fa-list-ul" style="color: ${color};"></i> Daftar Reservasi: ${locationName}</h2>
             </div>
             <div class="reservation-list">
               ${reservationsListHTML}
@@ -726,6 +736,41 @@
           }
           .controls-footer button.print-btn { background-color: var(--secondary); }
           
+          /* === [BARU] CSS UNTUK INDIKATOR SCROLL === */
+          .scroll-indicator {
+            position: fixed;
+            bottom: 80px; /* Di atas tombol footer */
+            right: 20px;
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1900;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            animation: bounce 2s infinite;
+            opacity: 0; /* Sembunyi by default */
+            pointer-events: none; /* Agar tidak bisa diklik */
+            transition: opacity 0.3s ease;
+          }
+          
+          @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+              transform: translateY(0);
+            }
+            40% {
+              transform: translateY(-10px);
+            }
+            60% {
+              transform: translateY(-5px);
+            }
+          }
+          /* === AKHIR DARI CSS BARU === */
+
           /* Media Queries */
           @media (max-width: 768px) {
             
@@ -780,12 +825,25 @@
             .controls-footer {
               position: sticky;
               bottom: 0;
+              z-index: 1901; /* Pastikan di atas indikator scroll */
             }
+            
+            /* [BARU] Sesuaikan indikator scroll di mobile */
+            .scroll-indicator {
+                bottom: 85px; /* Posisikan di atas sticky footer */
+            }
+          }
+          
+          /* [MODIFIKASI] Sembunyikan indikator scroll di desktop */
+          @media (min-width: 769px) {
+              .scroll-indicator {
+                  display: none; 
+              }
           }
           
           @media print {
             body { height: auto; overflow: visible; }
-            header, .summary-bar, .controls-footer, .location-nav { display: none; }
+            header, .summary-bar, .controls-footer, .location-nav, .scroll-indicator { display: none; }
             .main-container { display: block; height: auto; overflow: visible; }
             .detail-content { display: block; height: auto; overflow: visible; padding: 0; }
             .detail-panel { display: block !important; margin-bottom: 20px; }
@@ -826,6 +884,11 @@
             </main>
           </div>
           
+          <div class="scroll-indicator" id="scrollIndicator">
+            <i class="fas fa-chevron-down"></i>
+            <span>Scroll</span>
+          </div>
+          
           <footer class="controls-footer">
             <button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button>
             <button onclick="window.print()" class="print-btn"><i class="fas fa-print"></i> Cetak Halaman</button>
@@ -836,6 +899,29 @@
               
               // Cek apakah kita di tampilan desktop
               const isDesktop = window.matchMedia('(min-width: 769px)').matches;
+              
+              // [BARU] Ambil elemen indikator scroll
+              const scrollIndicator = document.getElementById('scrollIndicator');
+
+              // --- [BARU] Logika untuk Indikator Scroll (HANYA JALAN DI MOBILE) ---
+              if (!isDesktop) {
+                  // Tampilkan setelah 1 detik jika halaman lebih panjang dari layar
+                  setTimeout(() => {
+                      if (document.body.scrollHeight > window.innerHeight) {
+                          scrollIndicator.style.opacity = '1';
+                      }
+                  }, 1000);
+
+                  // Sembunyikan saat di-scroll
+                  window.addEventListener('scroll', () => {
+                      if (window.scrollY > 50) {
+                          scrollIndicator.style.opacity = '0';
+                      } else if (window.scrollY === 0) {
+                          // Opsi: Tampilkan lagi jika kembali ke atas (bisa diaktifkan jika mau)
+                          // scrollIndicator.style.opacity = '1';
+                      }
+                  });
+              }
 
               // --- Logika untuk Master-Detail (HANYA JALAN DI DESKTOP) ---
               if (isDesktop) {
@@ -1115,7 +1201,7 @@
                 }
                 
                 // Pesan sukses yang baru
-                alert('PROSES SELESAI!\n\nData RESERVASI dan LOKASI telah berhasil diimpor sepenuhnya.');
+                alert('PROSES SELESI!\n\nData RESERVASI dan LOKASI telah berhasil diimpor sepenuhnya.');
                 dataImportCode.value = '';
 
             } catch (error) {
