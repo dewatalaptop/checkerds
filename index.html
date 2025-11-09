@@ -399,7 +399,6 @@
         const maxCapacityDisplay = maxCapacity > 0 ? maxCapacity : '??';
         const percentage = maxCapacity > 0 ? Math.round((totalTamuInLocation / maxCapacity) * 100) : 0;
         
-        // [MODIFIKASI] Ambil warna
         const color = locationColors[idx % locationColors.length];
         
         masterNavHTML += `
@@ -438,8 +437,13 @@
         const groupData = groupedReservations[locationName] || { reservations: [], totalTamu: 0 };
         const locationReservations = groupData.reservations;
         
-        // [MODIFIKASI] Ambil warna
         const color = locationColors[idx % locationColors.length];
+        
+        // [BARU] Ambil data ringkasan untuk header accordion mobile
+        const totalTamuInLocation = groupData.totalTamu;
+        const maxCapacity = kapasitasTempat[locationName] || 0;
+        const maxCapacityDisplay = maxCapacity > 0 ? maxCapacity : '??';
+        const percentage = maxCapacity > 0 ? Math.round((totalTamuInLocation / maxCapacity) * 100) : 0;
 
         let reservationsListHTML = '';
         if (locationReservations.length > 0) {
@@ -477,14 +481,24 @@
           reservationsListHTML = '<p class="empty-state">Tidak ada reservasi di area ini.</p>';
         }
 
-        // Rakit panel tersembunyi
-        // [MODIFIKASI] Tambahkan style border dan warna pada .panel-header
+        // [MODIFIKASI] Rakit panel
+        // panel-header (desktop) dan accordion-trigger (mobile) digabung
+        // reservation-list (desktop) dan accordion-content (mobile) digabung
         detailContentHTML += `
-          <div class="detail-panel" id="panel-${idx}" style="display: none;">
-            <div class="panel-header" style="border-left: 5px solid ${color}; padding-left: 10px;">
-              <h2><i class="fas fa-list-ul" style="color: ${color};"></i> Daftar Reservasi: ${locationName}</h2>
+          <div class="detail-panel" id="panel-${idx}">
+            
+            <div class="panel-header accordion-trigger" data-target="list-${idx}" style="border-left: 5px solid ${color};">
+              <div class="panel-header-main">
+                <h2><i class="fas fa-map-marker-alt" style="color: ${color};"></i> ${locationName}</h2>
+                <span class="panel-header-count">${totalTamuInLocation} / ${maxCapacityDisplay}</span>
+              </div>
+              <div class="panel-header-bar">
+                <div class="panel-header-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};"></div>
+              </div>
+              <i class="fas fa-chevron-down accordion-icon"></i>
             </div>
-            <div class="reservation-list">
+            
+            <div class="reservation-list accordion-content" id="list-${idx}">
               ${reservationsListHTML}
             </div>
           </div>
@@ -617,7 +631,16 @@
             overflow-y: auto; /* Scroll hanya di kolom ini */
             padding: 20px;
           }
-          .detail-panel { animation: fadeIn 0.3s ease; }
+          .detail-panel { 
+            animation: fadeIn 0.3s ease; 
+            /* [MODIFIKASI] Sembunyikan panel di desktop by default */
+            display: none;
+          }
+          /* [MODIFIKASI] Kecuali panel welcome */
+          #detail-welcome {
+            display: block;
+          }
+          
           @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
           
           .welcome-message {
@@ -632,11 +655,9 @@
           .welcome-message h2 { margin: 0 0 10px 0; color: var(--primary-dark); }
           .welcome-message hr { border: 0; border-top: 1px dashed #ccc; margin: 20px 40px; }
           
+          /* [MODIFIKASI] Sembunyikan panel-header di desktop */
           .panel-header {
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-            display: none; /* Sembunyikan di desktop */
+            display: none;
           }
           .panel-header h2 {
             margin: 0;
@@ -736,7 +757,6 @@
           }
           .controls-footer button.print-btn { background-color: var(--secondary); }
           
-          /* === [BARU] CSS UNTUK INDIKATOR SCROLL === */
           .scroll-indicator {
             position: fixed;
             bottom: 80px; /* Di atas tombol footer */
@@ -769,17 +789,16 @@
               transform: translateY(-5px);
             }
           }
-          /* === AKHIR DARI CSS BARU === */
 
-          /* Media Queries */
+          /* =========================================== */
+          /* === [MODIFIKASI] MEDIA QUERY MOBILE === */
+          /* =========================================== */
           @media (max-width: 768px) {
             
-            /* === INI ADALAH PERBAIKANNYA === */
             body {
               height: auto; /* Izinkan body tumbuh */
               overflow: visible; /* Izinkan body di-scroll */
             }
-            /* === AKHIR PERBAIKAN === */
           
             .main-container {
               flex-direction: column; /* Tumpuk kolom di HP */
@@ -795,23 +814,15 @@
               padding: 15px;
             }
             .welcome-message { display: none; } /* Sembunyikan pesan di HP */
+            
             .detail-panel { 
               display: block !important; /* Tampilkan semua panel */
-              margin-bottom: 20px;
+              margin-bottom: 15px; /* Beri jarak antar panel */
+              border-radius: 8px;
+              overflow: hidden; /* Penting untuk rounded corner */
+              box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             }
             
-            /* Ganti nav dengan header panel */
-            .panel-header { 
-              display: block; /* Tampilkan header untuk setiap panel */
-              background: #fff;
-              padding: 15px;
-              margin: 0 -15px 15px -15px; /* Penuhkan ke layar */
-              border-bottom: 1px solid #ccc;
-              position: sticky;
-              top: 0; /* Menempel di paling atas layar */
-              z-index: 10;
-             }
-             /* Hapus sticky di header utama & summary di mobile */
              header, .summary-bar {
                position: static;
              }
@@ -819,25 +830,120 @@
                margin: 0;
                border-radius: 0;
              }
-             .reservation-list {
-              grid-template-columns: 1fr; /* 1 kolom di HP */
-            }
+             
             .controls-footer {
               position: sticky;
               bottom: 0;
               z-index: 1901; /* Pastikan di atas indikator scroll */
             }
             
-            /* [BARU] Sesuaikan indikator scroll di mobile */
             .scroll-indicator {
                 bottom: 85px; /* Posisikan di atas sticky footer */
             }
+            
+            /* === [BARU] STYLES UNTUK AKORDEON MOBILE === */
+            
+            .panel-header.accordion-trigger {
+                display: block; /* Tampilkan header di mobile */
+                background: #fff;
+                padding: 12px 15px;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+                position: relative; /* Untuk ikon chevron */
+                padding-right: 45px; /* Beri ruang untuk ikon */
+            }
+            .panel-header.accordion-trigger:hover {
+                background-color: #f9f9f9;
+            }
+            
+            .panel-header-main {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            .panel-header-main h2 {
+                margin: 0;
+                font-size: 1.1rem; /* Samakan dgn desktop nav */
+                font-weight: 600;
+                color: var(--primary-dark);
+            }
+            .panel-header-count {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: var(--dark);
+            }
+            
+            .panel-header-bar {
+                height: 8px;
+                background-color: var(--border-color);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            .panel-header-fill { height: 100%; }
+
+            .accordion-icon {
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%) rotate(0deg);
+                transition: transform 0.3s ease;
+                font-size: 1.2rem;
+                color: var(--primary);
+            }
+            .panel-header.active .accordion-icon {
+                transform: translateY(-50%) rotate(180deg);
+            }
+            
+            /* Konten Accordion (Kartu Reservasi) */
+            .reservation-list.accordion-content {
+                max-height: 0; /* Sembunyikan by default */
+                overflow: hidden;
+                transition: max-height 0.4s ease-out;
+                background: #fdfdfd; 
+                padding: 0 15px; /* Padding akan muncul saat terbuka */
+                margin: 0;
+                display: grid; /* Tetap gunakan grid */
+                grid-template-columns: 1fr; /* 1 kolom di HP */
+                gap: 15px;
+            }
+            
+            /* [MODIFIKASI] Terapkan padding saat terbuka */
+            .reservation-list.accordion-content.open {
+                padding-top: 15px;
+                padding-bottom: 15px;
+            }
+
+            .empty-state {
+                padding: 10px 0;
+            }
+            /* === AKHIR STYLES AKORDEON === */
           }
           
           /* [MODIFIKASI] Sembunyikan indikator scroll di desktop */
           @media (min-width: 769px) {
               .scroll-indicator {
                   display: none; 
+              }
+              /* [MODIFIKASI] Sembunyikan konten accordion di desktop */
+              /* Karena desktop pakai master-detail */
+              .reservation-list.accordion-content {
+                  max-height: none !important;
+                  overflow: visible !important;
+                  padding: 0 !important;
+                  background: none !important;
+              }
+              
+              /* [MODIFIKASI] Sembunyikan trigger accordion di desktop */
+              .panel-header.accordion-trigger {
+                  display: none;
+              }
+              
+              /* [MODIFIKASI] Atur ulang .reservation-list untuk desktop */
+              .reservation-list {
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                  gap: 15px;
               }
           }
           
@@ -846,17 +952,26 @@
             header, .summary-bar, .controls-footer, .location-nav, .scroll-indicator { display: none; }
             .main-container { display: block; height: auto; overflow: visible; }
             .detail-content { display: block; height: auto; overflow: visible; padding: 0; }
-            .detail-panel { display: block !important; margin-bottom: 20px; }
+            .detail-panel { display: block !important; margin-bottom: 20px; box-shadow: none; border: 1px solid #ccc; }
             .welcome-message { display: none; }
-            .panel-header {
+            
+            /* [MODIFIKASI] Tampilkan header akordeon saat print */
+            .panel-header.accordion-trigger {
               display: block;
               background: #eee;
               padding: 10px;
               border-bottom: 1px solid #999;
+              position: static;
             }
-            .reservation-list {
+            .accordion-icon { display: none; }
+            
+            .reservation-list.accordion-content {
+              display: grid !important;
               grid-template-columns: 1fr;
               gap: 10px;
+              max-height: none !important; /* Tampilkan semua saat print */
+              overflow: visible !important;
+              padding: 10px !important;
             }
             .reservation-card { box-shadow: none; border: 1px solid #ccc; }
             .res-menus { display: block !important; }
@@ -897,30 +1012,47 @@
           <script>
             document.addEventListener('DOMContentLoaded', () => {
               
-              // Cek apakah kita di tampilan desktop
               const isDesktop = window.matchMedia('(min-width: 769px)').matches;
-              
-              // [BARU] Ambil elemen indikator scroll
               const scrollIndicator = document.getElementById('scrollIndicator');
 
-              // --- [BARU] Logika untuk Indikator Scroll (HANYA JALAN DI MOBILE) ---
+              // --- Logika untuk Indikator Scroll (HANYA JALAN DI MOBILE) ---
               if (!isDesktop) {
-                  // Tampilkan setelah 1 detik jika halaman lebih panjang dari layar
                   setTimeout(() => {
                       if (document.body.scrollHeight > window.innerHeight) {
                           scrollIndicator.style.opacity = '1';
                       }
                   }, 1000);
 
-                  // Sembunyikan saat di-scroll
                   window.addEventListener('scroll', () => {
                       if (window.scrollY > 50) {
                           scrollIndicator.style.opacity = '0';
-                      } else if (window.scrollY === 0) {
-                          // Opsi: Tampilkan lagi jika kembali ke atas (bisa diaktifkan jika mau)
-                          // scrollIndicator.style.opacity = '1';
                       }
-                  });
+                  }, { once: true }); // [MODIFIKASI] Hanya jalankan sekali agar tidak boros
+              }
+
+              // --- [BARU] Logika untuk Accordion (HANYA JALAN DI MOBILE) ---
+              if (!isDesktop) {
+                const accordionTriggers = document.querySelectorAll('.accordion-trigger');
+                
+                accordionTriggers.forEach(trigger => {
+                    trigger.addEventListener('click', () => {
+                        trigger.classList.toggle('active');
+                        const targetId = trigger.getAttribute('data-target');
+                        const content = document.getElementById(targetId);
+                        
+                        if (content) {
+                            if (content.style.maxHeight) {
+                                // Tutup
+                                content.style.maxHeight = null;
+                                content.classList.remove('open');
+                            } else {
+                                // Buka: set max-height ke scrollHeight-nya
+                                content.classList.add('open');
+                                content.style.maxHeight = content.scrollHeight + "px";
+                            }
+                        }
+                    });
+                });
               }
 
               // --- Logika untuk Master-Detail (HANYA JALAN DI DESKTOP) ---
@@ -931,31 +1063,35 @@
 
                 navButtons.forEach(button => {
                   button.addEventListener('click', () => {
-                    // 1. Atur status aktif di Navigasi Kiri
                     navButtons.forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     
-                    // 2. Sembunyikan semua panel di Kanan
                     detailPanels.forEach(panel => panel.style.display = 'none');
                     
-                    // 3. Tampilkan panel yang dituju
                     const targetId = button.getAttribute('data-target');
                     const targetPanel = document.getElementById(targetId);
                     if (targetPanel) {
-                      targetPanel.style.display = 'block';
+                      targetPanel.style.display = 'block'; // Tampilkan panel
                     }
                     
-                    // 4. Scroll ke atas di kontainer kanan
                     detailContent.scrollTop = 0;
                   });
                 });
+                
+                // [MODIFIKASI] Tampilkan panel pertama jika ada
+                if(navButtons.length > 0) {
+                    navButtons[0].click();
+                } else {
+                    // Jika tidak ada reservasi sama sekali, tetap tampilkan welcome
+                    document.getElementById('detail-welcome').style.display = 'block';
+                }
               }
 
               // --- Logika untuk Menu Toggles (JALAN DI SEMUA TAMPILAN) ---
               const toggleButtons = document.querySelectorAll('.toggle-menu-btn');
               toggleButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                  e.stopPropagation(); // Hentikan klik agar tidak memicu event lain
+                  e.stopPropagation();
                   
                   const targetId = button.getAttribute('data-target');
                   const menuElement = document.getElementById(targetId);
@@ -964,6 +1100,14 @@
                     const isHidden = menuElement.style.display === 'none';
                     menuElement.style.display = isHidden ? 'block' : 'none';
                     button.classList.toggle('open', isHidden);
+                    
+                    // [MODIFIKASI] Hitung ulang tinggi accordion jika di mobile
+                    if (!isDesktop) {
+                        const parentContent = button.closest('.accordion-content');
+                        if (parentContent && parentContent.style.maxHeight) {
+                            parentContent.style.maxHeight = parentContent.scrollHeight + "px";
+                        }
+                    }
                   }
                 });
               });
