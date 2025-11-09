@@ -383,34 +383,55 @@
         ...Object.keys(groupedReservations),
         ...Object.keys(kapasitasTempat)
       ]);
-
-      let accordionHTML = '';
       const sortedLocationNames = Array.from(allLocationNames).sort();
 
-      // --- 3. BUAT HTML UNTUK SETIAP LOKASI (BARU: ACCORDION) ---
       
-      // Palet warna yang akan diulang
-      const colorPalette = [
-        { border: 'var(--primary)', fill: 'rgba(42, 157, 143, 0.05)', icon: 'var(--primary)' },
-        { border: 'var(--accent)', fill: 'rgba(244, 162, 97, 0.05)', icon: 'var(--accent)' },
-        { border: 'var(--secondary)', fill: 'rgba(233, 196, 106, 0.05)', icon: 'var(--secondary)' },
-        { border: 'var(--danger)', fill: 'rgba(231, 111, 81, 0.05)', icon: 'var(--danger)' }
-      ];
-
+      // --- 3. BUAT HTML UNTUK NAVIGASI KIRI (MASTER) ---
+      let masterNavHTML = '';
       sortedLocationNames.forEach((locationName, idx) => {
         const groupData = groupedReservations[locationName] || { reservations: [], totalTamu: 0 };
-        const locationReservations = groupData.reservations;
         const totalTamuInLocation = groupData.totalTamu;
         
         const maxCapacity = kapasitasTempat[locationName] || 0;
         const maxCapacityDisplay = maxCapacity > 0 ? maxCapacity : '??';
         const percentage = maxCapacity > 0 ? Math.round((totalTamuInLocation / maxCapacity) * 100) : 0;
-        const sisa = maxCapacity > 0 ? maxCapacity - totalTamuInLocation : '??';
+        
+        masterNavHTML += `
+          <button class="location-nav-item" data-target="panel-${idx}">
+            <div class="nav-item-header">
+              <h3 class="nav-item-title"><i class="fas fa-map-marker-alt"></i> ${locationName}</h3>
+              <span class="nav-item-count">${totalTamuInLocation} / ${maxCapacityDisplay}</span>
+            </div>
+            <div class="nav-item-bar">
+              <div class="nav-item-fill" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};"></div>
+            </div>
+          </button>
+        `;
+      });
+      
+      // --- 4. BUAT HTML UNTUK KONTEN KANAN (DETAIL) ---
+      let detailContentHTML = '';
+      
+      // Tampilan Awal/Selamat Datang
+      detailContentHTML += `
+        <div class="detail-panel" id="detail-welcome">
+          <div class="welcome-message">
+            <i class="fas fa-hand-point-left"></i>
+            <h2>Selamat Datang</h2>
+            <p>Silakan pilih lokasi di sebelah kiri untuk melihat daftar reservasi tamu.</p>
+            <hr>
+            <strong>Total Hari Ini:</strong><br>
+            <i class="fas fa-users"></i> ${totalTamu} Tamu<br>
+            <i class="fas fa-book-open"></i> ${reservations.length} Reservasi
+          </div>
+        </div>
+      `;
+      
+      // Buat panel tersembunyi untuk setiap lokasi
+      sortedLocationNames.forEach((locationName, idx) => {
+        const groupData = groupedReservations[locationName] || { reservations: [], totalTamu: 0 };
+        const locationReservations = groupData.reservations;
 
-        // Pilih warna dari palet
-        const colors = colorPalette[idx % colorPalette.length];
-
-        // --- BUAT DAFTAR RESERVASI (INI AKAN MASUK KE PANEL) ---
         let reservationsListHTML = '';
         if (locationReservations.length > 0) {
           locationReservations.sort((a,b) => a.jam.localeCompare(b.jam)).forEach((res, index) => {
@@ -424,19 +445,20 @@
                 });
                 menuDetailHtml += '</ul>';
             }
-            const menuId = `menu-${locationName.replace(/\s+/g, '-')}-${index}`;
+            const menuId = `menu-${idx}-${index}`; // ID unik
 
             reservationsListHTML += `
-              <div class="reservation-list-item">
-                <div class="res-header">
-                  <div class="res-info">
+              <div class="reservation-card">
+                <div class="res-card-header">
+                  <div class="res-card-info">
                     <i class="fas fa-user-circle"></i>
-                    <strong>${res.nama || 'Tanpa Nama'}</strong> (${res.jumlah || 0} orang)
+                    <strong>${res.nama || 'Tanpa Nama'}</strong>
                   </div>
                   ${hasMenu ? `<button class="toggle-menu-btn" data-target="${menuId}"><i class="fas fa-utensils"></i> Menu <i class="fas fa-chevron-down"></i></button>` : ''}
                 </div>
-                <div class="res-details">
+                <div class="res-card-body">
                   <span><i class="far fa-clock"></i> ${res.jam || 'Tanpa Jam'}</span>
+                  <span><i class="fas fa-users"></i> ${res.jumlah || 0} orang</span>
                 </div>
                 ${hasMenu ? `<div class="res-menus" id="${menuId}" style="display: none;">${menuDetailHtml}</div>` : ''}
               </div>
@@ -446,33 +468,14 @@
           reservationsListHTML = '<p class="empty-state">Tidak ada reservasi di area ini.</p>';
         }
 
-        // --- RAKIT HTML ACCORDION (HEADER + PANEL) ---
-        accordionHTML += `
-          <div class="accordion-item">
-            <button class="accordion-header" data-target="panel-${idx}" style="background-color: ${colors.fill}; border-left: 5px solid ${colors.border};">
-              
-              <div class="location-title">
-                <i class="fas fa-map-marker-alt" style="color: ${colors.icon};"></i>
-                <h2>${locationName}</h2>
-              </div>
-              
-              <div class="capacity-summary">
-                <div class="capacity-text">
-                  <i class="fas fa-users"></i>
-                  <span>${totalTamuInLocation} / ${maxCapacityDisplay}</span>
-                </div>
-                <div class="capacity-bar-mini">
-                  <div class="capacity-fill-mini" style="width: ${percentage}%; background-color: ${percentage > 90 ? 'var(--danger)' : percentage > 70 ? 'var(--accent)' : 'var(--primary)'};"></div>
-                </div>
-              </div>
-              
-              <i class="fas fa-chevron-down accordion-icon"></i>
-            </button>
-            
-            <div class="accordion-panel" id="panel-${idx}" style="display: none; border-left: 5px solid ${colors.border};">
-              <div class="reservation-list">
-                 ${reservationsListHTML}
-              </div>
+        // Rakit panel tersembunyi
+        detailContentHTML += `
+          <div class="detail-panel" id="panel-${idx}" style="display: none;">
+            <div class="panel-header">
+              <h2><i class="fas fa-list-ul"></i> Daftar Reservasi: ${locationName}</h2>
+            </div>
+            <div class="reservation-list">
+              ${reservationsListHTML}
             </div>
           </div>
         `;
@@ -480,7 +483,7 @@
 
 
       
-      // --- 4. MERAKIT HALAMAN HTML (VERSI BARU DENGAN CSS & JS) ---
+      // --- 5. MERAKIT HALAMAN HTML (VERSI BARU DENGAN CSS & JS) ---
       const detailPageHTML = `
         <!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Detail Reservasi - ${formattedDate}</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
@@ -489,301 +492,298 @@
             --primary: #2a9d8f; --primary-dark: #264653; 
             --secondary: #e9c46a; --accent: #f4a261; 
             --danger: #e76f51; --light: #f8f9fa; --dark: #343a40;
+            --border-color: #e9ecef;
           } 
           * { box-sizing: border-box; }
           body { 
             font-family: 'Poppins', sans-serif; 
             margin: 0; 
-            background: #f7f9fc; /* Latar belakang netral yang bersih */
+            background: var(--light);
             color: var(--dark); 
-            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Mencegah body scroll */
           } 
+          
+          /* Header & Summary */
           header { 
             background: linear-gradient(135deg, var(--primary-dark), var(--primary)); 
             color: white; 
-            padding: 20px; 
+            padding: 15px 20px; 
             text-align: center; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            position: sticky;
-            top: 0;
             z-index: 100;
+            flex-shrink: 0;
           } 
-          header h1 { margin: 0; font-size: 2.2rem; }
-          header h3 { margin: 5px 0 0 0; font-weight: 300; font-size: 1.3rem; opacity: 0.9; }
+          header h1 { margin: 0; font-size: 1.8rem; }
+          header h3 { margin: 3px 0 0 0; font-weight: 300; font-size: 1.1rem; opacity: 0.9; }
           
           .summary-bar {
               background-color: white;
               color: var(--dark);
-              padding: 15px 25px;
-              margin: -20px auto 20px auto; /* Overlap */
-              width: 90%;
-              max-width: 900px;
-              border-radius: 12px;
-              box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-              font-size: 1.2rem;
+              padding: 12px 20px;
               text-align: center;
               font-weight: 500;
-              border: 1px solid #eee;
-              position: relative; 
+              border-bottom: 2px solid var(--border-color);
               z-index: 50;
+              flex-shrink: 0;
           }
           .summary-bar strong { color: var(--primary-dark); font-weight: 700; }
 
-          .controls {
-            text-align: center;
-            margin: 20px 0 30px 0;
-          }
-          button {
-              background-color: var(--primary); 
-              color: white; 
-              border: none; 
-              padding: 12px 25px; 
-              border-radius: 8px; 
-              cursor: pointer; 
-              font-size: 1rem; 
-              margin: 8px; 
-              display: inline-flex; 
-              align-items: center; 
-              gap: 8px;
-              font-weight: 600;
-              box-shadow: 0 4px 10px rgba(42, 157, 143, 0.3);
-              transition: all 0.3s ease;
-          }
-          button:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 6px 15px rgba(42, 157, 143, 0.4);
-          }
-          button.print-btn { 
-            background-color: var(--secondary); 
-            box-shadow: 0 4px 10px rgba(233, 196, 106, 0.3);
-          }
-          button.print-btn:hover {
-            box-shadow: 0 6px 15px rgba(233, 196, 106, 0.4);
+          /* (BARU) Master-Detail Container */
+          .main-container {
+            display: flex;
+            flex-grow: 1; /* Ambil sisa tinggi */
+            height: 100%; /* Penting untuk internal scroll */
+            overflow: hidden;
           }
           
-          /* (BARU) Container untuk Accordion */
-          .accordion-container {
-            max-width: 900px;
-            margin: 0 auto 30px auto;
-            padding: 0 20px;
+          /* (BARU) Kolom Kiri - Navigasi Lokasi (Master) */
+          .location-nav {
+            width: 320px;
+            flex-shrink: 0;
+            background-color: #ffffff;
+            border-right: 2px solid var(--border-color);
+            overflow-y: auto; /* Scroll hanya di kolom ini */
+            height: 100%;
+            padding: 15px;
           }
-          .accordion-item {
-            margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Bayangan lembut */
-            border-radius: 12px;
-            overflow: hidden; /* Penting untuk radius */
-          }
-
-          /* (BARU) Header Accordion (yang diklik) */
-          .accordion-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+          .location-nav-item {
             width: 100%;
-            padding: 15px 20px;
-            border: 1px solid #eee;
-            border-left-width: 5px; /* Border warna akan ada di sini */
-            border-radius: 12px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            gap: 15px;
+            text-align: left;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
           }
-          .accordion-header:hover {
-             transform: scale(1.02); /* Efek hover */
-             box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+          .location-nav-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.07);
+            border-color: var(--primary);
           }
-          .accordion-header.active {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-            border-color: #ddd; /* Border lebih jelas saat aktif */
-          }
-          
-          .location-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-grow: 1; /* Ambil sisa ruang */
-            flex-basis: 40%; /* Basis awal */
-          }
-          .location-title i { font-size: 1.5rem; }
-          .location-title h2 { 
-            margin: 0; 
-            font-size: 1.4rem;
-            color: var(--primary-dark);
+          .location-nav-item.active {
+            background-color: rgba(42, 157, 143, 0.05); /* Latar aktif */
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.07);
           }
           
-          .capacity-summary {
+          .nav-item-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            flex-basis: 30%; /* Basis awal */
-            min-width: 150px;
+            margin-bottom: 8px;
           }
-          .capacity-text {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+          .nav-item-title {
+            margin: 0;
             font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .nav-item-count {
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--dark);
           }
-          .capacity-bar-mini {
-            width: 80px;
-            height: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
+          .nav-item-bar {
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
             overflow: hidden;
           }
-          .capacity-fill-mini { height: 100%; }
+          .nav-item-fill { height: 100%; }
           
-          .accordion-icon {
-            font-size: 1.2rem;
+          /* (BARU) Kolom Kanan - Konten (Detail) */
+          .detail-content {
+            flex-grow: 1;
+            height: 100%;
+            overflow-y: auto; /* Scroll hanya di kolom ini */
+            padding: 20px;
+          }
+          .detail-panel { animation: fadeIn 0.3s ease; }
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          
+          .welcome-message {
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-radius: 12px;
             color: #777;
-            transition: transform 0.3s ease;
+            font-size: 1.1rem;
           }
-          .accordion-header.active .accordion-icon {
-            transform: rotate(180deg);
-            color: var(--primary);
+          .welcome-message i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; }
+          .welcome-message h2 { margin: 0 0 10px 0; color: var(--primary-dark); }
+          .welcome-message hr { border: 0; border-top: 1px dashed #ccc; margin: 20px 40px; }
+          
+          .panel-header {
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+          }
+          .panel-header h2 {
+            margin: 0;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
           }
           
-          /* (BARU) Panel Accordion (Konten yang disembunyikan) */
-          .accordion-panel {
-            padding: 20px 25px;
-            background-color: #ffffff;
-            border: 1px solid #eee;
-            border-top: none;
-            border-left-width: 5px;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            animation: fadeInPanel 0.4s ease;
-          }
-          @keyframes fadeInPanel {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
+          /* (BARU) Desain Kartu Reservasi (di sisi kanan) */
           .reservation-list {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsif */
+            gap: 15px;
           }
-          
-          /* --- Style untuk item di DALAM panel (dari V3) --- */
           .empty-state {
             color: #777;
             text-align: center;
             padding: 20px;
             font-style: italic;
+            grid-column: 1 / -1; /* Ambil 1 baris penuh */
           }
-          .reservation-list-item { 
+          .reservation-card { 
               border: 1px solid #e0e0e0;
-              border-radius: 8px;
-              padding: 15px;
-              margin-bottom: 12px;
+              border-radius: 10px;
+              background: #ffffff;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.05);
               transition: box-shadow 0.3s ease;
-              background: var(--light);
           }
-          .reservation-list-item:last-child { margin-bottom: 0; }
-          .res-header {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              flex-wrap: wrap;
-              gap: 10px;
-              margin-bottom: 10px;
+          .reservation-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+          
+          .res-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
           }
-          .res-info {
-              font-size: 1.2rem;
-              font-weight: 600;
-              color: var(--primary-dark);
-              display: flex;
-              align-items: center;
-              gap: 8px;
+          .res-card-info {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
           }
-          .res-info .fa-user-circle { font-size: 1.5rem; color: var(--primary); }
-          .res-details {
-              display: flex;
-              gap: 15px 20px;
-              color: #555;
-              font-size: 0.95rem;
-              padding-left: 33px; /* Sejajar dengan nama */
+          .res-card-info i { font-size: 1.5rem; color: var(--primary); }
+          
+          .res-card-body {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #555;
           }
-          .res-details span { display: flex; align-items: center; gap: 6px; }
-
+          .res-card-body span { display: flex; align-items: center; gap: 8px; }
+          
           .toggle-menu-btn {
-              background-color: #f0f0f0;
-              color: #333;
-              border: 1px solid #ddd;
-              padding: 5px 12px;
-              font-size: 0.85rem;
-              font-weight: 600;
-              border-radius: 20px;
-              cursor: pointer;
-              transition: all 0.3s ease;
-              /* Reset style dari button global */
-              margin: 0; box-shadow: none; 
+            background-color: #f0f0f0; color: #333; border: 1px solid #ddd;
+            padding: 5px 12px; font-size: 0.85rem; font-weight: 600;
+            border-radius: 20px; cursor: pointer; transition: all 0.3s ease;
+            margin: 0; box-shadow: none; /* Reset style global */
           }
-          .toggle-menu-btn:hover { 
-            background-color: #e0e0e0; 
-            border-color: #ccc; 
-            transform: none; /* Reset */
-            box-shadow: none;
-          }
+          .toggle-menu-btn:hover { background-color: #e0e0e0; transform: none; box-shadow: none; }
           .toggle-menu-btn .fa-chevron-down { transition: transform 0.3s ease; margin-left: 5px; }
           .toggle-menu-btn.open { background-color: var(--primary-dark); color: white; border-color: var(--primary-dark); }
           .toggle-menu-btn.open .fa-chevron-down { transform: rotate(180deg); }
           
           .res-menus {
-              border-top: 1px dashed #ddd;
-              padding-top: 12px;
-              margin-top: 12px;
-              animation: fadeIn 0.3s ease;
-              background-color: #fff;
-              padding: 10px 15px;
-              border-radius: 6px;
+            border-top: 1px dashed #ddd;
+            padding: 15px;
+            margin: 0 15px 15px 15px; /* Margin agar tidak mentok */
+            animation: fadeIn 0.3s ease;
+            background-color: var(--light);
+            border-radius: 6px;
           }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
           .menu-detail-list {
-              margin: 0;
-              padding-left: 20px;
-              font-size: 0.9rem;
-              color: #333;
+            margin: 0; padding-left: 20px;
+            font-size: 0.9rem; color: #333;
           }
           .menu-detail-list li { margin-bottom: 5px; }
+
+          .controls-footer {
+            text-align: center;
+            padding: 15px;
+            border-top: 2px solid var(--border-color);
+            background: #fff;
+            flex-shrink: 0;
+          }
+          .controls-footer button {
+            background-color: var(--primary); color: white; border: none;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            font-size: 1rem; margin: 0 5px; font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          .controls-footer button.print-btn { background-color: var(--secondary); }
           
           /* Media Queries */
-          @media (max-width: 600px) {
-            header h1 { font-size: 1.8rem; }
-            header h3 { font-size: 1.1rem; }
-            .summary-bar { width: 90%; font-size: 1rem; }
-            
-            .accordion-header {
-                flex-wrap: wrap; /* Biarkan header membungkus */
-                padding: 12px 15px;
+          @media (max-width: 768px) {
+            .main-container {
+              flex-direction: column; /* Tumpuk kolom di HP */
+              height: auto;
+              overflow: visible;
             }
-            .location-title { flex-basis: 100%; } /* Judul ambil 1 baris penuh */
-            .location-title h2 { font-size: 1.2rem; }
-            .capacity-summary { flex-basis: 80%; } /* Kapasitas di bawahnya */
-            .accordion-icon { position: absolute; top: 15px; right: 15px; }
+            .location-nav {
+              width: 100%;
+              height: auto; /* Tinggi otomatis */
+              overflow-y: visible;
+              border-right: none;
+              border-bottom: 2px solid var(--border-color);
+              padding: 10px;
+            }
+            .detail-content {
+              height: auto; /* Tinggi otomatis */
+              overflow-y: visible;
+              padding: 15px;
+            }
+            .location-nav-item { margin-bottom: 8px; }
+            .reservation-list {
+              grid-template-columns: 1fr; /* 1 kolom di HP */
+            }
+            .welcome-message { display: none; } /* Sembunyikan pesan di HP */
+            .detail-panel { display: block !important; } /* Tampilkan semua panel */
+            .location-nav-item { display: none; } /* Sembunyikan nav */
             
-            .res-header { flex-direction: column; align-items: flex-start; }
-            .res-details { padding-left: 5px; }
+            /* Ganti nav dengan header panel */
+            .panel-header { display: block; }
+            .detail-content { padding-top: 0; }
+            .panel-header { 
+              background: #fff;
+              padding: 15px;
+              margin: 15px -15px 15px -15px;
+              border-bottom: 1px solid #ccc;
+              position: sticky;
+              top: 70px; /* Di bawah header utama */
+              z-index: 10;
+             }
+             header { position: sticky; top: 0; }
           }
           
           @media print {
-            body { background: white; }
-            header, .controls, .summary-bar { display: none; }
-            .accordion-container { padding: 0; margin: 0; }
-            .accordion-item { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; }
-            .accordion-header { background: #eee !important; border-radius: 0; }
-            .accordion-icon { display: none; }
-            .accordion-panel { 
-              display: block !important; /* Paksa tampilkan semua panel */
-              padding: 15px;
-              border-radius: 0;
-              box-shadow: none;
-              border-top: 1px solid #ccc;
+            body { height: auto; overflow: visible; }
+            header, .summary-bar, .controls-footer, .location-nav { display: none; }
+            .main-container { display: block; height: auto; overflow: visible; }
+            .detail-content { display: block; height: auto; overflow: visible; padding: 0; }
+            .detail-panel { display: block !important; margin-bottom: 20px; }
+            .welcome-message { display: none; }
+            .panel-header {
+              background: #eee;
+              padding: 10px;
+              border-bottom: 1px solid #999;
             }
-            .reservation-list { max-height: none; overflow: visible; }
+            .reservation-list {
+              grid-template-columns: 1fr;
+              gap: 10px;
+            }
+            .reservation-card { box-shadow: none; border: 1px solid #ccc; }
             .res-menus { display: block !important; }
             .toggle-menu-btn { display: none; }
           }
@@ -799,31 +799,48 @@
             Ringkasan Hari Ini: <strong>${reservations.length}</strong> Reservasi / <strong>${totalTamu}</strong> Total Tamu
           </div>
 
-          <div class="controls">
-            <button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button>
-            <button onclick="window.print()" class="print-btn"><i class="fas fa-print"></i> Cetak Halaman</button>
+          <div class="main-container">
+            <nav class="location-nav" id="locationNav">
+              ${masterNavHTML}
+            </nav>
+            
+            <main class="detail-content" id="detailContent">
+              ${detailContentHTML}
+            </main>
           </div>
           
-          <div class="accordion-container">
-            ${accordionHTML}
-          </div>
+          <footer class="controls-footer">
+            <button onclick="window.close()"><i class="fas fa-arrow-left"></i> Kembali</button>
+            <button onclick="window.print()" class="print-btn"><i class="fas fa-print"></i> Cetak Halaman</button>
+          </footer>
           
           <script>
             document.addEventListener('DOMContentLoaded', () => {
               
-              // --- Logika untuk Accordion (BARU) ---
-              const accordionHeaders = document.querySelectorAll('.accordion-header');
-              accordionHeaders.forEach(button => {
+              // --- Logika untuk Master-Detail (BARU) ---
+              const navButtons = document.querySelectorAll('.location-nav-item');
+              const detailPanels = document.querySelectorAll('.detail-panel');
+              const welcomePanel = document.getElementById('detail-welcome');
+              const detailContent = document.getElementById('detailContent');
+
+              navButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                  button.classList.toggle('active');
-                  const targetId = button.getAttribute('data-target');
-                  const panel = document.getElementById(targetId);
+                  // 1. Atur status aktif di Navigasi Kiri
+                  navButtons.forEach(btn => btn.classList.remove('active'));
+                  button.classList.add('active');
                   
-                  if (panel.style.display === 'block') {
-                    panel.style.display = 'none';
-                  } else {
-                    panel.style.display = 'block';
+                  // 2. Sembunyikan semua panel di Kanan
+                  detailPanels.forEach(panel => panel.style.display = 'none');
+                  
+                  // 3. Tampilkan panel yang dituju
+                  const targetId = button.getAttribute('data-target');
+                  const targetPanel = document.getElementById(targetId);
+                  if (targetPanel) {
+                    targetPanel.style.display = 'block';
                   }
+                  
+                  // 4. Scroll ke atas di kontainer kanan
+                  detailContent.scrollTop = 0;
                 });
               });
 
@@ -831,7 +848,7 @@
               const toggleButtons = document.querySelectorAll('.toggle-menu-btn');
               toggleButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                  e.stopPropagation(); // Hentikan klik agar tidak menutup accordion
+                  e.stopPropagation(); // Hentikan klik agar tidak memicu event lain
                   
                   const targetId = button.getAttribute('data-target');
                   const menuElement = document.getElementById(targetId);
