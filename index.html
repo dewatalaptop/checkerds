@@ -203,7 +203,7 @@
     <p>Viewer ditenagai oleh Firebase & GitHub Pages.</p>
   </footer>
 
-  <a href="https://www.dolansawah.my.id" class="floating-back-btn">
+  <a href="https.www.dolansawah.my.id" class="floating-back-btn">
     <i class="fas fa-home"></i> Kembali
   </a>
 
@@ -503,7 +503,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Mencegah body scroll */
+            overflow: hidden; /* Mencegah body scroll (HANYA UNTUK DESKTOP) */
           } 
           
           /* Header & Summary */
@@ -626,6 +626,7 @@
             padding-bottom: 10px;
             margin-bottom: 20px;
             border-bottom: 2px solid var(--border-color);
+            display: none; /* Sembunyikan di desktop */
           }
           .panel-header h2 {
             margin: 0;
@@ -715,6 +716,7 @@
             border-top: 2px solid var(--border-color);
             background: #fff;
             flex-shrink: 0;
+            z-index: 100; /* Pastikan di atas */
           }
           .controls-footer button {
             background-color: var(--primary); color: white; border: none;
@@ -726,45 +728,59 @@
           
           /* Media Queries */
           @media (max-width: 768px) {
+            
+            /* === INI ADALAH PERBAIKANNYA === */
+            body {
+              height: auto; /* Izinkan body tumbuh */
+              overflow: visible; /* Izinkan body di-scroll */
+            }
+            /* === AKHIR PERBAIKAN === */
+          
             .main-container {
               flex-direction: column; /* Tumpuk kolom di HP */
               height: auto;
               overflow: visible;
             }
             .location-nav {
-              width: 100%;
-              height: auto; /* Tinggi otomatis */
-              overflow-y: visible;
-              border-right: none;
-              border-bottom: 2px solid var(--border-color);
-              padding: 10px;
+              display: none; /* Sembunyikan navigasi kiri di HP */
             }
             .detail-content {
               height: auto; /* Tinggi otomatis */
               overflow-y: visible;
               padding: 15px;
             }
-            .location-nav-item { margin-bottom: 8px; }
-            .reservation-list {
-              grid-template-columns: 1fr; /* 1 kolom di HP */
-            }
             .welcome-message { display: none; } /* Sembunyikan pesan di HP */
-            .detail-panel { display: block !important; } /* Tampilkan semua panel */
-            .location-nav-item { display: none; } /* Sembunyikan nav */
+            .detail-panel { 
+              display: block !important; /* Tampilkan semua panel */
+              margin-bottom: 20px;
+            }
             
             /* Ganti nav dengan header panel */
-            .panel-header { display: block; }
-            .detail-content { padding-top: 0; }
             .panel-header { 
+              display: block; /* Tampilkan header untuk setiap panel */
               background: #fff;
               padding: 15px;
-              margin: 15px -15px 15px -15px;
+              margin: 0 -15px 15px -15px; /* Penuhkan ke layar */
               border-bottom: 1px solid #ccc;
               position: sticky;
-              top: 70px; /* Di bawah header utama */
+              top: 0; /* Menempel di paling atas layar */
               z-index: 10;
              }
-             header { position: sticky; top: 0; }
+             /* Hapus sticky di header utama & summary di mobile */
+             header, .summary-bar {
+               position: static;
+             }
+             .summary-bar {
+               margin: 0;
+               border-radius: 0;
+             }
+             .reservation-list {
+              grid-template-columns: 1fr; /* 1 kolom di HP */
+            }
+            .controls-footer {
+              position: sticky;
+              bottom: 0;
+            }
           }
           
           @media print {
@@ -775,6 +791,7 @@
             .detail-panel { display: block !important; margin-bottom: 20px; }
             .welcome-message { display: none; }
             .panel-header {
+              display: block;
               background: #eee;
               padding: 10px;
               border-bottom: 1px solid #999;
@@ -817,34 +834,38 @@
           <script>
             document.addEventListener('DOMContentLoaded', () => {
               
-              // --- Logika untuk Master-Detail (BARU) ---
-              const navButtons = document.querySelectorAll('.location-nav-item');
-              const detailPanels = document.querySelectorAll('.detail-panel');
-              const welcomePanel = document.getElementById('detail-welcome');
-              const detailContent = document.getElementById('detailContent');
+              // Cek apakah kita di tampilan desktop
+              const isDesktop = window.matchMedia('(min-width: 769px)').matches;
 
-              navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                  // 1. Atur status aktif di Navigasi Kiri
-                  navButtons.forEach(btn => btn.classList.remove('active'));
-                  button.classList.add('active');
-                  
-                  // 2. Sembunyikan semua panel di Kanan
-                  detailPanels.forEach(panel => panel.style.display = 'none');
-                  
-                  // 3. Tampilkan panel yang dituju
-                  const targetId = button.getAttribute('data-target');
-                  const targetPanel = document.getElementById(targetId);
-                  if (targetPanel) {
-                    targetPanel.style.display = 'block';
-                  }
-                  
-                  // 4. Scroll ke atas di kontainer kanan
-                  detailContent.scrollTop = 0;
+              // --- Logika untuk Master-Detail (HANYA JALAN DI DESKTOP) ---
+              if (isDesktop) {
+                const navButtons = document.querySelectorAll('.location-nav-item');
+                const detailPanels = document.querySelectorAll('.detail-panel');
+                const detailContent = document.getElementById('detailContent');
+
+                navButtons.forEach(button => {
+                  button.addEventListener('click', () => {
+                    // 1. Atur status aktif di Navigasi Kiri
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // 2. Sembunyikan semua panel di Kanan
+                    detailPanels.forEach(panel => panel.style.display = 'none');
+                    
+                    // 3. Tampilkan panel yang dituju
+                    const targetId = button.getAttribute('data-target');
+                    const targetPanel = document.getElementById(targetId);
+                    if (targetPanel) {
+                      targetPanel.style.display = 'block';
+                    }
+                    
+                    // 4. Scroll ke atas di kontainer kanan
+                    detailContent.scrollTop = 0;
+                  });
                 });
-              });
+              }
 
-              // --- Logika untuk Menu Toggles (Lama, tapi masih diperlukan) ---
+              // --- Logika untuk Menu Toggles (JALAN DI SEMUA TAMPILAN) ---
               const toggleButtons = document.querySelectorAll('.toggle-menu-btn');
               toggleButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
