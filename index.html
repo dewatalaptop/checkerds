@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Viewer Reservasi Dolan Sawah (Live Sync + Control)</title>
+  <title>Viewer Reservasi Dolan Sawah (Privacy Mode)</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -89,8 +89,8 @@
 
   <header>
     <div class="header-branding">
-      <h2><i class="fas fa-sync-alt"></i> Dolan Sawah Viewer</h2>
-      <small>Live Sync + Admin Control</small>
+      <h2><i class="fas fa-user-shield"></i> Dolan Sawah Viewer</h2>
+      <small>Data Privasi Terlindungi</small>
     </div>
   </header>
 
@@ -149,24 +149,17 @@
       </div>
 
       <div id="adminControls" style="display:none;">
-          <p style="font-size:0.85rem; color:#666; text-align:center; margin-bottom:15px;">Gunakan ini untuk menutup tanggal secara manual (misal: Libur).</p>
+          <p style="font-size:0.85rem; color:#666; text-align:center; margin-bottom:15px;">Tutup tanggal secara manual (misal: Libur).</p>
           <input type="date" id="dateSelector" class="form-input">
-          
           <div style="display:flex; gap:10px; margin-bottom:20px;">
-              <button class="btn-block" id="markFullBtn" style="background:var(--danger); color:white; flex:1;">
-                  <i class="fas fa-ban"></i> TUTUP
-              </button>
-              <button class="btn-block" id="markAvailableBtn" style="background:var(--secondary); color:white; flex:1;">
-                  <i class="fas fa-check"></i> BUKA
-              </button>
+              <button class="btn-block" id="markFullBtn" style="background:var(--danger); color:white; flex:1;"><i class="fas fa-ban"></i> TUTUP</button>
+              <button class="btn-block" id="markAvailableBtn" style="background:var(--secondary); color:white; flex:1;"><i class="fas fa-check"></i> BUKA</button>
           </div>
-          
           <button class="btn-block" onclick="firebase.auth().signOut()" style="background:#f1f2f6; color:#555; margin-top:15px;">Logout</button>
       </div>
   </div>
 
   <script>
-    // 1. CONFIG FIREBASE (SAMA PERSIS DENGAN ADMIN UTAMA)
     const firebaseConfig = {
       apiKey: "AIzaSyA_c1tU70FM84Qi_f_aSaQ-YVLo_18lCkI",
       authDomain: "reservasi-dolan-sawah.firebaseapp.com",
@@ -200,7 +193,7 @@
     let currentYear = new Date().getFullYear();
     let allReservations = {}; 
     let locationsConfig = {};
-    let dateStatus = {}; // Menyimpan status manual (Penuh/Buka)
+    let dateStatus = {};
     let unsubscribeRes = null;
     let unsubscribeStatus = null;
 
@@ -209,14 +202,8 @@
         setupRealtimeListeners();
         setupAdminLogic();
         
-        document.getElementById('prevMonth').addEventListener('click', () => { 
-            currentMonth--; if(currentMonth < 0) { currentMonth=11; currentYear--; } 
-            setupRealtimeListeners(); 
-        });
-        document.getElementById('nextMonth').addEventListener('click', () => { 
-            currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } 
-            setupRealtimeListeners(); 
-        });
+        document.getElementById('prevMonth').addEventListener('click', () => { currentMonth--; if(currentMonth < 0) { currentMonth=11; currentYear--; } setupRealtimeListeners(); });
+        document.getElementById('nextMonth').addEventListener('click', () => { currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } setupRealtimeListeners(); });
     });
 
     async function loadLocations() {
@@ -226,7 +213,6 @@
         } catch(e) {}
     }
 
-    // --- LISTENER GANDA (DATA RESERVASI + STATUS MANUAL) ---
     function setupRealtimeListeners() {
         if(unsubscribeRes) unsubscribeRes();
         if(unsubscribeStatus) unsubscribeStatus();
@@ -238,7 +224,6 @@
         document.getElementById('calendar').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:20px;">Memuat Data...</div>';
         document.getElementById('monthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-        // 1. DENGAR DATA RESERVASI
         unsubscribeRes = db.collection("reservations")
             .where('date', '>=', start).where('date', '<=', end)
             .onSnapshot(snapshot => {
@@ -251,8 +236,6 @@
                 renderCalendar();
             });
             
-        // 2. DENGAR STATUS MANUAL (PENUH/LIBUR)
-        // Kita simpan status manual di collection 'date_status' agar tidak campur
         unsubscribeStatus = db.collection("date_status")
              .where('date', '>=', start).where('date', '<=', end)
              .onSnapshot(snapshot => {
@@ -276,16 +259,12 @@
         for(let i=1; i<=daysInMonth; i++) {
             const el = document.createElement('div');
             el.className = 'day-cell';
-            
             const mStr = String(currentMonth + 1).padStart(2, '0');
             const dStr = String(i).padStart(2, '0');
             const dateKey = `${currentYear}-${mStr}-${dStr}`;
-            
             const list = allReservations[dateKey] || [];
             const count = list.length;
             const total = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
-            
-            // Cek Status Manual (Override)
             const isManualFull = dateStatus[dateKey] === true;
 
             if(i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) el.classList.add('today');
@@ -336,7 +315,13 @@
                 if(r.menus && Array.isArray(r.menus)) menuText = r.menus.map(m => m.quantity + 'x ' + m.name).join(', ');
                 else if (r.menu) menuText = r.menu;
 
-                htmlItems += `<div class="res-item"><div><strong>${r.nama}</strong><small><i class="far fa-clock"></i> ${r.jam} WIB ${r.nomorHp ? '| ' + r.nomorHp : ''}</small><div style="font-size:0.75rem; color:#666; margin-top:2px;">${menuText}</div></div><span class="res-qty">${r.jumlah}</span></div>`;
+                // --- PRIVACY PROTECTION (MASKING NOMOR HP) ---
+                const safePhone = r.nomorHp && r.nomorHp.length > 4 
+                    ? r.nomorHp.slice(0, -3) + 'xxx' 
+                    : (r.nomorHp || '');
+                // ----------------------------------------------
+
+                htmlItems += `<div class="res-item"><div><strong>${r.nama}</strong><small><i class="far fa-clock"></i> ${r.jam} WIB ${safePhone ? '| ' + safePhone : ''}</small><div style="font-size:0.75rem; color:#666; margin-top:2px;">${menuText}</div></div><span class="res-qty">${r.jumlah}</span></div>`;
             });
 
             const card = document.createElement('div');
@@ -348,7 +333,6 @@
     
     function closeDetail() { document.getElementById('detailOverlay').classList.remove('active'); }
     
-    // LOGIKA ADMIN (HANYA UNTUK SET STATUS MANUAL)
     function setupAdminLogic() {
         const btn = document.getElementById('adminBtn');
         const overlay = document.getElementById('adminOverlay');
@@ -374,9 +358,6 @@
         const updateStatus = async (isFull) => {
             const d = document.getElementById('dateSelector').value;
             if(!d) return alert("Pilih tanggal dulu");
-            
-            // Simpan ke collection khusus 'date_status'
-            // Format ID: YYYY-MM-DD
             try {
                 await db.collection("date_status").doc(d).set({
                     date: d,
