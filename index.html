@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Viewer Reservasi Dolan Sawah (Fixed Layout)</title>
+  <title>Viewer Ketersediaan Dolan Sawah</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,6 +20,8 @@
       --highlight: #d35400; 
       --danger: #c0392b; 
       --danger-light: #fadbd8;
+      --success: #27ae60;
+      --warning: #f39c12;
       --bg-body: #f4f6f8; 
       --bg-card: #ffffff; 
       --text-main: #2d3436; 
@@ -57,7 +59,7 @@
     .month-year { font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); text-transform: capitalize; }
     .calendar-nav button { background: #f1f2f6; border: 1px solid #e1e1e1; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
     
-    /* --- GRID KALENDER RESPONSIF --- */
+    /* --- GRID KALENDER --- */
     .calendar-grid-header { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 10px; }
     .weekday { text-align: center; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
     
@@ -85,7 +87,7 @@
     .legend { display: flex; justify-content: center; gap: 15px; margin-top: 25px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; border-top: 1px dashed #eee; padding-top: 15px; }
     .dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
 
-    /* --- MODAL DETAIL (PERBAIKAN UTAMA DISINI) --- */
+    /* --- MODAL DETAIL --- */
     .detail-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(3px); }
     .detail-overlay.active { display: flex; animation: fadeIn 0.3s; }
     
@@ -99,29 +101,12 @@
     }
     @keyframes slideUpBig { from { transform: translateY(100%); } to { transform: translateY(0); } }
     
-    .sheet-header { 
-        background: white; padding: 15px 25px; 
-        display: flex; justify-content: space-between; align-items: center; 
-        border-bottom: 1px solid #eee; box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
-        z-index: 10; flex-shrink: 0; /* Header tidak boleh mengecil */
-    }
+    .sheet-header { background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; box-shadow: 0 2px 10px rgba(0,0,0,0.03); z-index: 10; flex-shrink: 0; }
+    .sheet-content { flex: 1; overflow-y: auto; padding: 25px 20px; -webkit-overflow-scrolling: touch; }
     
-    .sheet-content { 
-        flex: 1; 
-        overflow-y: auto; /* Scroll Vertikal Aktif */
-        padding: 25px 20px; 
-        -webkit-overflow-scrolling: touch; /* Smooth scroll di iOS */
-    }
-    
-    /* Container Grid Lokasi */
-    #locGrid { 
-        display: flex; 
-        flex-direction: column; 
-        gap: 25px; 
-        padding-bottom: 80px; /* Ruang extra di bawah agar tidak tertutup */
-    }
+    #locGrid { display: flex; flex-direction: column; gap: 25px; padding-bottom: 80px; }
 
-    /* --- KARTU LOKASI (ANTI-GEPENG) --- */
+    /* --- KARTU LOKASI (BARU) --- */
     .loc-card { 
         background: white; 
         border-radius: 20px; 
@@ -129,15 +114,12 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
         border: 1px solid white;
         transform: translateZ(0);
-        
-        /* FIX UTAMA: */
-        flex-shrink: 0; /* Mencegah kartu mengecil/gepeng */
-        min-height: auto; 
+        flex-shrink: 0; min-height: auto; 
     }
     
     .loc-header { 
-        height: 140px; /* Tinggi Fix */
-        min-height: 140px; /* Paksa tinggi minimal */
+        height: 120px; 
+        min-height: 120px; 
         position: relative; 
         background-size: cover; 
         background-position: center; 
@@ -156,8 +138,20 @@
         backdrop-filter: blur(5px); padding: 5px 12px; border-radius: 20px; 
         border: 1px solid rgba(255,255,255,0.4); font-weight: 600;
     }
+
+    /* --- CAPACITY BAR (INDIKATOR BARU) --- */
+    .capacity-bar-container {
+        width: 100%; height: 6px; background: #eee; position: relative;
+    }
+    .capacity-bar-fill {
+        height: 100%; transition: width 0.5s ease-in-out;
+    }
+    /* Warna Bar */
+    .bar-green { background: var(--success); } /* Kosong/Aman */
+    .bar-yellow { background: var(--warning); } /* Terisi > 50% */
+    .bar-red { background: var(--danger); } /* Penuh */
     
-    /* Accordion Button */
+    /* Tombol Buka/Tutup */
     .btn-toggle-loc { 
         width: 100%; padding: 15px; background: white; border: none; 
         color: var(--primary); font-weight: 600; cursor: pointer; 
@@ -165,17 +159,14 @@
         transition: background 0.2s;
     }
     .btn-toggle-loc:active { background: #f9f9f9; }
+    .btn-toggle-loc.disabled { color: #aaa; cursor: default; }
     
     .loc-body { display: none; background: #fff; padding: 0; border-top: 1px solid #f0f0f0; animation: slideDown 0.3s ease; }
     @keyframes slideDown { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
 
     /* Item Reservasi */
-    .res-item { 
-        padding: 15px; border-bottom: 1px solid #f0f0f0; 
-        display: flex; justify-content: space-between; align-items: flex-start; 
-    }
+    .res-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start; }
     .res-item:last-child { border-bottom: none; }
-    
     .res-info strong { display: block; font-size: 1rem; color: var(--text-main); margin-bottom: 4px; }
     .res-info small { color: #888; font-size: 0.8rem; display: block; }
     
@@ -184,22 +175,18 @@
         background: #f8f9fa; padding: 8px 12px; border-radius: 8px; 
         border-left: 3px solid var(--secondary); display: inline-block; width: 100%;
     }
-    
     .res-qty { 
         background: #e0f2f1; color: var(--primary-dark); padding: 6px 12px; 
         border-radius: 10px; font-weight: 700; font-size: 0.9rem; margin-left: 10px;
         min-width: 45px; text-align: center;
     }
     
-    /* ADMIN FLOATING */
+    /* ADMIN COMPONENTS */
     .floating-admin { position: fixed; bottom: 25px; right: 25px; background: var(--primary-dark); color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(0,0,0,0.3); z-index: 90; cursor: pointer; }
-    
-    /* ADMIN MODAL */
     .admin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
     .admin-overlay.show { display: flex; }
     .admin-modal { background: white; padding: 30px; width: 85%; max-width: 350px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: zoomIn 0.2s; }
     @keyframes zoomIn { from {transform: scale(0.9);} to {transform: scale(1);} }
-    
     .btn-block { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .form-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit;}
   </style>
@@ -208,8 +195,8 @@
 
   <header>
     <div class="header-branding">
-      <h2><i class="fas fa-sync-alt"></i> Dolan Sawah Viewer</h2>
-      <small>Live Data,klik pada tanggal untuk melihat ketersediaan tempat.</small>
+      <h2><i class="fas fa-search-location"></i> Cek Ketersediaan</h2>
+      <small>Dolan Sawah Viewer System</small>
     </div>
   </header>
 
@@ -239,7 +226,7 @@
     
     <div style="margin-top: 25px; text-align: center;">
         <a href="https://www.dolansawah.my.id" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none; padding: 10px 20px; background: white; border-radius: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: inline-flex; align-items: center; gap: 8px;">
-             <i class="fas fa-external-link-alt"></i> Kembali ke website utama
+             <i class="fas fa-external-link-alt"></i> Buka Website Admin Utama
         </a>
     </div>
   </div>
@@ -259,34 +246,26 @@
   <div class="admin-overlay" id="adminOverlay">
       <div class="admin-modal" id="adminModal">
           <h3 style="margin-top:0; text-align:center; color:var(--primary-dark); margin-bottom:20px;"><i class="fas fa-shield-alt"></i> Kontrol Manual</h3>
-          
           <div id="loginForm">
               <input type="email" id="adminEmail" class="form-input" placeholder="Email Admin">
               <input type="password" id="adminPass" class="form-input" placeholder="Password">
               <button class="btn-block" style="background:var(--primary); color:white;" id="btnLoginAction">Masuk</button>
               <button class="btn-block" onclick="closeAdmin()" style="background:#f0f0f0; color:#666;">Batal</button>
           </div>
-
           <div id="adminControls" style="display:none;">
-              <p style="font-size:0.85rem; color:#666; text-align:center; margin-bottom:15px; line-height:1.5;">Gunakan fitur ini untuk menutup tanggal secara manual (misal: Libur atau Renovasi).</p>
+              <p style="font-size:0.85rem; color:#666; text-align:center; margin-bottom:15px; line-height:1.5;">Tutup tanggal secara manual (misal: Libur).</p>
               <input type="date" id="dateSelector" class="form-input">
-              
               <div style="display:flex; gap:10px; margin-bottom:20px;">
-                  <button class="btn-block" id="markFullBtn" style="background:var(--danger); color:white; flex:1;">
-                      <i class="fas fa-ban"></i> TUTUP
-                  </button>
-                  <button class="btn-block" id="markAvailableBtn" style="background:var(--secondary); color:white; flex:1;">
-                      <i class="fas fa-check"></i> BUKA
-                  </button>
+                  <button class="btn-block" id="markFullBtn" style="background:var(--danger); color:white; flex:1;"><i class="fas fa-ban"></i> TUTUP</button>
+                  <button class="btn-block" id="markAvailableBtn" style="background:var(--secondary); color:white; flex:1;"><i class="fas fa-check"></i> BUKA</button>
               </div>
-              
               <button class="btn-block" onclick="firebase.auth().signOut()" style="background:#f1f2f6; color:#555; margin-top:15px;">Logout</button>
           </div>
       </div>
   </div>
 
   <script>
-    // 1. CONFIG FIREBASE (WAJIB SAMA DENGAN ADMIN)
+    // 1. CONFIG FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyA_c1tU70FM84Qi_f_aSaQ-YVLo_18lCkI",
       authDomain: "reservasi-dolan-sawah.firebaseapp.com",
@@ -300,7 +279,7 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // Referensi Gambar
+    // Data Master Lokasi & Gambar
     const locationImages = {
         "Lantai 1 belakang": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764935931/IMG_7474_ve5qwo.jpg",
         "Gubug 3": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764935931/IMG_7477_bxsmc6.jpg",
@@ -331,14 +310,8 @@
         setupRealtimeListeners();
         setupAdminLogic();
         
-        document.getElementById('prevMonth').addEventListener('click', () => { 
-            currentMonth--; if(currentMonth < 0) { currentMonth=11; currentYear--; } 
-            setupRealtimeListeners(); 
-        });
-        document.getElementById('nextMonth').addEventListener('click', () => { 
-            currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } 
-            setupRealtimeListeners(); 
-        });
+        document.getElementById('prevMonth').addEventListener('click', () => { currentMonth--; if(currentMonth < 0) { currentMonth=11; currentYear--; } setupRealtimeListeners(); });
+        document.getElementById('nextMonth').addEventListener('click', () => { currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } setupRealtimeListeners(); });
     });
 
     async function loadLocations() {
@@ -359,7 +332,6 @@
         document.getElementById('calendar').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:#999;">Memuat Data...</div>';
         document.getElementById('monthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-        // 1. DATA RESERVASI (SYNC DARI ADMIN)
         unsubscribeRes = db.collection("reservations")
             .where('date', '>=', start).where('date', '<=', end)
             .onSnapshot(snapshot => {
@@ -372,7 +344,6 @@
                 renderCalendar();
             });
             
-        // 2. STATUS MANUAL (DATE_STATUS)
         unsubscribeStatus = db.collection("date_status")
              .where('date', '>=', start).where('date', '<=', end)
              .onSnapshot(snapshot => {
@@ -396,15 +367,12 @@
         for(let i=1; i<=daysInMonth; i++) {
             const el = document.createElement('div');
             el.className = 'day-cell';
-            
             const mStr = String(currentMonth + 1).padStart(2, '0');
             const dStr = String(i).padStart(2, '0');
             const dateKey = `${currentYear}-${mStr}-${dStr}`;
-            
             const list = allReservations[dateKey] || [];
             const count = list.length;
             const total = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
-            
             const isManualFull = dateStatus[dateKey] === true;
 
             if(i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) el.classList.add('today');
@@ -423,23 +391,18 @@
         }
     }
 
-    // --- FUNGSI DETAIL DENGAN TAMPILAN KARTU TERPISAH & PRIVASI ---
+    // --- LOGIKA DETAIL TERBARU (TAMPILKAN SEMUA & BAR KAPASITAS) ---
     function openDetail(day, list) {
         document.getElementById('detailOverlay').classList.add('active');
         document.getElementById('sheetDate').textContent = `${day} ${monthNames[currentMonth]} ${currentYear}`;
         
         const totalGuests = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
-        document.getElementById('sheetStats').textContent = list.length ? `${list.length} Grup / ${totalGuests} Tamu` : 'Tidak ada reservasi';
+        document.getElementById('sheetStats').textContent = `${list.length} Grup / ${totalGuests} Tamu Total`;
         
         const grid = document.getElementById('locGrid');
         grid.innerHTML = '';
-        
-        if(list.length === 0) {
-            grid.innerHTML = '<div style="text-align:center; padding:50px 20px; color:#aaa;"><i class="fas fa-wind" style="font-size:2rem; margin-bottom:10px;"></i><br>Tidak ada reservasi di tanggal ini.</div>';
-            return;
-        }
 
-        // Grouping Data
+        // 1. Group Data Reservasi (jika ada)
         const grouped = {};
         list.forEach(r => {
             const l = r.tempat || 'Lainnya';
@@ -447,44 +410,62 @@
             grouped[l].push(r);
         });
 
-        // Render Kartu Terpisah
-        Object.keys(grouped).sort().forEach(loc => {
-            const items = grouped[loc];
+        // 2. Loop SEMUA LOKASI (Dari Master Gambar) agar semua kartu muncul
+        const allLocations = Object.keys(locationImages).sort();
+        
+        allLocations.forEach(loc => {
+            const items = grouped[loc] || []; // Data reservasi (bisa kosong)
             const img = locationImages[loc] || defaultImage;
-            const cap = locationsConfig[loc] || '-';
+            const cap = locationsConfig[loc] || 100; // Kapasitas default jika tidak diset
             const curr = items.reduce((s,r)=>s+(parseInt(r.jumlah)||0),0);
+            
+            // Hitung Persentase & Warna Bar
+            let percent = cap > 0 ? (curr / cap) * 100 : 0;
+            if(percent > 100) percent = 100;
+            
+            let barColor = 'bar-green'; // Default Hijau
+            if (percent >= 90) barColor = 'bar-red';
+            else if (percent >= 50) barColor = 'bar-yellow';
 
-            // Generate Items (Hidden by default)
+            // Generate Item Reservasi HTML
             let htmlItems = '';
-            items.sort((a,b)=> (a.jam||'').localeCompare(b.jam||'')).forEach(r => {
-                let menuText = '';
-                if(r.menus && Array.isArray(r.menus) && r.menus.length > 0) {
-                    menuText = `<div class="menu-detail-text">${r.menus.map(m => m.quantity + 'x ' + m.name).join('<br>')}</div>`;
-                } else if (r.menu) {
-                    menuText = `<div class="menu-detail-text">${r.menu}</div>`;
-                }
+            if(items.length > 0) {
+                items.sort((a,b)=> (a.jam||'').localeCompare(b.jam||'')).forEach(r => {
+                    let menuText = '';
+                    if(r.menus && Array.isArray(r.menus) && r.menus.length > 0) {
+                        menuText = `<div class="menu-detail-text">${r.menus.map(m => m.quantity + 'x ' + m.name).join('<br>')}</div>`;
+                    } else if (r.menu) {
+                        menuText = `<div class="menu-detail-text">${r.menu}</div>`;
+                    }
 
-                // --- PRIVACY PROTECTION (MASKING NO HP) ---
-                const safePhone = r.nomorHp && r.nomorHp.length > 4 
-                    ? r.nomorHp.slice(0, -3) + 'xxx' 
-                    : (r.nomorHp || '');
+                    // Privacy Masking
+                    const safePhone = r.nomorHp && r.nomorHp.length > 4 ? r.nomorHp.slice(0, -3) + 'xxx' : (r.nomorHp || '');
 
-                htmlItems += `
-                    <div class="res-item">
-                        <div class="res-info">
-                            <strong>${r.nama}</strong>
-                            <small>
-                                <i class="far fa-clock"></i> ${r.jam} WIB 
-                                ${safePhone ? ' • <i class="fab fa-whatsapp"></i> ' + safePhone : ''}
-                            </small>
-                            ${menuText}
-                            ${r.tambahan ? `<div style="color:var(--highlight); font-size:0.75rem; margin-top:5px; font-style:italic;">Note: ${r.tambahan}</div>` : ''}
-                        </div>
-                        <div class="res-qty">${r.jumlah}</div>
-                    </div>`;
-            });
+                    htmlItems += `
+                        <div class="res-item">
+                            <div class="res-info">
+                                <strong>${r.nama}</strong>
+                                <small>
+                                    <i class="far fa-clock"></i> ${r.jam} WIB 
+                                    ${safePhone ? ' • <i class="fab fa-whatsapp"></i> ' + safePhone : ''}
+                                </small>
+                                ${menuText}
+                                ${r.tambahan ? `<div style="color:var(--highlight); font-size:0.75rem; margin-top:3px; font-style:italic;">Note: ${r.tambahan}</div>` : ''}
+                            </div>
+                            <div class="res-qty">${r.jumlah}</div>
+                        </div>`;
+                });
+            } else {
+                htmlItems = `<div style="padding:20px; text-align:center; color:#aaa; font-size:0.85rem;">Belum ada reservasi. Tempat ini kosong.</div>`;
+            }
 
-            // Container Kartu
+            // Tentukan Teks Tombol
+            const btnText = items.length > 0 ? `Lihat ${items.length} Reservasi` : 'Masih Kosong';
+            const btnClass = items.length > 0 ? '' : 'disabled';
+            const onclickAttr = items.length > 0 ? 'onclick="toggleAccordion(this)"' : '';
+            const iconHtml = items.length > 0 ? '<i class="fas fa-chevron-down"></i>' : '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
+
+            // Render Kartu
             const card = document.createElement('div');
             card.className = 'loc-card';
             card.innerHTML = `
@@ -495,9 +476,13 @@
                     </div>
                 </div>
                 
-                <button class="btn-toggle-loc" onclick="toggleAccordion(this)">
-                    <span>Lihat ${items.length} Reservasi</span>
-                    <i class="fas fa-chevron-down"></i>
+                <div class="capacity-bar-container">
+                    <div class="capacity-bar-fill ${barColor}" style="width: ${percent}%;"></div>
+                </div>
+                
+                <button class="btn-toggle-loc ${btnClass}" ${onclickAttr}>
+                    <span>${btnText}</span>
+                    ${iconHtml}
                 </button>
                 
                 <div class="loc-body">
@@ -511,15 +496,15 @@
     // Fungsi Accordion
     window.toggleAccordion = function(btn) {
         const body = btn.nextElementSibling;
-        const icon = btn.querySelector('i');
+        const icon = btn.querySelector('.fa-chevron-down, .fa-chevron-up');
         
         if(body.style.display === 'block') {
             body.style.display = 'none';
-            icon.className = 'fas fa-chevron-down';
+            if(icon) icon.className = 'fas fa-chevron-down';
             btn.style.background = 'white';
         } else {
             body.style.display = 'block';
-            icon.className = 'fas fa-chevron-up';
+            if(icon) icon.className = 'fas fa-chevron-up';
             btn.style.background = '#f9f9f9';
         }
     }
@@ -553,7 +538,6 @@
             const d = document.getElementById('dateSelector').value;
             if(!d) return alert("Pilih tanggal dulu");
             try {
-                // Simpan ke collection khusus 'date_status' agar tidak merusak data reservasi
                 await db.collection("date_status").doc(d).set({
                     date: d,
                     isFull: isFull
