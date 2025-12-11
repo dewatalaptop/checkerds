@@ -102,41 +102,59 @@
     
     .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
     
+    /* STYLE DASAR CELL */
     .day-cell {
       aspect-ratio: 1/1; background: #ffffff; border: 1px solid #eaeaea; border-radius: 10px;
       position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 6px; overflow: hidden;
     }
-    .day-num { font-weight: 600; font-size: 0.95rem; z-index: 2; line-height: 1; }
+    .day-num { font-weight: 600; font-size: 0.95rem; z-index: 2; line-height: 1; color: var(--text-main); }
     
-    /* Status Colors */
+    /* --- STYLE 1: ADA RESERVASI (NORMAL) --- */
     .day-cell.has-res { background: #e0f2f1; border-color: var(--primary); }
     .day-cell.has-res .day-num { color: var(--primary-dark); }
     
-    /* --- PERUBAHAN TAMPILAN FULL --- */
+    /* --- STYLE 2: FULL (MERAH) --- */
+    /* Perbaikan: Warna teks putih, Background Count Putih supaya kontras */
     .day-cell.is-full { 
         background: var(--danger) !important; 
         border: 2px solid #a93226 !important; 
-        opacity: 1; 
-        color: white !important;
+        box-shadow: 0 4px 10px rgba(192, 57, 43, 0.3);
     }
-    .day-cell.is-full .day-num { color: white !important; }
-    /* Menghilangkan tulisan "PENUH" seperti permintaan */
+    .day-cell.is-full .day-num { 
+        color: white !important; /* Paksa teks putih */
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .day-cell.is-full .res-count {
+        background: white !important; /* Kotak jumlah jadi putih */
+        color: var(--danger) !important; /* Angka merah */
+        font-weight: 800 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
     .day-cell.is-full::after { display: none; }
 
-    /* TODAY */
+    /* --- STYLE 3: TODAY (KUNING EMAS) --- */
+    /* Perbaikan: Teks GELAP di atas latar Kuning agar terbaca */
     .day-cell.today { 
-        background: var(--secondary) !important; 
-        border: 2px solid #d4ac0d !important; 
-        color: white !important; 
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        background: #f4d03f !important; /* Kuning Emas */
+        border: 2px solid #d68910 !important; 
+        box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.5);
     }
     .day-cell.today .day-num { 
-        color: #fff !important; 
-        text-shadow: 0 1px 2px rgba(0,0,0,0.4); 
+        color: #5d4037 !important; /* Coklat Tua (Kontras tinggi) */
+        font-weight: 800;
+        text-shadow: none !important;
+    }
+    .day-cell.today .res-count {
+        background: #fff !important;
+        color: #d68910 !important;
+        border: 1px solid #d68910;
     }
     
-    .res-indicator { margin-top: auto; margin-bottom: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .res-count { font-size: 0.6rem; color: var(--primary-dark); font-weight: 700; background: rgba(255,255,255,0.7); padding: 1px 4px; border-radius: 4px; }
+    .res-indicator { margin-top: auto; margin-bottom: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100%; }
+    .res-count { 
+        font-size: 0.65rem; color: var(--primary-dark); font-weight: 700; 
+        background: rgba(255,255,255,0.8); padding: 2px 6px; border-radius: 10px; 
+    }
     
     .legend { display: flex; justify-content: center; gap: 15px; margin-top: 25px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; border-top: 1px dashed #eee; padding-top: 15px; }
     .dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
@@ -383,7 +401,7 @@
         <div class="calendar-days" id="calendar"></div>
         
         <div class="legend">
-            <div style="display:flex; gap:5px; align-items:center;"><span class="dot" style="background:var(--secondary); border:1px solid #d4ac0d;"></span> Hari Ini</div>
+            <div style="display:flex; gap:5px; align-items:center;"><span class="dot" style="background:#f4d03f; border:1px solid #d68910;"></span> Hari Ini</div>
             <div style="display:flex; gap:5px; align-items:center;"><span class="dot" style="background:var(--primary)"></span> Ada Reservasi</div>
             <div style="display:flex; gap:5px; align-items:center;"><span class="dot" style="background:var(--danger)"></span> Reservasi Penuh</div>
         </div>
@@ -486,8 +504,6 @@
     let dateStatus = {};
     let unsubscribeRes = null;
     let unsubscribeStatus = null;
-    
-    // Variabel untuk menyimpan data sementara saat popup penuh aktif
     let pendingDetailData = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -560,43 +576,38 @@
             const total = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
             const isManualFull = dateStatus[dateKey] === true;
 
-            // Logika Prioritas Tampilan
-            // 1. Cek apakah penuh manual
+            // Logika Tampilan & Kelas CSS
             if(isManualFull) {
                 el.classList.add('is-full');
+                // Struktur HTML khusus untuk Full
+                el.innerHTML = `<span class="day-num">${i}</span><div class="res-indicator"><div class="res-count">${total > 0 ? total : 'FULL'}</div></div>`;
             } 
-            // 2. Cek apakah ini hari ini
             else if(i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
                 el.classList.add('today');
+                // Struktur HTML untuk Today
+                el.innerHTML = `<span class="day-num">${i}</span>${count > 0 ? `<div class="res-indicator"><div class="res-count">${total}</div></div>` : ''}`;
             }
-            // 3. Cek apakah ada reservasi (jika tidak penuh manual)
             else if(count > 0) {
                 el.classList.add('has-res');
                 el.innerHTML = `<span class="day-num">${i}</span><div class="res-indicator"><div class="res-count">${total}</div></div>`;
             } 
-            // 4. Kosong
             else {
                 el.innerHTML = `<span class="day-num">${i}</span>`;
             }
 
-            // PERUBAHAN LOGIKA ONCLICK
             el.onclick = () => {
                 if(isManualFull) {
-                    // Jika Penuh: Buka Popup Warning dulu
                     showFullWarning(i, list);
                 } else {
-                    // Jika Normal: Buka detail biasa
                     openDetail(i, list, false);
                 }
             };
-            
             cal.appendChild(el);
         }
     }
 
-    // --- LOGIKA BARU: POPUP WARNING ---
+    // --- LOGIKA POPUP WARNING ---
     function showFullWarning(day, list) {
-        // Simpan data untuk dibuka nanti setelah klik tombol keluar
         pendingDetailData = { day: day, list: list };
         document.getElementById('fullWarningPopup').style.display = 'flex';
     }
@@ -604,17 +615,15 @@
     function continueToDetail() {
         document.getElementById('fullWarningPopup').style.display = 'none';
         if(pendingDetailData) {
-            // Buka detail dengan mode merah (isFullMode = true)
             openDetail(pendingDetailData.day, pendingDetailData.list, true);
         }
     }
 
-    // --- LOGIKA DETAIL (DIPERBARUI) ---
+    // --- LOGIKA DETAIL ---
     function openDetail(day, list, isFullMode = false) {
         const detailSheet = document.getElementById('detailSheet');
         const overlay = document.getElementById('detailOverlay');
         
-        // Atur Mode Warna & Badge
         if (isFullMode) {
             detailSheet.classList.add('red-mode');
         } else {
@@ -735,12 +744,10 @@
         setTimeout(() => modal.style.display = 'none', 300);
     }
 
-    // Tutup jika klik diluar gambar
     document.getElementById('imgModal').addEventListener('click', (e) => {
         if(e.target.id === 'imgModal') closeImgModal();
     });
 
-    // Accordion
     window.toggleAccordion = function(btn) {
         const body = btn.nextElementSibling;
         const icon = btn.querySelector('.fa-chevron-down, .fa-chevron-up');
@@ -758,7 +765,6 @@
     
     function closeDetail() { document.getElementById('detailOverlay').classList.remove('active'); }
     
-    // ADMIN LOGIC
     function setupAdminLogic() {
         const btn = document.getElementById('adminBtn');
         const overlay = document.getElementById('adminOverlay');
