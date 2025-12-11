@@ -54,7 +54,17 @@
     /* --- KALENDER CONTAINER --- */
     .main-container { max-width: 800px; margin: -30px auto 0; padding: 0 15px; position: relative; z-index: 10; }
     
-    /* BARU: INFO CARD STYLE */
+    /* --- INFO CARD ANIMATION (NEW) --- */
+    @keyframes gentle-wobble {
+        0% { transform: translateX(0%); }
+        15% { transform: translateX(-3px) rotate(-2deg); }
+        30% { transform: translateX(3px) rotate(2deg); }
+        45% { transform: translateX(-3px) rotate(-2deg); }
+        60% { transform: translateX(2px) rotate(1deg); }
+        75% { transform: translateX(-1px); }
+        100% { transform: translateX(0%); }
+    }
+
     .info-card {
         background: white;
         border-radius: 20px;
@@ -65,10 +75,12 @@
         align-items: flex-start;
         gap: 15px;
         border-left: 5px solid var(--primary);
-        animation: fadeIn 0.5s ease;
+        /* Animasi: durasi 3 detik, infinite agar terus menarik perhatian */
+        animation: gentle-wobble 3s infinite ease-in-out;
+        transform-origin: center center;
     }
     .info-icon {
-        background: rgba(42, 157, 143, 0.1); /* Transparent primary */
+        background: rgba(42, 157, 143, 0.1); 
         width: 40px; height: 40px;
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
@@ -98,14 +110,8 @@
     .day-num { font-weight: 600; font-size: 0.95rem; z-index: 2; line-height: 1; }
     
     /* Status Colors */
-    .day-cell.today { background: var(--secondary); border: 2px solid #d4ac0d; color: white; }
-    .day-cell.today .day-num { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-    
     .day-cell.has-res { background: #e0f2f1; border-color: var(--primary); }
     .day-cell.has-res .day-num { color: var(--primary-dark); }
-    
-    .res-indicator { margin-top: auto; margin-bottom: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .res-count { font-size: 0.6rem; color: var(--primary-dark); font-weight: 700; background: rgba(255,255,255,0.7); padding: 1px 4px; border-radius: 4px; }
     
     .day-cell.is-full { background: var(--danger-light); border: 2px solid var(--danger); opacity: 0.95; }
     .day-cell.is-full::after { 
@@ -123,6 +129,22 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
     }
 
+    /* UPDATED: FIXED TODAY VISIBILITY */
+    /* Menggunakan !important untuk memastikan warna hari ini tidak tertimpa status lain */
+    .day-cell.today { 
+        background: var(--secondary) !important; 
+        border: 2px solid #d4ac0d !important; 
+        color: white !important; 
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
+    .day-cell.today .day-num { 
+        color: #fff !important; 
+        text-shadow: 0 1px 2px rgba(0,0,0,0.4); 
+    }
+    
+    .res-indicator { margin-top: auto; margin-bottom: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .res-count { font-size: 0.6rem; color: var(--primary-dark); font-weight: 700; background: rgba(255,255,255,0.7); padding: 1px 4px; border-radius: 4px; }
+    
     .legend { display: flex; justify-content: center; gap: 15px; margin-top: 25px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; border-top: 1px dashed #eee; padding-top: 15px; }
     .dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
 
@@ -470,14 +492,23 @@
             const total = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
             const isManualFull = dateStatus[dateKey] === true;
 
-            if(i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) el.classList.add('today');
+            // Logika Prioritas Tampilan
+            // 1. Cek apakah ini hari ini
+            if(i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+                el.classList.add('today');
+            }
             
+            // 2. Cek apakah penuh manual
             if(isManualFull) {
                 el.classList.add('is-full');
-            } else if(count > 0) {
+            } 
+            // 3. Cek apakah ada reservasi (jika tidak penuh manual)
+            else if(count > 0) {
                 el.classList.add('has-res');
                 el.innerHTML = `<span class="day-num">${i}</span><div class="res-indicator"><div class="res-count">${total}</div></div>`;
-            } else {
+            } 
+            // 4. Kosong
+            else {
                 el.innerHTML = `<span class="day-num">${i}</span>`;
             }
 
