@@ -480,20 +480,8 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // Data Master Lokasi & Gambar
-    const locationImages = {
-        "Lantai 1 belakang": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764935931/IMG_7474_ve5qwo.jpg",
-        "Gubug 3": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764935931/IMG_7477_bxsmc6.jpg",
-        "Lantai 2": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764935931/IMG_7475_s9rtpo.jpg",
-        "Lantai 1 depan": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764935935/IMG_7472_gd2zsf.jpg",
-        "Pondok 2": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764936109/3ac34945-6aef-4921-8c08-f9cbf8ab4892_mfdft0.jpg",
-        "Pondok 3": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764936110/49d5f9c2-da86-461e-bdca-ad04398bfd99_yturyb.jpg",
-        "Pondok 1": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764936110/ae454394-906a-43d6-a3e7-7453e5ef91b7_fdzogh.jpg",
-        "Lantai 3": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764935931/IMG_7479_dlgxmv.jpg",
-        "Lantai 1 tengah": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764985452/IMG_7494_wyskxg.jpg",
-        "Meeting Room": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764985551/IMG_7491_shjtqx.jpg",
-        "Lantai 1 Full Blok (peserta wajib di atas 200 orang)": "https://res.cloudinary.com/dn60ib3ur/image/upload/v1764985614/image_e2za88.jpg"
-    };
+    // Data Master Lokasi & Gambar (DINAMIS DARI DB)
+    let locationImages = {};
     const defaultImage = "https://via.placeholder.com/300x200?text=Lokasi";
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     
@@ -507,7 +495,7 @@
     let pendingDetailData = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-        await loadLocations();
+        await loadLocations(); // Sekarang load gambar juga dari DB
         setupRealtimeListeners();
         setupAdminLogic();
         
@@ -515,11 +503,40 @@
         document.getElementById('nextMonth').addEventListener('click', () => { currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } setupRealtimeListeners(); });
     });
 
+    // FUNGSI LOAD LOKASI DIPERBARUI: Mengambil Capacity & ImageUrl dari DB
     async function loadLocations() {
         try {
-            const snap = await db.collection("locations").get();
-            snap.forEach(doc => locationsConfig[doc.data().name] = doc.data().capacity);
-        } catch(e) { console.log("Gagal load lokasi", e); }
+            // Coba ambil dari koleksi 'locations' dulu (huruf kecil)
+            let snap = await db.collection("locations").get();
+            
+            // Jika kosong, fallback ke 'Locations' (huruf besar) seperti di website Reservasi
+            if (snap.empty) {
+                snap = await db.collection("Locations").get();
+            }
+
+            // Reset data
+            locationsConfig = {};
+            locationImages = {};
+
+            snap.forEach(doc => {
+                const data = doc.data();
+                const name = data.name;
+                
+                // Simpan kapasitas
+                locationsConfig[name] = data.capacity;
+                
+                // Simpan gambar jika ada di DB
+                if (data.imageUrl) {
+                    locationImages[name] = data.imageUrl;
+                } else {
+                    // Jika tidak ada gambar di DB, biarkan kosong (nanti pakai default)
+                    locationImages[name] = defaultImage;
+                }
+            });
+            console.log("Data Lokasi & Gambar berhasil dimuat dari Database.");
+        } catch(e) { 
+            console.log("Gagal load lokasi/gambar", e); 
+        }
     }
 
     function setupRealtimeListeners() {
@@ -647,11 +664,14 @@
             grouped[l].push(r);
         });
 
-        const allLocations = Object.keys(locationImages).sort();
+        // Ambil semua nama lokasi yang ada di DB (lewat locationImages atau locationsConfig)
+        // Gabungkan juga lokasi yang mungkin ada di reservasi tapi tidak ada di config (defensive)
+        const allKnownLocations = new Set([...Object.keys(locationImages), ...Object.keys(locationsConfig)]);
+        const allLocations = Array.from(allKnownLocations).sort();
         
         allLocations.forEach(loc => {
             const items = grouped[loc] || [];
-            const img = locationImages[loc] || defaultImage;
+            const img = locationImages[loc] || defaultImage; // Ambil gambar dari data dinamis
             const cap = locationsConfig[loc] || 100;
             const curr = items.reduce((s,r)=>s+(parseInt(r.jumlah)||0),0);
             
@@ -698,9 +718,12 @@
 
             const card = document.createElement('div');
             card.className = 'loc-card';
+            // Perbaikan: Escape single quote pada nama lokasi agar JS tidak error saat viewPhoto
+            const safeLocName = loc.replace(/'/g, "\\'");
+            
             card.innerHTML = `
                 <div class="loc-header" style="background-image:url('${img}')">
-                    <button class="btn-view-photo" onclick="viewPhoto('${img}', '${loc.replace(/'/g, "\\'")}')">
+                    <button class="btn-view-photo" onclick="viewPhoto('${img}', '${safeLocName}')">
                         <i class="fas fa-eye"></i>
                     </button>
                     <div class="loc-title">
