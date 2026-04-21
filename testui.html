@@ -1039,6 +1039,15 @@
   ══════════════════════════════════════════════════════ -->
 
   <script>
+  // 🔴 DEBUG ERROR GLOBAL (TARUH DI SINI)
+
+  window.onerror = function(msg, url, line, col, error) {
+
+    alert("ERROR: " + msg + " di baris: " + line);
+
+  };
+
+
     /* ── Firebase ── */
     const firebaseConfig = {
       apiKey: "AIzaSyA_c1tU70FM84Qi_f_aSaQ-YVLo_18lCkI",
