@@ -404,6 +404,124 @@
     @keyframes zoomIn { from {transform: scale(0.9);} to {transform: scale(1);} }
     .btn-block { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .form-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit;}
+  /* === BACKGROUND FULL IMAGE + BLUR === */
+body {
+  background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb') no-repeat center/cover;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.15);
+  z-index: -1;
+}
+
+/* === HEADER GLASS === */
+header {
+  background: rgba(20, 80, 70, 0.55);
+  backdrop-filter: blur(20px);
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+}
+
+/* === CARD GLASS === */
+.info-card,
+.calendar-wrapper {
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* === INFO ICON SOFT === */
+.info-icon {
+  background: rgba(0, 150, 136, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* === CALENDAR NAV BUTTON === */
+.calendar-nav button {
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(10px);
+  border: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.calendar-nav button:hover {
+  transform: scale(1.1);
+}
+
+/* === DAY CELL GLASS STYLE === */
+.day-cell {
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 3px rgba(255,255,255,0.6),
+              0 4px 10px rgba(0,0,0,0.1);
+  transition: 0.2s;
+}
+
+.day-cell:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* === ADA RESERVASI (HIJAU LEMBUT) === */
+.day-cell.has-res {
+  background: rgba(0, 200, 150, 0.25);
+  border: 1px solid rgba(0, 200, 150, 0.5);
+}
+
+/* === TODAY (GOLD GLOW) === */
+.day-cell.today {
+  background: linear-gradient(145deg, #ffd86f, #ffb347);
+  box-shadow: 0 0 15px rgba(255, 200, 0, 0.6);
+  border: none;
+}
+
+/* === FULL (SOFT RED GLASS) === */
+.day-cell.is-full {
+  background: rgba(255, 80, 80, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 0, 0, 0.6);
+  box-shadow: 0 0 12px rgba(255,0,0,0.5);
+}
+
+/* === ANGKA === */
+.day-num {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* === RES COUNT BADGE === */
+.res-count {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(6px);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+}
+
+/* === LEGEND GLASS === */
+.legend {
+  border-top: 1px solid rgba(255,255,255,0.3);
+}
+
+/* === BUTTON BAWAH === */
+a[href] {
+  background: rgba(255,255,255,0.4) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+/* === TEXT SOFT SHADOW BIAR KONTRAS === */
+h2, .month-year, .weekday {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
   </style>
 </head>
 <body>
