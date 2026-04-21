@@ -2,12 +2,12 @@
 
 <html lang="id">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Viewer Reservasi Dolan Sawah</title>
+  <title>Viewer Reservasi Dolan Sawah (Photo View)</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 
@@ -16,1039 +16,854 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <style>
-  /* ═══════════════════════════════════════════════════════
-     DESIGN TOKENS
-  ═══════════════════════════════════════════════════════ */
-  :root {
-    --primary:        #2a9d8f;
-    --primary-dark:   #1a3a3a;
-    --primary-glow:   rgba(42,157,143,0.30);
-    --secondary:      #e9c46a;
-    --highlight:      #e07b39;
-    --danger:         rgb(255,59,48);
-    --danger-soft:    rgba(255,59,48,0.18);
-    --danger-border:  rgba(255,59,48,0.42);
-    --success:        #34c759;
-    --warning:        #ff9f0a;
+/* ============================================
+   iOS 26 LIQUID GLASS — Dolan Sawah RSVP
+   ============================================ */
 
-    /* Glass — tuned for dark photo background */
-    --glass-blur: blur(16px) saturate(160%);
-    --glass-blur-sm:  blur(14px) saturate(140%);
-
-    --radius-xl: 24px;
-    --radius-lg: 18px;
-    --radius-md: 12px;
-
-    /* iOS physics spring */
-    --ease-ios: cubic-bezier(0.22, 1, 0.36, 1);
-
-    /* Ambient orb — updated by JS mousemove */
-    --mx: 50%; --my: 30%;
-  }
-@media (max-width: 768px) {
-  .calendar-wrapper::before {
-    animation: none;
-  }
+:root {
+  --primary: #2a9d8f;
+  --primary-dark: #1a3a35;
+  --secondary: #e9c46a;
+  --highlight: #d35400;
+  --danger: #c0392b;
+  --danger-light: #fadbd8;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --bg-body: transparent;
+  --bg-card: rgba(255,255,255,0.18);
+  --text-main: #1a2e2a;
+  --text-muted: #4a6660;
+  --glass-bg: rgba(255,255,255,0.22);
+  --glass-bg-strong: rgba(255,255,255,0.32);
+  --glass-border: rgba(255,255,255,0.55);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  --glass-blur: blur(24px);
+  --glass-blur-heavy: blur(40px);
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
 }
-  /* ═══════════════════════════════════════════════════════
-     RESET
-  ═══════════════════════════════════════════════════════ */
-  *, *::before, *::after {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    will-change: transform;
-  }
-  html { scroll-behavior: smooth; }
 
-  /* ═══════════════════════════════════════════════════════
-     BODY — real photo background + dark overlay
-  ═══════════════════════════════════════════════════════ */
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    margin: 0;
-    min-height: 100vh;
-    overflow-x: hidden;
-    padding-bottom: 90px;
-    letter-spacing: -0.15px;
-    color: white;
-    /* Photo background — dark overlay on top */
-    background:
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.25)),
-
-    url('https://as2.ftcdn.net/jpg/02/70/12/65/1000_F_270126543_Fpjy5Y3I0JHGOazU5UxKZxG3hMXv7ixC.webp');
-
+/* ── BODY & BACKGROUND ── */
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin: 0;
+  color: var(--text-main);
+  overflow-x: hidden;
+  padding-bottom: 90px;
+  min-height: 100vh;
+  background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200&q=85');
   background-size: cover;
-
-  background-position: center;
-
-  background-repeat: no-repeat;
-
+  background-position: center top;
   background-attachment: fixed;
-  }
-  body {
-  -webkit-overflow-scrolling: touch;
+  position: relative;
 }
 
-@supports (-webkit-touch-callout: none) {
-  body {
-    background-attachment: scroll;
-  }
-}
-  /* Teal ambient orb — follows cursor */
-  body::after {
-    content: "";
-    position: fixed;
-    width: 420px; height: 420px;
-    background: radial-gradient(circle,
-      rgba(42,157,143,0.20) 0%,
-      rgba(42,157,143,0.06) 45%,
-      transparent 70%
-    );
-    pointer-events: none;
-    z-index: 0;
-    border-radius: 50%;
-    left: var(--mx); top: var(--my);
-    transform: translate(-50%, -50%);
-    transition: left 0.6s var(--ease-ios), top 0.6s var(--ease-ios);
-    mix-blend-mode: screen;
-  }
-  /* Warm secondary orb — bottom-right, static */
-  body::before {
-    content: "";
-    position: fixed;
-    width: 280px; height: 280px;
-    background: radial-gradient(circle,
-      rgba(233,196,106,0.13) 0%,
-      transparent 70%
-    );
-    pointer-events: none;
-    z-index: 0;
-    border-radius: 50%;
-    right: 5%; bottom: 18%;
-    mix-blend-mode: screen;
-  }
-
-  h2,h3,h4 { font-family: 'Nunito', sans-serif; font-weight: 700; }
-
-  /* ═══════════════════════════════════════════════════════
-     HEADER — transparent glass over photo
-  ═══════════════════════════════════════════════════════ */
-  header {
-    background: linear-gradient(
-      175deg,
-      rgba(10,35,32,0.70) 0%,
-      rgba(26,58,58,0.50) 60%,
-      rgba(20,50,45,0.38) 100%
-    );
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    padding: 20px 22px 54px;
-    color: white;
-    border-bottom-left-radius: 36px;
-    border-bottom-right-radius: 36px;
-    box-shadow:
-      0 8px 32px rgba(0,0,0,0.30),
-      inset 0 1px 0 rgba(255,255,255,0.18),
-      inset 0 -1px 0 rgba(255,255,255,0.06);
-    position: relative;
-    overflow: hidden;
-    z-index: 5;
-    cursor: default;
-    user-select: none; -webkit-user-select: none;
-  }
-  header::before {
-    content:""; position: absolute; inset: 0;
-    background:
-      linear-gradient(155deg, rgba(255,255,255,0.11) 0%, transparent 45%),
-      linear-gradient(to bottom, rgba(42,157,143,0.08), transparent 70%);
-    pointer-events: none;
-  }
-  /* Animated shimmer sweep */
-  header::after {
-    content:""; position: absolute;
-    top:-60%; left:-40%;
-    width:55%; height:200%;
-    background: linear-gradient(
-      105deg,
-      transparent 40%,
-      rgba(255,255,255,0.07) 50%,
-      transparent 60%
-    );
-    animation: headerShimmer 9s ease-in-out infinite;
-    pointer-events: none;
-  }
-  @keyframes headerShimmer {
-    0%,100% { transform: translateX(0);   opacity: 0.5; }
-    50%      { transform: translateX(280%);opacity: 1;   }
-  }
-  .header-branding h2 {
-    margin: 0; font-size: 1.3rem; font-weight: 800;
-    display: flex; align-items: center; gap: 10px;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.30);
-    letter-spacing: -0.3px;
-  }
-  .header-branding small {
-    display: block; margin-top: 5px;
-    opacity: 0.68; font-size: 0.76rem; font-weight: 400;
-    letter-spacing: 0.9px; text-transform: uppercase;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.35);
-  }
-
-  /* Hidden 5-dot tap-counter */
-  #tapIndicator {
-    position: absolute; bottom: 14px; right: 18px;
-    display: flex; gap: 5px;
-    opacity: 0; transition: opacity 0.3s var(--ease-ios);
-    pointer-events: none;
-  }
-  #tapIndicator.visible { opacity: 1; }
-  #tapIndicator span {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(255,255,255,0.28);
-    border: 1px solid rgba(255,255,255,0.42);
-    transition: background 0.2s, transform 0.25s var(--ease-ios), box-shadow 0.2s;
-  }
-  #tapIndicator span.lit {
-    background: white; transform: scale(1.35);
-    box-shadow: 0 0 7px rgba(255,255,255,0.75);
-  }
-
-  /* ═══════════════════════════════════════════════════════
-     MAIN CONTAINER
-  ═══════════════════════════════════════════════════════ */
-  .main-container {
-    max-width: 800px;
-    margin: -36px auto 0;
-    padding: 0 14px;
-    position: relative; z-index: 10;
-  }
-
-  /* ═══════════════════════════════════════════════════════
-     INFO CARD
-  ═══════════════════════════════════════════════════════ */
-  @keyframes gentle-float {
-    0%,100% { transform: translateY(0) translateZ(0); }
-    50%      { transform: translateY(-5px) translateZ(0); }
-  }
-  .info-card {
-    background: rgba(255,255,255,0.13);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid rgba(255,255,255,0.24);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.45);
-    border-radius: var(--radius-xl);
-    padding: 16px 20px;
-    margin-bottom: 18px;
-    display: flex; align-items: flex-start; gap: 14px;
-    animation: gentle-float 5.5s ease-in-out infinite;
-    position: relative; overflow: hidden;
-    transform: translateZ(0);
-  }
-  .info-card::before {
-    content:""; position: absolute;
-    top:0; left:0; right:0; height:1px;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.60),transparent);
-  }
-  .info-icon {
-    background: linear-gradient(135deg, var(--primary), rgba(42,157,143,0.70));
-    width: 42px; height: 42px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; color: white; font-size: 1.1rem;
-    box-shadow: 0 4px 14px var(--primary-glow);
-  }
-  .info-content h4 { margin: 0 0 4px; font-size: 0.9rem; color: white; font-weight: 700; }
-  .info-content p  { margin: 0; font-size: 0.78rem; color: rgba(255,255,255,0.72); line-height: 1.55; }
-
-  /* ═══════════════════════════════════════════════════════
-     CALENDAR WRAPPER — real glass + caustic water + highlight
-  ═══════════════════════════════════════════════════════ */
-  .calendar-wrapper {
-    background: rgba(255,255,255,0.14);
-    backdrop-filter: blur(30px) saturate(165%);
-    -webkit-backdrop-filter: blur(30px) saturate(165%);
-    border: 1px solid rgba(255,255,255,0.28);
-    box-shadow:
-      0 12px 44px rgba(0,0,0,0.30),
-      inset 0 1px 0 rgba(255,255,255,0.55),
-      inset 0 -1px 0 rgba(255,255,255,0.14);
-    border-radius: 28px;
-    padding: 22px 18px 18px;
-    position: relative; overflow: hidden;
-    transform: perspective(1200px) rotateX(2deg) translateZ(0);
-  }
-  /* Caustic water grid animation */
-  .calendar-wrapper::before {
+/* Warm teal overlay */
+body::before {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
-
-  background: url('https://i.imgur.com/8IuucQZ.png');
-  background-size: cover;
-
-  opacity: 0.18;
-  mix-blend-mode: overlay;
-
-  animation: waterMove 18s linear infinite;
+  background: linear-gradient(
+    170deg,
+    rgba(20, 95, 80, 0.38) 0%,
+    rgba(10, 60, 50, 0.25) 40%,
+    rgba(80, 120, 60, 0.18) 100%
+  );
+  z-index: 0;
   pointer-events: none;
 }
 
-@keyframes waterMove {
-  0%   { transform: translate(0,0) scale(1.05); }
-  50%  { transform: translate(-40px,-25px) scale(1.08); }
-  100% { transform: translate(0,0) scale(1.05); }
+/* Animated golden sun shimmer */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% -10%,
+    rgba(255, 220, 100, 0.22) 0%,
+    transparent 60%
+  );
+  z-index: 0;
+  pointer-events: none;
+  animation: sunShimmer 8s ease-in-out infinite alternate;
 }
-  /* Liquid highlight sweep */
-  .calendar-wrapper::after {
-    content:""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
-    background: linear-gradient(
-      118deg,
-      transparent 28%,
-      rgba(255,255,255,0.18) 50%,
-      transparent 72%
-    );
-    opacity: 0.55;
-    transition: opacity 0.4s var(--ease-ios);
-    border-radius: inherit;
-  }
-  .calendar-wrapper:hover::after { opacity: 0.88; }
 
-  /* ── Calendar header & nav ── */
-  .calendar-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 22px; position: relative; z-index: 3;
-  }
-  .month-year {
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.2rem; font-weight: 800; color: white;
-    text-transform: capitalize; letter-spacing: -0.3px;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.35);
-  }
-  .calendar-nav { display: flex; gap: 8px; }
-  .calendar-nav button {
-    background: rgba(255,255,255,0.20);
-    backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm);
-    border: 1px solid rgba(255,255,255,0.36);
-    width: 38px; height: 38px; border-radius: 12px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    color: white;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.50), 0 4px 12px rgba(0,0,0,0.22);
-    transition: all 0.4s var(--ease-ios); font-size: 0.85rem;
-  }
-  .calendar-nav button:active { transform: scale(0.88); background: rgba(255,255,255,0.35); }
+@keyframes sunShimmer {
+  0%   { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 1;   transform: scale(1.05) translateY(4px); }
+}
 
-  /* ── Grid ── */
-  .calendar-grid-header {
-    display: grid; grid-template-columns: repeat(7,1fr);
-    margin-bottom: 8px; position: relative; z-index: 3;
-  }
-  .weekday {
-    text-align: center; font-size: 0.68rem; font-weight: 700;
-    color: rgba(255,255,255,0.58); text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .calendar-days {
-    display: grid; grid-template-columns: repeat(7,1fr);
-    gap: 5px; position: relative; z-index: 3;
-  }
+/* ── HEADER ── */
+header {
+  position: relative;
+  z-index: 100;
+  background: rgba(14, 75, 62, 0.52);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.25);
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.3) inset,
+    0 12px 40px rgba(0,0,0,0.25);
+  padding: 22px 24px 32px;
+}
 
-  /* ── Day cell ── */
-  .day-cell {
-    aspect-ratio: 1/1;
-    background: rgba(255,255,255,0.16);
-    backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.32);
-    border-radius: var(--radius-md);
-    position: relative; cursor: pointer;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: flex-start;
-    padding-top: 6px; overflow: hidden;
-    transition: all 0.4s var(--ease-ios);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.45);
-  }
-  /* Inner light sheen */
-  .day-cell::before {
-    content:""; position: absolute; inset: 0; border-radius: inherit;
-    background: linear-gradient(130deg, rgba(255,255,255,0.50), transparent 58%);
-    opacity: 0.45; pointer-events: none; z-index: 1;
-  }
-  /* Liquid press ripple */
-  .day-cell::after {
-    content:""; position: absolute; inset: 0; border-radius: inherit;
-    background: radial-gradient(circle, rgba(255,255,255,0.50), transparent 68%);
-    opacity: 0; pointer-events: none; z-index: 2;
-    transition: opacity 0.22s;
-  }
-  .day-cell:active::after { opacity: 0.75; }
-  .day-cell:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.50);
-  }
-  .day-cell:active { transform: scale(0.88); background: rgba(255,255,255,0.30); }
+.header-branding h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  letter-spacing: -0.3px;
+}
 
-  .day-num {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 700; font-size: 0.92rem;
-    z-index: 3; line-height: 1;
-    color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.40);
-  }
+.header-branding small {
+  opacity: 0.85;
+  font-size: 0.82rem;
+  margin-top: 5px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.9);
+  display: block;
+  letter-spacing: 0.2px;
+}
 
-  /* Has reservation — teal glass */
-  .day-cell.has-res {
-    background: rgba(42,157,143,0.32);
-    border-color: rgba(42,157,143,0.55);
-    box-shadow: 0 4px 16px rgba(42,157,143,0.28), inset 0 1px 0 rgba(255,255,255,0.35);
-  }
-  .day-cell.has-res .day-num { color: white; text-shadow: 0 1px 5px rgba(0,60,50,0.50); }
+/* ── MAIN CONTAINER ── */
+.main-container {
+  max-width: 800px;
+  margin: -28px auto 0;
+  padding: 0 16px;
+  position: relative;
+  z-index: 10;
+}
 
-  /* Full — iOS subtle danger + X cross mark */
-  .day-cell.is-full {
-    background: rgba(255,59,48,0.20) !important;
-    border: 1px solid rgba(255,59,48,0.42) !important;
-    box-shadow: 0 4px 16px rgba(255,59,48,0.20) !important;
-  }
-  .day-cell.is-full .day-num { color: #ffccc8 !important; font-weight: 800; }
-  .day-cell.is-full .res-count {
-    background: rgba(255,59,48,0.28) !important; color: white !important;
-    font-weight: 800 !important; border: 1px solid rgba(255,59,48,0.35);
-  }
-  /* X diagonal cross */
-  .day-cell.is-full::after {
-    content:""; position: absolute; inset: 0;
-    background:
-      linear-gradient( 45deg, transparent 42%, rgba(255,80,60,0.30) 48%, transparent 54%),
-      linear-gradient(-45deg, transparent 42%, rgba(255,80,60,0.30) 48%, transparent 54%);
-    opacity: 1 !important; z-index: 4; pointer-events: none;
-  }
+/* ── INFO CARD ── */
+@keyframes gentle-wobble {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-2px) rotate(-1.5deg); }
+  30%  { transform: translateX(2px) rotate(1.5deg); }
+  45%  { transform: translateX(-2px) rotate(-1deg); }
+  60%  { transform: translateX(1.5px) rotate(0.8deg); }
+  75%  { transform: translateX(-0.8px); }
+  100% { transform: translateX(0); }
+}
 
-  /* Today — golden glass */
-  .day-cell.today {
-    background: rgba(233,196,106,0.35) !important;
-    border: 1px solid rgba(233,196,106,0.65) !important;
-    box-shadow: 0 4px 18px rgba(233,196,106,0.32), inset 0 1px 0 rgba(255,255,255,0.45) !important;
-  }
-  .day-cell.today .day-num { color: #fff6cc !important; font-weight: 800; text-shadow: 0 1px 6px rgba(100,60,0,0.55); }
-  .day-cell.today .res-count {
-    background: rgba(255,255,255,0.28) !important; color: #ffd860 !important;
-    border: 1px solid rgba(233,196,106,0.50);
-  }
+.info-card {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.6) inset,
+    var(--glass-shadow);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  animation: gentle-wobble 4s ease-in-out infinite;
+  transform-origin: center center;
+}
 
-  .res-indicator {
-    margin-top: auto; margin-bottom: 5px;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 2px; width: 100%;
-    position: relative; z-index: 3;
-  }
-  .res-count {
-    font-size: 0.6rem; font-weight: 700; color: white;
-    background: rgba(0,0,0,0.28); backdrop-filter: blur(6px);
-    padding: 2px 7px; border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.20);
-  }
+.info-icon {
+  background: rgba(42, 157, 143, 0.28);
+  backdrop-filter: blur(10px);
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: #1a6e62;
+  font-size: 1.2rem;
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 2px 8px rgba(42,157,143,0.2);
+}
 
-  /* ── Legend & swipe hint ── */
-  .legend {
-    display: flex; justify-content: center;
-    gap: 14px; margin-top: 22px;
-    font-size: 0.72rem; color: rgba(255,255,255,0.68); flex-wrap: wrap;
-    border-top: 1px solid rgba(255,255,255,0.15);
-    padding-top: 14px; position: relative; z-index: 3;
-  }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .dot { width:12px; height:12px; border-radius:5px; display:inline-block; border:1px solid rgba(255,255,255,0.35); }
+.info-content h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  color: var(--primary-dark);
+  font-weight: 700;
+}
 
-  /* Swipe hint — touch devices only */
-  .swipe-hint {
-    text-align: center; margin-top: 10px;
-    font-size: 0.68rem; color: rgba(255,255,255,0.45);
-    letter-spacing: 0.4px;
-    display: none; align-items: center; justify-content: center; gap: 6px;
-    opacity: 0;
-    animation: hintFade 4s ease-in-out 1.8s forwards;
-  }
-  @media (hover: none) { .swipe-hint { display: flex; } }
-  @keyframes hintFade {
-    0%   { opacity:0; transform:translateY(4px); }
-    20%  { opacity:1; transform:translateY(0); }
-    80%  { opacity:1; }
-    100% { opacity:0; }
-  }
-  .swipe-hint i { font-size: 0.72rem; }
+.info-content p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #3a5550;
+  line-height: 1.55;
+}
 
-  /* ── Footer link ── */
-  .footer-link { margin-top: 24px; text-align: center; }
-  .footer-link a {
-    color: rgba(255,255,255,0.75); font-size: 0.85rem; text-decoration: none;
-    padding: 10px 22px;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm);
-    border: 1px solid rgba(255,255,255,0.22);
-    border-radius: 30px;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.28);
-    display: inline-flex; align-items: center; gap: 8px;
-    transition: all 0.4s var(--ease-ios);
-  }
-  .footer-link a:active { transform: scale(0.95); }
+/* ── CALENDAR WRAPPER ── */
+.calendar-wrapper {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 22px 18px 18px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.55) inset,
+    var(--glass-shadow);
+}
 
-  /* ═══════════════════════════════════════════════════════
-     FULL WARNING POPUP
-  ═══════════════════════════════════════════════════════ */
-  .info-popup-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.30);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    z-index: 2500;
-    display: none; align-items: center; justify-content: center; padding: 20px;
-  }
-  .info-popup-content {
-    background: rgba(18,38,36,0.88);
-    backdrop-filter: blur(28px) saturate(150%); -webkit-backdrop-filter: blur(28px) saturate(150%);
-    border: 1px solid rgba(255,255,255,0.20);
-    box-shadow: 0 24px 70px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.20);
-    width: 100%; max-width: 380px;
-    border-radius: 28px; padding: 32px 26px; text-align: center;
-    animation: popIn 0.35s var(--ease-ios);
-    position: relative; overflow: hidden;
-  }
-  .info-popup-content::before {
-    content:""; position: absolute; top:0; left:0; right:0; height:1px;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.50),transparent);
-  }
-  @keyframes popIn { from{opacity:0;transform:scale(0.84);} to{opacity:1;transform:scale(1);} }
-  .info-popup-icon {
-    width:60px; height:60px; border-radius:20px;
-    background: var(--danger-soft); border:1px solid var(--danger-border);
-    display:inline-flex; align-items:center; justify-content:center;
-    font-size:1.8rem; color:var(--danger); margin-bottom:16px;
-    box-shadow: 0 4px 18px rgba(255,59,48,0.22);
-  }
-  .info-popup-title { font-size:1.1rem; font-weight:800; margin-bottom:10px; color:white; }
-  .info-popup-text  { font-size:0.85rem; color:rgba(255,255,255,0.65); line-height:1.65; margin-bottom:24px; }
-  .info-popup-btn {
-    background: linear-gradient(135deg, rgba(255,59,48,0.85), rgba(200,40,30,0.90));
-    color:white; border:none; padding:14px 30px; border-radius:50px;
-    font-weight:700; cursor:pointer; font-size:0.95rem; width:100%;
-    box-shadow: 0 6px 22px rgba(255,59,48,0.28);
-    transition: transform 0.3s var(--ease-ios); letter-spacing:-0.2px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
-  .info-popup-btn:active { transform:scale(0.96); }
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
-  /* ═══════════════════════════════════════════════════════
-     DETAIL BOTTOM SHEET — dark glass
-  ═══════════════════════════════════════════════════════ */
-  .detail-overlay {
-    position:fixed; inset:0;
-    background: rgba(0,0,0,0.28);
-    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-    z-index:1000; display:none; align-items:flex-end; justify-content:center;
-  }
-  .detail-overlay.active { display:flex; animation:fadeIn 0.25s ease; }
-  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+.month-year {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #0e3028;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.4);
+  letter-spacing: -0.5px;
+}
 
-  .detail-sheet {
-    background: rgba(10,28,25,0.84);
-    backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255,255,255,0.14);
-    width:100%; max-width:600px; height:90vh;
-    border-top-left-radius:32px; border-top-right-radius:32px;
-    display:flex; flex-direction:column; overflow:hidden;
-    animation:slideUpBig 0.40s var(--ease-ios);
-    box-shadow: 0 -16px 60px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.18);
-    position:relative;
-   
-  }
-  /* iOS grabber — white on dark */
-  .detail-sheet::before {
-    content:""; position:absolute; top:10px; left:50%; transform:translateX(-50%);
-    width:36px; height:5px; background: rgba(255,255,255,0.28);
-    border-radius:10px; z-index:20;
-  }
-  .detail-sheet.red-mode .sheet-header { border-bottom:1.5px solid rgba(255,80,60,0.38); }
-  .detail-sheet.red-mode #sheetDate   { color:#ff8070 !important; }
+.calendar-nav { display: flex; gap: 8px; }
 
-  @keyframes slideUpBig { from{transform:translateY(100%);} to{transform:translateY(0);} }
+.calendar-nav button {
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #0e3028;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    0 4px 12px rgba(0,0,0,0.12);
+  font-size: 0.85rem;
+}
+.calendar-nav button:hover { transform: scale(1.12); background: rgba(255,255,255,0.55); }
+.calendar-nav button:active { transform: scale(0.93); }
 
-  .pulsing-badge {
-    position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
-    background: linear-gradient(135deg, rgba(255,59,48,0.88), rgba(200,40,30,0.95));
-    color:white; padding:10px 26px; border-radius:30px;
-    font-weight:700; font-size:0.88rem;
-    box-shadow:0 6px 24px rgba(255,59,48,0.35);
-    animation:pulse-red 2s infinite;
-    z-index:100; pointer-events:none; display:none; white-space:nowrap;
-    border:1.5px solid rgba(255,255,255,0.25); backdrop-filter:blur(8px);
-    font-family:'Plus Jakarta Sans',sans-serif;
-  }
-  .detail-sheet.red-mode .pulsing-badge { display:block; }
-  @keyframes pulse-red {
-    0%   { transform:translateX(-50%) scale(1);    box-shadow:0 0 0 0 rgba(255,59,48,0.45); }
-    70%  { transform:translateX(-50%) scale(1.05); box-shadow:0 0 0 14px rgba(255,59,48,0); }
-    100% { transform:translateX(-50%) scale(1);    box-shadow:0 0 0 0 rgba(255,59,48,0); }
-  }
+/* ── WEEKDAYS ── */
+.calendar-grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
 
-  .sheet-header {
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-    border-bottom: 1px solid rgba(255,255,255,0.11);
-    padding: 22px 20px 14px;
-    display:flex; justify-content:space-between; align-items:center;
-    z-index:10; flex-shrink:0;
-    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
-  }
-  #sheetDate  { color: white !important; }
-  #sheetStats { color: rgba(255,255,255,0.48) !important; }
+.weekday {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(20, 70, 60, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
 
-  .btn-sheet-back {
-    background: rgba(255,255,255,0.11);
-    backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm);
-    border: 1px solid rgba(255,255,255,0.18); color: white;
-    padding:9px 18px; border-radius:20px; font-size:0.84rem; font-weight:600; cursor:pointer;
-    display:flex; align-items:center; gap:7px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 10px rgba(0,0,0,0.28);
-    transition: all 0.35s var(--ease-ios);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
-  .btn-sheet-back:active { transform:scale(0.94); background: rgba(255,255,255,0.20); }
+/* ── CALENDAR GRID ── */
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
 
-  .sheet-content { flex:1; overflow-y:auto; padding:20px 16px 90px; -webkit-overflow-scrolling:touch; }
-  #locGrid { display:flex; flex-direction:column; gap:18px; padding-bottom:80px; }
+/* ── DAY CELL base ── */
+.day-cell {
+  aspect-ratio: 1/1;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: var(--radius-md);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 6px;
+  overflow: hidden;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    0 3px 8px rgba(0,0,0,0.08);
+}
 
-  /* ── Location cards — dark glass ── */
-  @keyframes cardEnter {
-    from { opacity:0; transform:translateY(24px) scale(0.96); }
-    to   { opacity:1; transform:translateY(0)    scale(1); }
-  }
-  .loc-card {
-    background: rgba(255,255,255,0.07);
-    backdrop-filter: blur(24px) saturate(150%); -webkit-backdrop-filter: blur(24px) saturate(150%);
-    border: 1px solid rgba(255,255,255,0.13);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.12);
-    border-radius: var(--radius-xl); overflow:hidden;
-    transition: transform 0.4s var(--ease-ios), box-shadow 0.4s var(--ease-ios);
-    flex-shrink:0; position:relative;
-  }
-  .loc-card::after {
-    content:""; position:absolute; inset:0; pointer-events:none;
-    background: linear-gradient(118deg, transparent 28%, rgba(255,255,255,0.08), transparent 72%);
-    opacity:0; transition:opacity 0.4s var(--ease-ios); z-index:10; border-radius:inherit;
-  }
-  .loc-card:hover { transform:translateY(-4px); box-shadow:0 18px 48px rgba(0,0,0,0.42); }
-  .loc-card:hover::after { opacity:1; }
+/* Inner top shimmer line */
+.day-cell::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+  border-radius: 1px;
+}
 
-  .loc-header {
-    height:148px; min-height:148px; position:relative;
-    background-size:cover; background-position:center;
-    display:flex; align-items:flex-end; cursor:pointer; overflow:hidden;
-  }
-  .loc-header::after {
-    content:""; position:absolute; inset:0;
-    background:linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.10) 60%, transparent 100%);
-    pointer-events:none;
-  }
-  .loc-title {
-    position:relative; z-index:2; width:100%; padding:14px 16px; color:white;
-    display:flex; justify-content:space-between; align-items:flex-end; pointer-events:none;
-  }
-  .loc-name { font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem; text-shadow:0 2px 8px rgba(0,0,0,0.55); white-space:normal; max-width:68%; line-height:1.2; }
-  .loc-badge {
-    font-size:0.72rem; background:rgba(255,255,255,0.18); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-    padding:5px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.30);
-    font-weight:700; white-space:nowrap;
-  }
+.day-cell:hover {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.8) inset,
+    0 10px 20px rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.42);
+}
+.day-cell:active { transform: scale(0.93); }
 
-  .btn-view-photo {
-    position:absolute; top:14px; right:14px; z-index:20;
-    width:38px; height:38px; border-radius:50%;
-    background:rgba(255,255,255,0.18); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-    border:1px solid rgba(255,255,255,0.40); color:white; font-size:1rem;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; box-shadow:0 3px 12px rgba(0,0,0,0.22);
-    transition:all 0.3s var(--ease-ios); pointer-events:auto;
-  }
-  .btn-view-photo:active { transform:scale(0.88); background:rgba(255,255,255,0.35); }
+.day-num {
+  font-weight: 700;
+  font-size: 0.95rem;
+  z-index: 2;
+  line-height: 1;
+  color: #0e3028;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.6);
+}
 
-  .capacity-bar-container { width:100%; height:5px; background:rgba(255,255,255,0.08); }
-  .capacity-bar-fill { height:100%; transition:width 0.65s var(--ease-ios); }
-  .bar-green  { background:linear-gradient(90deg,#34c759,#30d158); }
-  .bar-yellow { background:linear-gradient(90deg,#ff9f0a,#ffcc02); }
-  .bar-red    { background:linear-gradient(90deg,rgba(255,59,48,0.75),rgba(255,59,48,0.95)); }
+/* ── HAS RESERVATION ── */
+.day-cell.has-res {
+  background: rgba(42, 180, 155, 0.22);
+  border: 1px solid rgba(42, 200, 170, 0.5);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    0 4px 12px rgba(42,157,143,0.18);
+}
+.day-cell.has-res .day-num { color: #0d3d30; }
 
-  .btn-toggle-loc {
-    width:100%; padding:14px 16px;
-    background: rgba(255,255,255,0.06);
-    border:none; border-top:1px solid rgba(255,255,255,0.09);
-    color: rgba(255,255,255,0.82); font-weight:600; cursor:pointer;
-    font-size:0.88rem; font-family:'Plus Jakarta Sans',sans-serif;
-    display:flex; align-items:center; justify-content:space-between;
-    transition:background 0.35s var(--ease-ios); letter-spacing:-0.1px;
-  }
-  .btn-toggle-loc:active { background:rgba(255,255,255,0.13); }
-  .btn-toggle-loc.disabled { color:rgba(255,255,255,0.28); cursor:default; }
+/* ── IS FULL ── */
+.day-cell.is-full {
+  background: rgba(220, 60, 60, 0.38) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 100, 100, 0.55) !important;
+  box-shadow:
+    0 1px 0 rgba(255,200,200,0.5) inset,
+    0 4px 14px rgba(192, 57, 43, 0.28) !important;
+}
+.day-cell.is-full .day-num { color: #fff !important; text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important; }
+.day-cell.is-full .res-count { background: rgba(255,255,255,0.88) !important; color: var(--danger) !important; font-weight: 800 !important; }
+.day-cell.is-full::after { display: none; }
 
-  .loc-body {
-    display:none; background: rgba(0,0,0,0.20);
-    border-top:1px solid rgba(255,255,255,0.07);
-    animation:slideDown 0.35s var(--ease-ios);
-  }
-  @keyframes slideDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+/* ── TODAY — golden glow ── */
+.day-cell.today {
+  background: linear-gradient(145deg, #ffd25a, #ffb830) !important;
+  border: 1.5px solid rgba(255, 200, 60, 0.9) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    0 0 18px rgba(255, 200, 0, 0.55),
+    0 6px 18px rgba(200, 130, 0, 0.25) !important;
+}
+.day-cell.today .day-num { color: #5a3800 !important; font-weight: 800 !important; text-shadow: 0 1px 2px rgba(255,255,255,0.4) !important; }
+.day-cell.today .res-count { background: rgba(255,255,255,0.9) !important; color: #c47800 !important; border: 1px solid rgba(200,150,0,0.3); }
 
-  .res-item { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:flex-start; }
-  .res-item:last-child { border-bottom:none; }
-  .res-info strong { display:block; font-size:0.95rem; color:rgba(255,255,255,0.90); margin-bottom:3px; font-weight:700; }
-  .res-info small  { color:rgba(255,255,255,0.42); font-size:0.78rem; display:block; }
-  .menu-detail-text {
-    margin-top:8px; font-size:0.74rem; color:rgba(255,255,255,0.62);
-    background:rgba(255,255,255,0.07); backdrop-filter:blur(6px);
-    padding:8px 12px; border-radius:10px;
-    border-left:3px solid var(--secondary);
-    display:inline-block; width:100%; line-height:1.5;
-  }
-  .res-qty {
-    background:rgba(42,157,143,0.28); backdrop-filter:blur(6px);
-    color:white; padding:6px 12px;
-    border-radius:10px; font-weight:800; font-size:0.9rem;
-    margin-left:10px; min-width:44px; text-align:center;
-    border:1px solid rgba(42,157,143,0.42);
-  }
+/* ── RES INDICATOR ── */
+.res-indicator {
+  margin-top: auto;
+  margin-bottom: 5px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  width: 100%;
+}
 
-  /* ═══════════════════════════════════════════════════════
-     IMAGE LIGHTBOX
-  ═══════════════════════════════════════════════════════ */
-  .img-modal-overlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.88); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
-    z-index:3000; display:none; flex-direction:column;
-    align-items:center; justify-content:center;
-    opacity:0; transition:opacity 0.3s var(--ease-ios);
-  }
-  .img-modal-overlay.show { opacity:1; }
-  .img-modal-content {
-    max-width:94%; max-height:68vh; border-radius:18px;
-    box-shadow:0 10px 48px rgba(0,0,0,0.60);
-    transform:scale(0.86); transition:transform 0.42s var(--ease-ios); object-fit:contain;
-  }
-  .img-modal-overlay.show .img-modal-content { transform:scale(1); }
-  .img-caption { color:rgba(255,255,255,0.82); margin-top:16px; font-weight:600; font-size:1rem; text-align:center; }
-  .close-img-modal {
-    position:absolute; top:22px; right:22px; color:white; font-size:1.5rem; cursor:pointer;
-    background:rgba(255,255,255,0.16); backdrop-filter:blur(10px);
-    width:48px; height:48px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    border:1px solid rgba(255,255,255,0.24); transition:all 0.3s var(--ease-ios);
-  }
-  .close-img-modal:active { transform:scale(0.88); }
-  .btn-exit-fullscreen {
-    margin-top:22px; background:rgba(255,255,255,0.14); backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,0.24); color:white; padding:11px 26px; border-radius:30px;
-    cursor:pointer; font-size:0.88rem; display:flex; align-items:center; gap:8px;
-    font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; transition:all 0.3s var(--ease-ios);
-  }
-  .btn-exit-fullscreen:active { transform:scale(0.94); }
+.res-count {
+  font-size: 0.62rem;
+  color: #0e3028;
+  font-weight: 700;
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(6px);
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.5);
+}
 
-  /* ═══════════════════════════════════════════════════════
-     FLOATING ADMIN BUTTON
-  ═══════════════════════════════════════════════════════ */
-  .floating-admin {
-    position:fixed; bottom:28px; right:22px;
-    background:rgba(10,35,32,0.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-    border:1px solid rgba(255,255,255,0.18); color:white; width:52px; height:52px;
-    border-radius:50%; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 28px rgba(0,0,0,0.35); z-index:90; cursor:pointer;
-    transition:all 0.35s var(--ease-ios);
-  }
-  .floating-admin:active { transform:scale(0.88); }
+/* ── LEGEND ── */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 20px;
+  font-size: 0.73rem;
+  color: rgba(20, 60, 50, 0.85);
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255,255,255,0.35);
+  padding-top: 14px;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
 
-  /* ═══════════════════════════════════════════════════════
-     BUG REPORT MODAL — 5x tap header
-  ═══════════════════════════════════════════════════════ */
-  .bug-overlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.32); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-    z-index:4000; display:none; align-items:center; justify-content:center; padding:20px;
-  }
-  .bug-overlay.show { display:flex; }
-  .bug-modal {
-    background:rgba(12,30,28,0.90); backdrop-filter:blur(30px) saturate(160%); -webkit-backdrop-filter:blur(30px) saturate(160%);
-    border:1px solid rgba(255,255,255,0.18);
-    box-shadow:0 24px 70px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.18);
-    padding:28px 24px; width:90%; max-width:360px; border-radius:28px;
-    animation:popIn 0.32s var(--ease-ios); position:relative; overflow:hidden;
-  }
-  .bug-modal::before {
-    content:""; position:absolute; top:0; left:0; right:0; height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent);
-  }
-  .bug-modal h3 { margin:0 0 16px; font-size:1rem; color:white; display:flex; align-items:center; gap:8px; }
-  .bug-modal textarea {
-    width:100%; padding:12px 14px; margin-bottom:12px;
-    border:1px solid rgba(255,255,255,0.15); border-radius:14px;
-    background:rgba(255,255,255,0.08); backdrop-filter:blur(8px);
-    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:white;
-    resize:vertical; min-height:100px; outline:none; transition:border 0.2s; line-height:1.5;
-  }
-  .bug-modal textarea::placeholder { color:rgba(255,255,255,0.35); }
-  .bug-modal textarea:focus { border-color:var(--primary); }
-  .bug-modal-actions { display:flex; gap:10px; }
-  .bug-submit {
-    flex:1; padding:13px; border:none; border-radius:14px;
-    background:linear-gradient(135deg,var(--primary),#1a7a6e);
-    color:white; font-weight:700; cursor:pointer;
-    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
-    box-shadow:0 4px 16px var(--primary-glow); transition:all 0.3s var(--ease-ios);
-  }
-  .bug-submit:active { transform:scale(0.96); }
-  .bug-cancel {
-    padding:13px 20px; border:none; border-radius:14px;
-    background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.70); font-weight:600;
-    cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
-    transition:all 0.3s var(--ease-ios); border:1px solid rgba(255,255,255,0.12);
-  }
-  .bug-cancel:active { transform:scale(0.96); }
+.dot {
+  width: 12px; height: 12px;
+  border-radius: 4px;
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.5);
+}
 
-  /* ═══════════════════════════════════════════════════════
-     ADMIN MODAL
-  ═══════════════════════════════════════════════════════ */
-  .admin-overlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.28); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-    z-index:2000; display:none; align-items:center; justify-content:center;
-  }
-  .admin-overlay.show { display:flex; }
-  .admin-modal {
-    background:rgba(12,30,28,0.90); backdrop-filter:blur(30px) saturate(160%); -webkit-backdrop-filter:blur(30px) saturate(160%);
-    border:1px solid rgba(255,255,255,0.18);
-    box-shadow:0 24px 70px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.18);
-    padding:28px 24px; width:88%; max-width:340px; border-radius:28px;
-    animation:popIn 0.30s var(--ease-ios); position:relative; overflow:hidden;
-  }
-  .admin-modal::before {
-    content:""; position:absolute; top:0; left:0; right:0; height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent);
-  }
-  .btn-block {
-    width:100%; padding:13px; border:none; border-radius:14px; font-weight:700;
-    cursor:pointer; margin-bottom:10px;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
-    transition:all 0.3s var(--ease-ios); letter-spacing:-0.1px;
-  }
-  .btn-block:active { transform:scale(0.96); }
-  .form-input {
-    width:100%; padding:12px 14px; margin-bottom:12px;
-    border:1px solid rgba(255,255,255,0.15); border-radius:12px;
-    font-family:'Plus Jakarta Sans',sans-serif;
-    background:rgba(255,255,255,0.08); backdrop-filter:blur(8px);
-    font-size:0.9rem; color:white; outline:none; transition:border 0.2s;
-  }
-  .form-input::placeholder { color:rgba(255,255,255,0.35); }
-  .form-input:focus { border-color:var(--primary); }
+/* ── BOTTOM LINK ── */
+.main-container > div:last-child a {
+  background: rgba(255,255,255,0.28) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255,255,255,0.55) !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    0 4px 16px rgba(0,0,0,0.12) !important;
+  color: #0e3028 !important;
+  font-weight: 600 !important;
+  border-radius: 30px;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.main-container > div:last-child a:hover { transform: translateY(-2px); background: rgba(255,255,255,0.42) !important; }
 
-  /* Loading */
-  .loading-cell {
-    grid-column:1/-1; text-align:center; padding:32px;
-    color:rgba(255,255,255,0.50); font-size:0.9rem;
-    display:flex; align-items:center; justify-content:center; gap:10px;
-  }
-  @keyframes spin { to{transform:rotate(360deg);} }
-  .spinner {
-    width:20px; height:20px; border-radius:50%;
-    border:2px solid rgba(42,157,143,0.25); border-top-color:rgba(42,157,143,0.80);
-    animation:spin 0.85s linear infinite;
-  }
+/* Text readability */
+h2, .month-year, .weekday { text-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.day-num { text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
 
-  /* Toast */
-  #bugToast {
-    position:fixed; bottom:100px; left:50%;
-    transform:translateX(-50%) translateY(20px);
-    background:rgba(10,35,32,0.92); backdrop-filter:blur(14px);
-    color:white; padding:12px 22px; border-radius:30px;
-    font-size:0.85rem; font-weight:600;
-    box-shadow:0 6px 26px rgba(0,0,0,0.30);
-    border:1px solid rgba(255,255,255,0.16);
-    opacity:0; transition:all 0.42s var(--ease-ios);
-    z-index:5000; white-space:nowrap; pointer-events:none;
-    font-family:'Plus Jakarta Sans',sans-serif;
-  }
-  #bugToast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+/* ── INFO POPUP OVERLAY ── */
+.info-popup-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  z-index: 2500;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+
+.info-popup-content {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(30px);
+  width: 100%; max-width: 400px;
+  border-radius: var(--radius-xl);
+  padding: 32px 26px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.8) inset;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-top: 5px solid var(--danger);
+}
+
+.info-popup-icon { font-size: 3.2rem; color: var(--danger); margin-bottom: 16px; }
+.info-popup-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+.info-popup-text { font-size: 0.88rem; color: #555; line-height: 1.65; margin-bottom: 26px; }
+
+.info-popup-btn {
+  background: var(--danger); color: white; border: none;
+  padding: 14px 30px; border-radius: 50px; font-weight: 700;
+  cursor: pointer; font-size: 0.95rem; width: 100%;
+  box-shadow: 0 6px 20px rgba(192, 57, 43, 0.35);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.info-popup-btn:active { transform: scale(0.96); }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.78) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── DETAIL OVERLAY ── */
+.detail-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000; display: none; align-items: flex-end; justify-content: center;
+}
+.detail-overlay.active { display: flex; animation: fadeIn 0.3s; }
+
+.detail-sheet {
+  background: rgba(245, 248, 245, 0.95);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  width: 100%; max-width: 600px; height: 90vh;
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  display: flex; flex-direction: column; overflow: hidden;
+  animation: slideUpBig 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.2), 0 -1px 0 rgba(255,255,255,0.8) inset;
+  border-top: 1px solid rgba(255,255,255,0.7);
+  position: relative;
+}
+
+/* Drag handle */
+.detail-sheet::before {
+  content: "";
+  display: block;
+  width: 36px; height: 5px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 3px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+
+.detail-sheet.red-mode .sheet-header { border-bottom: 2px solid var(--danger); }
+.detail-sheet.red-mode h3 { color: var(--danger) !important; }
+
+.pulsing-badge {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: var(--danger); color: white;
+  padding: 10px 25px; border-radius: 30px;
+  font-weight: 700; font-size: 0.9rem;
+  box-shadow: 0 4px 20px rgba(192, 57, 43, 0.5);
+  animation: pulse-red 2s infinite;
+  z-index: 100; pointer-events: none;
+  display: none; white-space: nowrap;
+  border: 2px solid white;
+}
+.detail-sheet.red-mode .pulsing-badge { display: block; }
+
+@keyframes pulse-red {
+  0%  { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(192,57,43,0.7); }
+  70% { transform: translateX(-50%) scale(1.05); box-shadow: 0 0 0 15px rgba(192,57,43,0); }
+  100%{ transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(192,57,43,0); }
+}
+
+@keyframes slideUpBig { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.sheet-header {
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 12px 20px 14px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  z-index: 10; flex-shrink: 0;
+}
+
+.btn-sheet-back {
+  background: rgba(14, 75, 62, 0.9);
+  backdrop-filter: blur(10px);
+  color: white; border: none;
+  padding: 9px 18px; border-radius: 22px;
+  font-size: 0.85rem; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 12px rgba(14,75,62,0.3);
+  font-weight: 600;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.btn-sheet-back:active { transform: scale(0.93); }
+
+.sheet-content {
+  flex: 1; overflow-y: auto;
+  padding: 20px 16px;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 80px;
+}
+
+#locGrid { display: flex; flex-direction: column; gap: 20px; padding-bottom: 80px; }
+
+/* ── LOCATION CARDS ── */
+.loc-card {
+  background: rgba(255,255,255,0.9);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
+  border: 1px solid rgba(255,255,255,0.85);
+  transform: translateZ(0);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0; min-height: auto;
+}
+.loc-card:hover { transform: translateY(-2px); }
+
+.loc-header {
+  height: 140px; min-height: 140px;
+  position: relative;
+  background-size: cover; background-position: center;
+  display: flex; align-items: flex-end;
+  cursor: pointer;
+}
+
+.loc-title {
+  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+  width: 100%; padding: 14px 16px; color: white;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  pointer-events: none;
+}
+.loc-name { font-weight: 700; font-size: 1.0rem; text-shadow: 0 2px 4px rgba(0,0,0,0.6); white-space: normal; max-width: 70%; line-height: 1.2; }
+.loc-badge { font-size: 0.75rem; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.4); font-weight: 600; white-space: nowrap; }
+
+.btn-view-photo {
+  position: absolute; top: 12px; right: 12px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.6);
+  color: white; font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 20;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  pointer-events: auto;
+}
+.btn-view-photo:hover { background: white; color: var(--primary); transform: scale(1.12); }
+
+/* ── IMAGE MODAL ── */
+.img-modal-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  z-index: 3000;
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; opacity: 0; transition: opacity 0.3s ease;
+}
+.img-modal-overlay.show { opacity: 1; }
+
+.img-modal-content {
+  max-width: 95%; max-height: 70vh;
+  border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  transform: scale(0.88); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  object-fit: contain;
+}
+.img-modal-overlay.show .img-modal-content { transform: scale(1); }
+
+.img-caption { color: white; margin-top: 16px; font-weight: 600; font-size: 1.05rem; text-align: center; }
+
+.close-img-modal {
+  position: absolute; top: 20px; right: 20px;
+  color: white; font-size: 1.8rem; cursor: pointer;
+  background: rgba(255,255,255,0.15); width: 48px; height: 48px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+}
+.close-img-modal:hover { background: rgba(255,255,255,0.3); transform: scale(1.1); }
+
+.btn-exit-fullscreen {
+  margin-top: 20px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: white; padding: 11px 28px; border-radius: 30px;
+  cursor: pointer; font-size: 0.9rem;
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s ease; font-weight: 500;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.btn-exit-fullscreen:hover { background: rgba(255,255,255,0.25); }
+
+/* ── CAPACITY BAR ── */
+.capacity-bar-container { width: 100%; height: 5px; background: #eee; position: relative; }
+.capacity-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 0 3px 3px 0; }
+.bar-green  { background: linear-gradient(90deg, #27ae60, #52e07c); }
+.bar-yellow { background: linear-gradient(90deg, #f39c12, #ffd460); }
+.bar-red    { background: linear-gradient(90deg, #c0392b, #ff6b6b); }
+
+/* ── TOGGLE BUTTON ── */
+.btn-toggle-loc {
+  width: 100%; padding: 14px 16px;
+  background: rgba(255,255,255,0.95); border: none;
+  color: var(--primary); font-weight: 600; cursor: pointer;
+  font-size: 0.88rem; display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.btn-toggle-loc:active { background: #f5f5f5; }
+.btn-toggle-loc.disabled { color: #aaa; cursor: default; }
+
+.loc-body { display: none; background: #fff; padding: 0; border-top: 1px solid #f0f0f0; animation: slideDown 0.25s ease; }
+@keyframes slideDown { from {opacity:0; transform:translateY(-8px);} to {opacity:1; transform:translateY(0);} }
+
+/* ── RES ITEMS ── */
+.res-item { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start; }
+.res-item:last-child { border-bottom: none; }
+.res-info strong { display: block; font-size: 0.98rem; color: var(--text-main); margin-bottom: 4px; font-weight: 700; }
+.res-info small { color: #888; font-size: 0.78rem; display: block; }
+
+.menu-detail-text {
+  margin-top: 7px; font-size: 0.74rem; color: #555;
+  background: #f8f9fa; padding: 8px 12px; border-radius: 10px;
+  border-left: 3px solid var(--secondary); display: inline-block; width: 100%;
+}
+
+.res-qty {
+  background: rgba(42, 157, 143, 0.12); color: var(--primary-dark); padding: 6px 12px;
+  border-radius: 10px; font-weight: 800; font-size: 0.88rem; margin-left: 10px;
+  min-width: 44px; text-align: center; border: 1px solid rgba(42,157,143,0.2);
+}
+
+/* ── ADMIN ── */
+.floating-admin {
+  position: fixed; bottom: 28px; right: 22px;
+  background: rgba(14, 55, 46, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: white; width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.28), 0 1px 0 rgba(255,255,255,0.2) inset;
+  z-index: 90; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.floating-admin:hover { transform: scale(1.1); }
+.floating-admin:active { transform: scale(0.9); }
+
+.admin-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 2000; display: none; align-items: center; justify-content: center;
+}
+.admin-overlay.show { display: flex; }
+
+.admin-modal {
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  padding: 28px; width: 85%; max-width: 350px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.8) inset;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255,255,255,0.7);
+}
+
+.btn-block {
+  width: 100%; padding: 12px; border: none; border-radius: 14px;
+  font-weight: 700; cursor: pointer; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: transform 0.15s ease;
+}
+.btn-block:active { transform: scale(0.96); }
+
+.form-input {
+  width: 100%; padding: 13px 14px; margin-bottom: 12px;
+  border: 1.5px solid rgba(0,0,0,0.1); border-radius: 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: rgba(255,255,255,0.8);
+  transition: border-color 0.2s; font-size: 0.9rem;
+}
+.form-input:focus { outline: none; border-color: var(--primary); }
+
+/* ── SCROLLBAR ── */
+.sheet-content::-webkit-scrollbar { width: 4px; }
+.sheet-content::-webkit-scrollbar-track { background: transparent; }
+.sheet-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
   </style>
 
 </head>
 <body>
 
-  <!-- ══ HEADER — 5x tap → bug report ══ -->
-
-  <header id="mainHeader">
+  <header>
     <div class="header-branding">
-      <h2><i class="fas fa-search-location"></i> Cek Ketersediaan Tempat</h2>
-      <small>Dolan Sawah · Reservation System</small>
-    </div>
-    <div id="tapIndicator">
-      <span></span><span></span><span></span><span></span><span></span>
+      <h2><i class="fas fa-search-location"></i> Cek Ketersediaan Tempat (Reservasi)</h2>
+      <small>Dolan Sawah RSVP System</small>
     </div>
   </header>
-
-  <!-- ══ MAIN ══ -->
 
   <div class="main-container">
 
 ```
 <div class="info-card">
-  <div class="info-icon"><i class="fas fa-info-circle"></i></div>
-  <div class="info-content">
-    <h4>Info Reservasi &amp; Reguler</h4>
-    <p>Kalender ini khusus <b>Tempat Reservasi</b>. Pengunjung Reguler tetap bisa memilih <b>Tempat Reguler</b> yang tersedia langsung di lokasi.</p>
-  </div>
-</div>
-
-<div class="calendar-wrapper" id="calendarWrapper">
-  <div class="calendar-header">
-    <div class="month-year" id="monthYear">Loading...</div>
-    <div class="calendar-nav">
-      <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-      <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+    <div class="info-icon">
+        <i class="fas fa-info-circle"></i>
     </div>
-  </div>
-  <div class="calendar-grid-header">
-    <div class="weekday">Min</div><div class="weekday">Sen</div><div class="weekday">Sel</div>
-    <div class="weekday">Rab</div><div class="weekday">Kam</div><div class="weekday">Jum</div><div class="weekday">Sab</div>
-  </div>
-  <div class="calendar-days" id="calendar">
-    <div class="loading-cell"><div class="spinner"></div> Memuat kalender...</div>
-  </div>
-  <div class="legend">
-    <div class="legend-item"><span class="dot" style="background:rgba(233,196,106,0.45);border-color:rgba(233,196,106,0.60);"></span> Hari Ini</div>
-    <div class="legend-item"><span class="dot" style="background:rgba(42,157,143,0.38);border-color:rgba(42,157,143,0.55);"></span> Ada Reservasi</div>
-    <div class="legend-item"><span class="dot" style="background:var(--danger-soft);border-color:var(--danger-border);"></span> Reservasi Penuh</div>
-  </div>
-  <div class="swipe-hint">
-    <i class="fas fa-chevron-left"></i> geser untuk ganti bulan <i class="fas fa-chevron-right"></i>
-  </div>
+    <div class="info-content">
+        <h4>Info Reservasi & Reguler</h4>
+        <p>Ketersediaan di kalender ini khusus untuk <b>Tempat Reservasi</b>. Pengunjung Reguler (datang langsung) tetap bisa memilih <b>Tempat Reguler</b> yang tersedia di lokasi.</p>
+    </div>
 </div>
 
-<div class="footer-link">
-  <a href="https://www.dolansawah.my.id"><i class="fas fa-external-link-alt"></i> Buka Website Utama</a>
+<div class="calendar-wrapper">
+    <div class="calendar-header">
+      <div class="month-year" id="monthYear">Loading...</div>
+      <div class="calendar-nav">
+        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+
+    <div class="calendar-grid-header">
+        <div class="weekday">Min</div><div class="weekday">Sen</div><div class="weekday">Sel</div>
+        <div class="weekday">Rab</div><div class="weekday">Kam</div><div class="weekday">Jum</div><div class="weekday">Sab</div>
+    </div>
+    
+    <div class="calendar-days" id="calendar"></div>
+    
+    <div class="legend">
+        <div style="display:flex; gap:5px; align-items:center;"><span class="dot" style="background:#ffd25a; border:1px solid rgba(200,150,0,0.4);"></span> Hari Ini</div>
+        <div style="display:flex; gap:5px; align-items:center;"><span class="dot" style="background:rgba(42,180,155,0.5); border:1px solid rgba(42,200,170,0.5);"></span> Ada Reservasi</div>
+        <div style="display:flex; gap:5px; align-items:center;"><span class="dot" style="background:rgba(220,60,60,0.45); border:1px solid rgba(255,100,100,0.5);"></span> Reservasi Penuh</div>
+    </div>
+</div>
+
+<div style="margin-top: 25px; text-align: center;">
+    <a href="https://www.dolansawah.my.id" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: none; padding: 12px 24px; display: inline-flex; align-items: center; gap: 8px;">
+         <i class="fas fa-external-link-alt"></i> Buka Website Utama
+    </a>
 </div>
 ```
 
   </div>
 
-  <!-- ══ FLOATING ADMIN ══ -->
-
   <div class="floating-admin" id="adminBtn"><i class="fas fa-lock"></i></div>
 
-  <!-- ══ DETAIL SHEET ══ -->
-
   <div class="detail-overlay" id="detailOverlay">
-    <div class="detail-sheet" id="detailSheet">
-      <div class="pulsing-badge">Tempat non reservasi tersedia</div>
-      <div class="sheet-header">
-        <button onclick="closeDetail()" class="btn-sheet-back">
-          <i class="fas fa-arrow-left"></i> Kembali
-        </button>
-        <div style="text-align:right;">
-          <h3 id="sheetDate" style="margin:0;font-size:0.98rem;">Detail</h3>
-          <span id="sheetStats" style="font-size:0.73rem;">...</span>
-        </div>
+      <div class="detail-sheet" id="detailSheet">
+          <div class="pulsing-badge">Tempat non reservasi tersedia</div>
+          <div class="sheet-header">
+              <button onclick="closeDetail()" class="btn-sheet-back">
+                  <i class="fas fa-arrow-left"></i> Kembali
+              </button>
+              <div style="text-align: right;">
+                  <h3 id="sheetDate" style="margin:0; color:var(--primary-dark); font-size:1rem;">Detail</h3>
+                  <span id="sheetStats" style="font-size:0.75rem; color:#666;">...</span>
+              </div>
+          </div>
+          <div class="sheet-content" id="locGrid"></div>
       </div>
-      <div class="sheet-content"><div id="locGrid"></div></div>
-    </div>
   </div>
-
-  <!-- ══ FULL WARNING ══ -->
 
   <div class="info-popup-overlay" id="fullWarningPopup">
-    <div class="info-popup-content">
-      <div class="info-popup-icon"><i class="fas fa-exclamation-circle"></i></div>
-      <div class="info-popup-title">Kuota Reservasi Penuh</div>
-      <div class="info-popup-text">
-        Tempat masih tersedia untuk walk-in! Namun kuota reservasi untuk tanggal ini sudah penuh.
-        Langsung menuju resto — tim kami akan memilihkan tempat terbaik.
+      <div class="info-popup-content">
+          <div class="info-popup-icon"><i class="fas fa-exclamation-circle"></i></div>
+          <div class="info-popup-title">Tempat masih tersedia untuk walk in</div>
+          <div class="info-popup-text">
+              Tempat Masih Tersedia! Namun Kuota Reservasi untuk tanggal ini sudah penuh. Anda bisa langsung menuju resto untuk memilih menu langsung di ruang prasmanan. Tim kami akan membantu memilihkan tempat terbaik.
+          </div>
+          <button class="info-popup-btn" onclick="continueToDetail()">Keluar & Lihat Detail</button>
       </div>
-      <button class="info-popup-btn" onclick="continueToDetail()">Lihat Detail Tempat</button>
-    </div>
   </div>
-
-  <!-- ══ IMAGE LIGHTBOX ══ -->
 
   <div class="img-modal-overlay" id="imgModal">
-    <span class="close-img-modal" onclick="closeImgModal()">&times;</span>
-    <img class="img-modal-content" id="imgTarget" src="" alt="">
-    <div class="img-caption" id="imgCaption"></div>
-    <button class="btn-exit-fullscreen" onclick="closeImgModal()">
-      <i class="fas fa-times-circle"></i> Tutup
-    </button>
+      <span class="close-img-modal" onclick="closeImgModal()">&times;</span>
+      <img class="img-modal-content" id="imgTarget">
+      <div class="img-caption" id="imgCaption"></div>
+      <button class="btn-exit-fullscreen" onclick="closeImgModal()">
+          <i class="fas fa-times-circle"></i> Tutup / Exit
+      </button>
   </div>
-
-  <!-- ══ BUG REPORT — hidden, 5x tap header ══ -->
-
-  <div class="bug-overlay" id="bugOverlay">
-    <div class="bug-modal">
-      <h3><i class="fas fa-bug" style="color:var(--primary);"></i> Laporkan Bug</h3>
-      <textarea id="bugText" placeholder="Ceritakan bug yang kamu temukan — halaman apa, langkah reproduksi, apa yang terjadi..."></textarea>
-      <div class="bug-modal-actions">
-        <button class="bug-submit" onclick="submitBug()">Kirim Laporan</button>
-        <button class="bug-cancel"  onclick="closeBugModal()">Batal</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ TOAST ══ -->
-
-  <div id="bugToast">✓ Laporan terkirim — terima kasih!</div>
-
-  <!-- ══ ADMIN MODAL ══ -->
 
   <div class="admin-overlay" id="adminOverlay">
-    <div class="admin-modal">
-      <h3 style="margin:0 0 20px;text-align:center;color:white;font-size:1rem;">
-        <i class="fas fa-shield-alt" style="color:var(--primary);"></i> Kontrol Manual
-      </h3>
-      <div id="loginForm">
-        <input type="email"    id="adminEmail" class="form-input" placeholder="Email Admin">
-        <input type="password" id="adminPass"  class="form-input" placeholder="Password">
-        <button class="btn-block" id="btnLoginAction"
-          style="background:linear-gradient(135deg,var(--primary),#1a7a6e);color:white;">Masuk</button>
-        <button class="btn-block" onclick="closeAdmin()"
-          style="background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.70);border:1px solid rgba(255,255,255,0.12);">Batal</button>
+      <div class="admin-modal" id="adminModal">
+          <h3 style="margin-top:0; text-align:center; color:var(--primary-dark); margin-bottom:20px;"><i class="fas fa-shield-alt"></i> Kontrol Manual</h3>
+          <div id="loginForm">
+              <input type="email" id="adminEmail" class="form-input" placeholder="Email Admin">
+              <input type="password" id="adminPass" class="form-input" placeholder="Password">
+              <button class="btn-block" style="background:var(--primary); color:white;" id="btnLoginAction">Masuk</button>
+              <button class="btn-block" onclick="closeAdmin()" style="background:#f0f0f0; color:#666;">Batal</button>
+          </div>
+          <div id="adminControls" style="display:none;">
+              <p style="font-size:0.85rem; color:#666; text-align:center; margin-bottom:15px; line-height:1.5;">Tandai tanggal ini sebagai "Reservasi Penuh".</p>
+              <input type="date" id="dateSelector" class="form-input">
+              <div style="display:flex; gap:10px; margin-bottom:20px;">
+                  <button class="btn-block" id="markFullBtn" style="background:var(--danger); color:white; flex:1;"><i class="fas fa-ban"></i> SET PENUH</button>
+                  <button class="btn-block" id="markAvailableBtn" style="background:var(--secondary); color:white; flex:1;"><i class="fas fa-check"></i> SET BUKA</button>
+              </div>
+              <button class="btn-block" onclick="firebase.auth().signOut()" style="background:#f1f2f6; color:#555; margin-top:15px;">Logout</button>
+          </div>
       </div>
-      <div id="adminControls" style="display:none;">
-        <p style="font-size:0.82rem;color:rgba(255,255,255,0.55);text-align:center;margin-bottom:14px;line-height:1.55;">
-          Tandai tanggal ini sebagai "Reservasi Penuh".
-        </p>
-        <input type="date" id="dateSelector" class="form-input">
-        <div style="display:flex;gap:10px;margin-bottom:16px;">
-          <button class="btn-block" id="markFullBtn"
-            style="background:linear-gradient(135deg,rgba(255,59,48,0.82),rgba(200,40,30,0.90));color:white;flex:1;">
-            <i class="fas fa-ban"></i> PENUH
-          </button>
-          <button class="btn-block" id="markAvailableBtn"
-            style="background:linear-gradient(135deg,rgba(52,199,89,0.82),rgba(40,160,70,0.90));color:white;flex:1;">
-            <i class="fas fa-check"></i> BUKA
-          </button>
-        </div>
-        <button class="btn-block" onclick="firebase.auth().signOut()"
-          style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.60);border:1px solid rgba(255,255,255,0.12);">
-          Logout
-        </button>
-      </div>
-    </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════
-       JAVASCRIPT
-  ══════════════════════════════════════════════════════ -->
-
   <script>
-  // 🔴 DEBUG ERROR GLOBAL (TARUH DI SINI)
-
-  window.onerror = function(msg, url, line, col, error) {
-
-    alert("ERROR: " + msg + " di baris: " + line);
-
-  };
-
-
-    /* ── Firebase ── */
     const firebaseConfig = {
       apiKey: "AIzaSyA_c1tU70FM84Qi_f_aSaQ-YVLo_18lCkI",
       authDomain: "reservasi-dolan-sawah.firebaseapp.com",
@@ -1057,475 +872,260 @@
       messagingSenderId: "213151400721",
       appId: "1:213151400721:web:e51b0d8cdd24206cf682b0"
     };
+    
     firebase.initializeApp(firebaseConfig);
-    const db   = firebase.firestore();
+    const db = firebase.firestore();
     const auth = firebase.auth();
 
-    /* ── State ── */
-    const monthNames = ["Januari","Februari","Maret","April","Mei","Juni",
-                        "Juli","Agustus","September","Oktober","November","Desember"];
-    let currentMonth = new Date().getMonth();
-    let currentYear  = new Date().getFullYear();
-    let allReservations = {}, locationsConfig = {}, locationImages = {};
-    let dateStatus = {};
-    let unsubscribeRes = null, unsubscribeStatus = null;
-    let pendingDetailData = null;
+    let locationImages = {};
     const defaultImage = "https://via.placeholder.com/300x200?text=Lokasi";
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let allReservations = {}; 
+    let locationsConfig = {};
+    let dateStatus = {};
+    let unsubscribeRes = null;
+    let unsubscribeStatus = null;
+    let pendingDetailData = null;
 
-    /* ──────────────────────────────────────────
-       Ambient orb follows mouse cursor (desktop)
-    ────────────────────────────────────────── */
-    document.addEventListener('mousemove', e => {
-      document.body.style.setProperty('--mx', e.clientX + 'px');
-      document.body.style.setProperty('--my', e.clientY + 'px');
-    });
-
-    /* Parallax — aktif di semua device termasuk iPhone */
-if (window.innerWidth > 768) {
-  window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-
-    document.body.style.backgroundPosition =
-      `center ${y * 0.35}px`;
-
-    const tilt = Math.min(y * 0.02, 6);
-    const el = document.querySelector('.calendar-wrapper');
-
-    if (el) {
-      el.style.transform = `perspective(1200px) rotateX(${tilt}deg)`;
-    }
-  }, { passive: true });
-}
-  
-
-    /* ──────────────────────────────────────────
-       Swipe calendar gesture (touch devices)
-    ────────────────────────────────────────── */
-    (function () {
-      let startX = 0, startY = 0, didMove = false;
-      const wrap = document.getElementById('calendarWrapper');
-
-      wrap.addEventListener('touchstart', e => {
-        startX  = e.touches[0].clientX;
-        startY  = e.touches[0].clientY;
-        didMove = false;
-      }, { passive: true });
-
-      wrap.addEventListener('touchmove', () => {
-        didMove = true;
-      }, { passive: true });
-
-      wrap.addEventListener('touchend', e => {
-        if (!didMove) return;
-        const dx = startX - e.changedTouches[0].clientX;
-        const dy = Math.abs(startY - e.changedTouches[0].clientY);
-        if (Math.abs(dx) < 52 || dy > Math.abs(dx)) return;
-
-        const velocity = Math.abs(dx);
-
-if (dx > 0 && velocity > 40) {
-          currentMonth++;
-          if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-          animateCalendarSlide('left');
-        } else if (dx < 0 && velocity > 40) {
-          currentMonth--;
-          if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-          animateCalendarSlide('right');
-        }
-        loadMonthData();
-      }, { passive: true });
-    })();
-
-    /* Slide animation helper — used by swipe & nav buttons */
-    function animateCalendarSlide(dir) {
-      const el = document.getElementById('calendar');
-      const tx = dir === 'left' ? '-38px' : '38px';
-      el.style.transition = 'none';
-      el.style.opacity    = '0';
-      el.style.transform  = `translateX(${tx})`;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          el.style.transition = 'opacity 0.36s var(--ease-ios), transform 0.36s var(--ease-ios)';
-          el.style.opacity    = '1';
-          el.style.transform  = 'translateX(0)';
-        });
-      });
-    }
-
-    /* ──────────────────────────────────────────
-       Hidden bug report — 5x tap header
-    ────────────────────────────────────────── */
-    (function () {
-      const header    = document.getElementById('mainHeader');
-      const indicator = document.getElementById('tapIndicator');
-      const dots      = indicator.querySelectorAll('span');
-      let count = 0, idleTimer = null, fadeTimer = null;
-
-      header.addEventListener('click', () => {
-        count++;
-        dots.forEach((d, i) => d.classList.toggle('lit', i < count));
-        indicator.classList.add('visible');
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => {
-          count = 0;
-          dots.forEach(d => d.classList.remove('lit'));
-          clearTimeout(fadeTimer);
-          fadeTimer = setTimeout(() => indicator.classList.remove('visible'), 400);
-        }, 1800);
-        if (count >= 5) {
-          count = 0;
-          clearTimeout(idleTimer);
-          dots.forEach(d => d.classList.remove('lit'));
-          setTimeout(() => indicator.classList.remove('visible'), 280);
-          setTimeout(openBugModal, 200);
-        }
-      });
-    })();
-
-    function openBugModal() {
-      document.getElementById('bugText').value = '';
-      document.getElementById('bugOverlay').classList.add('show');
-    }
-    function closeBugModal() {
-      document.getElementById('bugOverlay').classList.remove('show');
-    }
-    function submitBug() {
-      const msg = (document.getElementById('bugText').value || '').trim();
-      if (!msg) { document.getElementById('bugText').focus(); return; }
-      db.collection('bug_reports').add({
-        message:   msg,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        userAgent: navigator.userAgent,
-        url:       location.href
-      }).catch(() => {});
-      closeBugModal();
-      const t = document.getElementById('bugToast');
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3400);
-    }
-    document.getElementById('bugOverlay').addEventListener('click', e => {
-      if (e.target.id === 'bugOverlay') closeBugModal();
-    });
-
-    /* ──────────────────────────────────────────
-       Init
-    ────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', async () => {
-      await loadLocations();
-      loadMonthData();
-      setupAdminLogic();
-
-      document.getElementById('prevMonth').addEventListener('click', () => {
-        currentMonth--;
-        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-        animateCalendarSlide('right');
-        loadMonthData();
-      });
-      document.getElementById('nextMonth').addEventListener('click', () => {
-        currentMonth++;
-        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-        animateCalendarSlide('left');
-        loadMonthData();
-      });
+        await loadLocations(); 
+        setupRealtimeListeners();
+        setupAdminLogic();
+        
+        document.getElementById('prevMonth').addEventListener('click', () => { currentMonth--; if(currentMonth < 0) { currentMonth=11; currentYear--; } setupRealtimeListeners(); });
+        document.getElementById('nextMonth').addEventListener('click', () => { currentMonth++; if(currentMonth > 11) { currentMonth=0; currentYear++; } setupRealtimeListeners(); });
     });
 
-    /* ── Load locations from Firestore ── */
     async function loadLocations() {
-      try {
-        let snap = await db.collection("locations").get();
-        if (snap.empty) snap = await db.collection("Locations").get();
-        locationsConfig = {}; locationImages = {};
-        snap.forEach(doc => {
-          const d = doc.data();
-          locationsConfig[d.name] = d.capacity;
-          locationImages[d.name]  = d.imageUrl || defaultImage;
-        });
-      } catch(e) { console.warn("Gagal load lokasi:", e); }
-    }
-
-    /* ── Realtime listeners ── */
-    function setupRealtimeListeners() {
-      if (unsubscribeRes)    unsubscribeRes();
-      if (unsubscribeStatus) unsubscribeStatus();
-
-      const mStr  = String(currentMonth + 1).padStart(2, '0');
-      const start = `${currentYear}-${mStr}-01`;
-      const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
-const end = `${currentYear}-${mStr}-${String(lastDay).padStart(2, '0')}`;
-
-      document.getElementById('calendar').innerHTML =
-        '<div class="loading-cell"><div class="spinner"></div> Memuat data...</div>';
-      document.getElementById('monthYear').textContent =
-        `${monthNames[currentMonth]} ${currentYear}`;
-
-      unsubscribeRes = db.collection("reservations")
-  .where("date", ">=", start)
-  .where("date", "<=", end)
-  // .limit(500)
-  .onSnapshot(snapshot => {
-
-    allReservations = {};
-
-    snapshot.forEach(doc => {
-      const r = doc.data();
-
-      if (!allReservations[r.date]) {
-        allReservations[r.date] = [];
-      }
-
-      allReservations[r.date].push(r);
-    });
-
-    renderCalendar();
-  });
-
-      unsubscribeStatus = db.collection("date_status")
-        .where('date', '>=', start).where('date', '<=', end)
-        .onSnapshot(snap => {
-          dateStatus = {};
-          snap.forEach(doc => { dateStatus[doc.data().date] = doc.data().isFull; });
-          renderCalendar();
-        });
-    }
-
-    /* ── Render calendar ── */
-    function renderCalendar() {
-      const cal      = document.getElementById('calendar');
-      cal.innerHTML  = '';
-      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-      const daysMax  = new Date(currentYear, currentMonth + 1, 0).getDate();
-      const today    = new Date();
-
-      for (let i = 0; i < firstDay; i++) {
-        cal.appendChild(document.createElement('div'));
-      }
-
-      for (let i = 1; i <= daysMax; i++) {
-        const el     = document.createElement('div');
-        el.className = 'day-cell';
-        const mStr   = String(currentMonth + 1).padStart(2, '0');
-        const dStr   = String(i).padStart(2, '0');
-        const key    = `${currentYear}-${mStr}-${dStr}`;
-        const list   = allReservations[key] || [];
-        const count  = list.length;
-        const total = list.reduce((s, r) => s + (parseInt(r.jumlah) || 0), 0);
-        const isFull  = dateStatus[key] === true;
-        const isToday = i === today.getDate() &&
-                        currentMonth === today.getMonth() &&
-                        currentYear  === today.getFullYear();
-
-        if (isFull) {
-          el.classList.add('is-full');
-          el.innerHTML = `<span class="day-num">${i}</span>
-            <div class="res-indicator">
-              <div class="res-count">${total > 0 ? total : 'FULL'}</div>
-            </div>`;
-        } else if (isToday) {
-          el.classList.add('today');
-          el.innerHTML = `<span class="day-num">${i}</span>
-            ${count > 0 ? `<div class="res-indicator"><div class="res-count">${total}</div></div>` : ''}`;
-        } else if (count > 0) {
-          el.classList.add('has-res');
-          el.innerHTML = `<span class="day-num">${i}</span>
-            <div class="res-indicator"><div class="res-count">${total}</div></div>`;
-        } else {
-          el.innerHTML = `<span class="day-num">${i}</span>`;
-        }
-
-        el.onclick = () => {
-          if (isFull) showFullWarning(i, list);
-          else        openDetail(i, list, false);
-        };
-        cal.appendChild(el);
-      }
-    }
-
-    /* ── Full warning ── */
-    function showFullWarning(day, list) {
-      pendingDetailData = { day, list };
-      document.getElementById('fullWarningPopup').style.display = 'flex';
-    }
-    function continueToDetail() {
-      document.getElementById('fullWarningPopup').style.display = 'none';
-      if (pendingDetailData) openDetail(pendingDetailData.day, pendingDetailData.list, true);
-    }
-
-    /* ── Open detail sheet ── */
-    function openDetail(day, list, isFullMode = false) {
-      const sheet   = document.getElementById('detailSheet');
-      const overlay = document.getElementById('detailOverlay');
-      isFullMode ? sheet.classList.add('red-mode') : sheet.classList.remove('red-mode');
-      overlay.classList.add('active');
-
-      document.getElementById('sheetDate').textContent =
-        `${day} ${monthNames[currentMonth]} ${currentYear}`;
-      const totalGuests = list.reduce((s, r) => s + (parseInt(r.jumlah) || 0), 0);
-      document.getElementById('sheetStats').textContent =
-        `${list.length} Grup · ${totalGuests} Tamu`;
-
-      const grid = document.getElementById('locGrid');
-      grid.innerHTML = '';
-
-      /* Group by location */
-      const grouped = {};
-      list.forEach(r => {
-        let l = r.tempat || 'Lainnya';
-        if (l.toLowerCase() === 'meeting room') l = 'Meeting Room';
-        if (!grouped[l]) grouped[l] = [];
-        grouped[l].push(r);
-      });
-
-      const allLocs = Array.from(
-        new Set([...Object.keys(locationImages), ...Object.keys(locationsConfig)])
-      ).sort();
-
-      allLocs.forEach((loc, idx) => {
-        const items = grouped[loc] || [];
-        const img   = locationImages[loc] || defaultImage;
-        const cap   = locationsConfig[loc] || 100;
-        const curr = items.reduce((s, r) => s + (parseInt(r.jumlah) || 0), 0);
-        const pct   = cap > 0 ? Math.min((curr / cap) * 100, 100) : 0;
-        const barColor = pct >= 90 ? 'bar-red' : pct >= 50 ? 'bar-yellow' : 'bar-green';
-
-        let htmlItems = '';
-        if (items.length > 0) {
-          items.sort((a, b) => (a.jam || '').localeCompare(b.jam || '')).forEach(r => {
-            let menuText = '';
-            if (r.menus && Array.isArray(r.menus) && r.menus.length > 0) {
-              menuText = `<div class="menu-detail-text">${r.menus.map(m => m.quantity + 'x ' + m.name).join('<br>')}</div>`;
-            } else if (r.menu) {
-              menuText = `<div class="menu-detail-text">${r.menu}</div>`;
-            }
-            const safePhone = r.nomorHp && r.nomorHp.length > 4
-              ? r.nomorHp.slice(0, -3) + 'xxx' : (r.nomorHp || '');
-            htmlItems += `
-              <div class="res-item">
-                <div class="res-info">
-                  <strong>${r.nama}</strong>
-                  <small>
-                    <i class="far fa-clock"></i> ${r.jam} WIB
-                    ${safePhone ? ' &nbsp;·&nbsp; <i class="fab fa-whatsapp"></i> ' + safePhone : ''}
-                  </small>
-                  ${menuText}
-                  ${r.tambahan
-                    ? `<div style="color:var(--highlight);font-size:0.73rem;margin-top:4px;font-style:italic;">Note: ${r.tambahan}</div>`
-                    : ''}
-                </div>
-                <div class="res-qty">${r.jumlah}</div>
-              </div>`;
-          });
-        } else {
-          htmlItems = `<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.28);font-size:0.83rem;">
-            Belum ada reservasi — tempat ini masih kosong.</div>`;
-        }
-
-        const btnText  = items.length > 0 ? `Lihat ${items.length} Reservasi` : 'Masih Kosong';
-        const btnClass = items.length > 0 ? '' : 'disabled';
-        const onclk    = items.length > 0 ? 'onclick="toggleAccordion(this)"' : '';
-        const iconHtml = items.length > 0
-          ? '<i class="fas fa-chevron-down"></i>'
-          : '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
-
-        const card    = document.createElement('div');
-        card.className = 'loc-card';
-        const safeLoc  = loc.replace(/'/g, "\\'");
-
-        card.innerHTML = `
-          <div class="loc-header" style="background-image:url('${img}')"
-               onclick="viewPhoto('${img}', '${safeLoc}')">
-            <button class="btn-view-photo"
-                    onclick="event.stopPropagation(); viewPhoto('${img}', '${safeLoc}')">
-              <i class="fas fa-eye"></i>
-            </button>
-            <div class="loc-title">
-              <span class="loc-name">${loc}</span>
-              <span class="loc-badge">${curr} / ${cap} Org</span>
-            </div>
-          </div>
-          <div class="capacity-bar-container">
-            <div class="capacity-bar-fill ${barColor}" style="width:${pct}%;"></div>
-          </div>
-          <button class="btn-toggle-loc ${btnClass}" ${onclk}>
-            <span>${btnText}</span>${iconHtml}
-          </button>
-          <div class="loc-body">${htmlItems}</div>`;
-
-        grid.appendChild(card);
-
-        /* Staggered entrance animation */
-        card.style.animationDelay = `${idx * 62}ms`;
-        card.style.animation = `cardEnter 0.46s cubic-bezier(0.22,1,0.36,1) ${idx * 62}ms both`;
-      });
-    }
-
-    /* ── Photo lightbox ── */
-    function viewPhoto(url, caption) {
-      const modal = document.getElementById('imgModal');
-      document.getElementById('imgTarget').src = url;
-      document.getElementById('imgCaption').textContent = caption;
-      modal.style.display = 'flex';
-      setTimeout(() => modal.classList.add('show'), 12);
-    }
-    function closeImgModal() {
-      const modal = document.getElementById('imgModal');
-      modal.classList.remove('show');
-      setTimeout(() => { modal.style.display = 'none'; }, 320);
-    }
-    document.getElementById('imgModal').addEventListener('click', e => {
-      if (e.target.id === 'imgModal') closeImgModal();
-    });
-
-    /* ── Accordion ── */
-    window.toggleAccordion = function (btn) {
-      const body = btn.nextElementSibling;
-      const icon = btn.querySelector('.fa-chevron-down, .fa-chevron-up');
-      const open = body.style.display === 'block';
-      body.style.display = open ? 'none' : 'block';
-      if (icon) icon.className = open ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
-      btn.style.background = open ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.13)';
-    };
-
-    /* ── Close detail ── */
-    function closeDetail() {
-      document.getElementById('detailOverlay').classList.remove('active');
-    }
-
-    /* ── Admin logic ── */
-    function setupAdminLogic() {
-      const ADMIN_EMAIL = "ultimasquad@gmail.com";
-      const adminBtn = document.getElementById('adminBtn');
-      const overlay  = document.getElementById('adminOverlay');
-      adminBtn.onclick = () => overlay.classList.add('show');
-      window.closeAdmin = () => overlay.classList.remove('show');
-      overlay.onclick = e => { if (e.target === overlay) window.closeAdmin(); };
-
-      auth.onAuthStateChanged(user => {
-  const isAdmin = user && user.email === ADMIN_EMAIL;
-
-  document.getElementById('loginForm').style.display     = isAdmin ? 'none'  : 'block';
-  document.getElementById('adminControls').style.display = isAdmin ? 'block' : 'none';
-});
-      document.getElementById('btnLoginAction').onclick = () => {
-        const e = document.getElementById('adminEmail').value;
-        const p = document.getElementById('adminPass').value;
-        auth.signInWithEmailAndPassword(e, p)
-          .catch(err => alert("Login Gagal: " + err.message));
-      };
-      const updateStatus = async (isFull) => {
-  const user = auth.currentUser;
-  if (!user || user.email !== ADMIN_EMAIL) {
-    alert("Akses ditolak");
-    return;
-  }
-        const d = document.getElementById('dateSelector').value;
-        if (!d) return alert("Pilih tanggal dulu");
         try {
-          await db.collection("date_status").doc(d).set({ date: d, isFull }, { merge: true });
-          alert("Status berhasil diperbarui!");
-        } catch(err) { alert("Error: " + err.message); }
-      };
-      document.getElementById('markFullBtn').onclick      = () => updateStatus(true);
-      document.getElementById('markAvailableBtn').onclick = () => updateStatus(false);
+            let snap = await db.collection("locations").get();
+            if (snap.empty) { snap = await db.collection("Locations").get(); }
+            locationsConfig = {};
+            locationImages = {};
+            snap.forEach(doc => {
+                const data = doc.data();
+                const name = data.name;
+                locationsConfig[name] = data.capacity;
+                locationImages[name] = data.imageUrl || defaultImage;
+            });
+        } catch(e) { console.log("Gagal load lokasi/gambar", e); }
+    }
+
+    function setupRealtimeListeners() {
+        if(unsubscribeRes) unsubscribeRes();
+        if(unsubscribeStatus) unsubscribeStatus();
+        const mStr = String(currentMonth + 1).padStart(2, '0');
+        const start = `${currentYear}-${mStr}-01`;
+        const end = `${currentYear}-${mStr}-31`;
+        document.getElementById('calendar').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:#999;">Memuat Data...</div>';
+        document.getElementById('monthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+        unsubscribeRes = db.collection("reservations")
+            .where('date', '>=', start).where('date', '<=', end)
+            .onSnapshot(snapshot => {
+                allReservations = {};
+                snapshot.forEach(doc => {
+                    const r = doc.data();
+                    if(!allReservations[r.date]) allReservations[r.date] = [];
+                    allReservations[r.date].push(r);
+                });
+                renderCalendar();
+            });
+        unsubscribeStatus = db.collection("date_status")
+             .where('date', '>=', start).where('date', '<=', end)
+             .onSnapshot(snapshot => {
+                 dateStatus = {};
+                 snapshot.forEach(doc => { dateStatus[doc.data().date] = doc.data().isFull; });
+                 renderCalendar();
+             });
+    }
+
+    function renderCalendar() {
+        const cal = document.getElementById('calendar');
+        cal.innerHTML = '';
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const today = new Date();
+        for(let i=0; i<firstDay; i++) cal.innerHTML += `<div></div>`;
+        for(let i=1; i<=daysInMonth; i++) {
+            const el = document.createElement('div');
+            el.className = 'day-cell';
+            const mStr = String(currentMonth + 1).padStart(2, '0');
+            const dStr = String(i).padStart(2, '0');
+            const dateKey = `${currentYear}-${mStr}-${dStr}`;
+            const list = allReservations[dateKey] || [];
+            const count = list.length;
+            const total = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
+            const isManualFull = dateStatus[dateKey] === true;
+            if(isManualFull) {
+                el.classList.add('is-full');
+                el.innerHTML = `<span class="day-num">${i}</span><div class="res-indicator"><div class="res-count">${total > 0 ? total : 'FULL'}</div></div>`;
+            } else if(i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+                el.classList.add('today');
+                el.innerHTML = `<span class="day-num">${i}</span>${count > 0 ? `<div class="res-indicator"><div class="res-count">${total}</div></div>` : ''}`;
+            } else if(count > 0) {
+                el.classList.add('has-res');
+                el.innerHTML = `<span class="day-num">${i}</span><div class="res-indicator"><div class="res-count">${total}</div></div>`;
+            } else {
+                el.innerHTML = `<span class="day-num">${i}</span>`;
+            }
+            el.onclick = () => {
+                if(isManualFull) { showFullWarning(i, list); } else { openDetail(i, list, false); }
+            };
+            cal.appendChild(el);
+        }
+    }
+
+    function showFullWarning(day, list) {
+        pendingDetailData = { day: day, list: list };
+        document.getElementById('fullWarningPopup').style.display = 'flex';
+    }
+
+    function continueToDetail() {
+        document.getElementById('fullWarningPopup').style.display = 'none';
+        if(pendingDetailData) { openDetail(pendingDetailData.day, pendingDetailData.list, true); }
+    }
+
+    function openDetail(day, list, isFullMode = false) {
+        const detailSheet = document.getElementById('detailSheet');
+        const overlay = document.getElementById('detailOverlay');
+        if (isFullMode) { detailSheet.classList.add('red-mode'); } else { detailSheet.classList.remove('red-mode'); }
+        overlay.classList.add('active');
+        document.getElementById('sheetDate').textContent = `${day} ${monthNames[currentMonth]} ${currentYear}`;
+        const totalGuests = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
+        document.getElementById('sheetStats').textContent = `${list.length} Grup / ${totalGuests} Tamu`;
+        const grid = document.getElementById('locGrid');
+        grid.innerHTML = '';
+        const grouped = {};
+        list.forEach(r => {
+            let l = r.tempat || 'Lainnya';
+            if (l.toLowerCase() === 'meeting room') l = 'Meeting Room';
+            if(!grouped[l]) grouped[l] = [];
+            grouped[l].push(r);
+        });
+        const allKnownLocations = new Set([...Object.keys(locationImages), ...Object.keys(locationsConfig)]);
+        const allLocations = Array.from(allKnownLocations).sort();
+        allLocations.forEach(loc => {
+            const items = grouped[loc] || [];
+            const img = locationImages[loc] || defaultImage;
+            const cap = locationsConfig[loc] || 100;
+            const curr = items.reduce((s,r)=>s+(parseInt(r.jumlah)||0),0);
+            let percent = cap > 0 ? (curr / cap) * 100 : 0;
+            if(percent > 100) percent = 100;
+            let barColor = 'bar-green';
+            if (percent >= 90) barColor = 'bar-red';
+            else if (percent >= 50) barColor = 'bar-yellow';
+            let htmlItems = '';
+            if(items.length > 0) {
+                items.sort((a,b)=> (a.jam||'').localeCompare(b.jam||'')).forEach(r => {
+                    let menuText = '';
+                    if(r.menus && Array.isArray(r.menus) && r.menus.length > 0) {
+                        menuText = `<div class="menu-detail-text">${r.menus.map(m => m.quantity + 'x ' + m.name).join('<br>')}</div>`;
+                    } else if (r.menu) {
+                        menuText = `<div class="menu-detail-text">${r.menu}</div>`;
+                    }
+                    const safePhone = r.nomorHp && r.nomorHp.length > 4 ? r.nomorHp.slice(0, -3) + 'xxx' : (r.nomorHp || '');
+                    htmlItems += `
+                        <div class="res-item">
+                            <div class="res-info">
+                                <strong>${r.nama}</strong>
+                                <small><i class="far fa-clock"></i> ${r.jam} WIB ${safePhone ? ' • <i class="fab fa-whatsapp"></i> ' + safePhone : ''}</small>
+                                ${menuText}
+                                ${r.tambahan ? `<div style="color:var(--highlight); font-size:0.75rem; margin-top:3px; font-style:italic;">Note: ${r.tambahan}</div>` : ''}
+                            </div>
+                            <div class="res-qty">${r.jumlah}</div>
+                        </div>`;
+                });
+            } else {
+                htmlItems = `<div style="padding:20px; text-align:center; color:#aaa; font-size:0.85rem;">Belum ada reservasi. Tempat ini kosong.</div>`;
+            }
+            const btnText = items.length > 0 ? `Lihat ${items.length} Reservasi` : 'Masih Kosong';
+            const btnClass = items.length > 0 ? '' : 'disabled';
+            const onclickAttr = items.length > 0 ? 'onclick="toggleAccordion(this)"' : '';
+            const iconHtml = items.length > 0 ? '<i class="fas fa-chevron-down"></i>' : '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
+            const card = document.createElement('div');
+            card.className = 'loc-card';
+            const safeLocName = loc.replace(/'/g, "\\'");
+            card.innerHTML = `
+                <div class="loc-header" style="background-image:url('${img}')" onclick="viewPhoto('${img}', '${safeLocName}')">
+                    <button class="btn-view-photo"><i class="fas fa-eye"></i></button>
+                    <div class="loc-title">
+                        <span class="loc-name">${loc}</span>
+                        <span class="loc-badge">${curr} / ${cap} Org</span>
+                    </div>
+                </div>
+                <div class="capacity-bar-container">
+                    <div class="capacity-bar-fill ${barColor}" style="width: ${percent}%;"></div>
+                </div>
+                <button class="btn-toggle-loc ${btnClass}" ${onclickAttr}>
+                    <span>${btnText}</span>${iconHtml}
+                </button>
+                <div class="loc-body">${htmlItems}</div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    function viewPhoto(url, caption) {
+        const modal = document.getElementById('imgModal');
+        document.getElementById('imgTarget').src = url;
+        document.getElementById('imgCaption').textContent = caption;
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeImgModal() {
+        const modal = document.getElementById('imgModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    document.getElementById('imgModal').addEventListener('click', (e) => { if(e.target.id === 'imgModal') closeImgModal(); });
+
+    window.toggleAccordion = function(btn) {
+        const body = btn.nextElementSibling;
+        const icon = btn.querySelector('.fa-chevron-down, .fa-chevron-up');
+        if(body.style.display === 'block') {
+            body.style.display = 'none';
+            if(icon) icon.className = 'fas fa-chevron-down';
+            btn.style.background = '';
+        } else {
+            body.style.display = 'block';
+            if(icon) icon.className = 'fas fa-chevron-up';
+            btn.style.background = '#f9f9f9';
+        }
+    }
+    
+    function closeDetail() { document.getElementById('detailOverlay').classList.remove('active'); }
+    
+    function setupAdminLogic() {
+        const btn = document.getElementById('adminBtn');
+        const overlay = document.getElementById('adminOverlay');
+        const modal = document.getElementById('adminModal');
+        const open = () => { overlay.classList.add('show'); modal.classList.add('show'); };
+        window.closeAdmin = () => { overlay.classList.remove('show'); modal.classList.remove('show'); };
+        btn.onclick = open;
+        overlay.onclick = (e) => { if(e.target === overlay) window.closeAdmin(); };
+        auth.onAuthStateChanged(user => {
+            document.getElementById('loginForm').style.display = user ? 'none' : 'block';
+            document.getElementById('adminControls').style.display = user ? 'block' : 'none';
+        });
+        document.getElementById('btnLoginAction').onclick = () => {
+            const e = document.getElementById('adminEmail').value;
+            const p = document.getElementById('adminPass').value;
+            auth.signInWithEmailAndPassword(e, p).catch(err => alert("Login Gagal: " + err.message));
+        };
+        const updateStatus = async (isFull) => {
+            const d = document.getElementById('dateSelector').value;
+            if(!d) return alert("Pilih tanggal dulu");
+            try {
+                await db.collection("date_status").doc(d).set({ date: d, isFull: isFull }, { merge: true });
+                alert("Status Berhasil Diupdate!");
+            } catch(e) { alert("Error: " + e.message); }
+        };
+        document.getElementById('markFullBtn').onclick = () => updateStatus(true);
+        document.getElementById('markAvailableBtn').onclick = () => updateStatus(false);
     }
   </script>
 
