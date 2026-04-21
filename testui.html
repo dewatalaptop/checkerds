@@ -555,11 +555,7 @@
     animation:slideUpBig 0.40s var(--ease-ios);
     box-shadow: 0 -16px 60px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.18);
     position:relative;
-    @supports not (backdrop-filter: blur(10px)) {
-  .calendar-wrapper {
-    background: rgba(0,0,0,0.6);
-  }
-}
+   
   }
   /* iOS grabber — white on dark */
   .detail-sheet::before {
@@ -1091,18 +1087,7 @@ if (window.innerWidth > 768) {
     }
   }, { passive: true });
 }
-  const y = window.scrollY;
-
-  document.body.style.backgroundPosition =
-    `center ${y * 0.35}px`;
-
-  const tilt = Math.min(y * 0.02, 6);
-  const el = document.querySelector('.calendar-wrapper');
-
-  if (el) {
-    el.style.transform = `perspective(1200px) rotateX(${tilt}deg)`;
-  }
-}, { passive: true });
+  
 
     /* ──────────────────────────────────────────
        Swipe calendar gesture (touch devices)
@@ -1232,9 +1217,6 @@ if (dx > 0 && velocity > 40) {
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         animateCalendarSlide('left');
         loadMonthData();
-        function loadMonthData() {
-  setupRealtimeListeners();
-}
       });
     });
 
@@ -1270,6 +1252,7 @@ const end = `${currentYear}-${mStr}-${String(lastDay).padStart(2, '0')}`;
       unsubscribeRes = db.collection("reservations")
   .where("date", ">=", start)
   .where("date", "<=", end)
+  // .limit(500)
   .onSnapshot(snapshot => {
 
     allReservations = {};
@@ -1286,14 +1269,6 @@ const end = `${currentYear}-${mStr}-${String(lastDay).padStart(2, '0')}`;
 
     renderCalendar();
   });
-          allReservations = {};
-          snap.forEach(doc => {
-            const r = doc.data();
-            if (!allReservations[r.date]) allReservations[r.date] = [];
-            allReservations[r.date].push(r);
-          });
-          renderCalendar();
-        });
 
       unsubscribeStatus = db.collection("date_status")
         .where('date', '>=', start).where('date', '<=', end)
@@ -1508,6 +1483,7 @@ const end = `${currentYear}-${mStr}-${String(lastDay).padStart(2, '0')}`;
 
     /* ── Admin logic ── */
     function setupAdminLogic() {
+      const ADMIN_EMAIL = "ultimasquad@gmail.com";
       const adminBtn = document.getElementById('adminBtn');
       const overlay  = document.getElementById('adminOverlay');
       adminBtn.onclick = () => overlay.classList.add('show');
@@ -1515,9 +1491,11 @@ const end = `${currentYear}-${mStr}-${String(lastDay).padStart(2, '0')}`;
       overlay.onclick = e => { if (e.target === overlay) window.closeAdmin(); };
 
       auth.onAuthStateChanged(user => {
-        document.getElementById('loginForm').style.display     = user ? 'none'  : 'block';
-        document.getElementById('adminControls').style.display = user ? 'block' : 'none';
-      });
+  const isAdmin = user && user.email === ADMIN_EMAIL;
+
+  document.getElementById('loginForm').style.display     = isAdmin ? 'none'  : 'block';
+  document.getElementById('adminControls').style.display = isAdmin ? 'block' : 'none';
+});
       document.getElementById('btnLoginAction').onclick = () => {
         const e = document.getElementById('adminEmail').value;
         const p = document.getElementById('adminPass').value;
@@ -1525,6 +1503,11 @@ const end = `${currentYear}-${mStr}-${String(lastDay).padStart(2, '0')}`;
           .catch(err => alert("Login Gagal: " + err.message));
       };
       const updateStatus = async (isFull) => {
+  const user = auth.currentUser;
+  if (!user || user.email !== ADMIN_EMAIL) {
+    alert("Akses ditolak");
+    return;
+  }
         const d = document.getElementById('dateSelector').value;
         if (!d) return alert("Pilih tanggal dulu");
         try {
