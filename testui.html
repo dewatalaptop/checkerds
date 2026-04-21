@@ -2,7 +2,7 @@
 
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Viewer Reservasi Dolan Sawah</title>
 
@@ -16,752 +16,870 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <style>
-    /* ══════════════════════════════════════════════════
-       DESIGN TOKENS — iOS 26 Liquid Glass (final polish)
-    ══════════════════════════════════════════════════ */
-    :root {
-      --primary:         #2a9d8f;
-      --primary-dark:    #1a3a3a;
-      --primary-glow:    rgba(42,157,143,0.30);
-      --secondary:       #e9c46a;
-      --highlight:       #e07b39;
+  /* ═══════════════════════════════════════════════════════
+     DESIGN TOKENS
+  ═══════════════════════════════════════════════════════ */
+  :root {
+    --primary:        #2a9d8f;
+    --primary-dark:   #1a3a3a;
+    --primary-glow:   rgba(42,157,143,0.30);
+    --secondary:      #e9c46a;
+    --highlight:      #e07b39;
+    --danger:         rgb(255,59,48);
+    --danger-soft:    rgba(255,59,48,0.18);
+    --danger-border:  rgba(255,59,48,0.42);
+    --success:        #34c759;
+    --warning:        #ff9f0a;
 
-      /* FIX #9 — iOS-subtle danger, not Android red */
-      --danger:          rgb(255,59,48);
-      --danger-soft:     rgba(255,59,48,0.12);
-      --danger-border:   rgba(255,59,48,0.35);
+    /* Glass — tuned for dark photo background */
+    --glass-blur: blur(16px) saturate(160%);
+    --glass-blur-sm:  blur(14px) saturate(140%);
 
-      --success:         #34c759;
-      --warning:         #ff9f0a;
+    --radius-xl: 24px;
+    --radius-lg: 18px;
+    --radius-md: 12px;
 
-      /* Glass system */
-      --glass-bg:        rgba(255,255,255,0.18);
-      --glass-bg-heavy:  rgba(255,255,255,0.52);
-      --glass-border:    rgba(255,255,255,0.30);
-      --glass-blur:      blur(18px);
-      --glass-blur-sm:   blur(10px);
-      --glass-shadow:    0 8px 32px rgba(0,0,0,0.09);
-      --glass-shadow-lg: 0 16px 48px rgba(0,0,0,0.13);
+    /* iOS physics spring */
+    --ease-ios: cubic-bezier(0.22, 1, 0.36, 1);
 
-      --text-main:   #1c2b2b;
-      --text-muted:  #5a6e6e;
-      --radius-xl:   22px;
-      --radius-lg:   16px;
-      --radius-md:   12px;
+    /* Ambient orb — updated by JS mousemove */
+    --mx: 50%; --my: 30%;
+  }
+@media (max-width: 768px) {
+  .calendar-wrapper::before {
+    animation: none;
+  }
+}
+  /* ═══════════════════════════════════════════════════════
+     RESET
+  ═══════════════════════════════════════════════════════ */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+  }
+  html { scroll-behavior: smooth; }
 
-      /* FIX #4 — iOS physics spring */
-      --ease-ios:    cubic-bezier(0.22, 1, 0.36, 1);
+  /* ═══════════════════════════════════════════════════════
+     BODY — real photo background + dark overlay
+  ═══════════════════════════════════════════════════════ */
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 90px;
+    letter-spacing: -0.15px;
+    color: white;
+    /* Photo background — dark overlay on top */
+    background:
 
-      /* FIX #1 — ambient glow position (updated by JS) */
-      --mx: 50%;
-      --my: 30%;
-    }
+    linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.25)),
 
-    /* ══════════════════════════════════════════════════
-       RESET
-    ══════════════════════════════════════════════════ */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      will-change: transform; /* FIX #10 */
-    }
-    html { scroll-behavior: smooth; }
+    url('https://as2.ftcdn.net/jpg/02/70/12/65/1000_F_270126543_Fpjy5Y3I0JHGOazU5UxKZxG3hMXv7ixC.webp');
 
-    /* ══════════════════════════════════════════════════
-       BODY + LIVING GRADIENT BACKGROUND
-    ══════════════════════════════════════════════════ */
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text-main);
-      overflow-x: hidden;
-      padding-bottom: 90px;
-      letter-spacing: -0.15px;
-      background:
-        radial-gradient(ellipse at 15% 15%, rgba(42,157,143,0.22) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 20%, rgba(233,196,106,0.20) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 85%, rgba(160,210,200,0.18) 0%, transparent 55%),
-        radial-gradient(ellipse at 80% 80%, rgba(224,123,57,0.12) 0%, transparent 50%),
-        #dceeed;
-      background-attachment: fixed;
-    }
+  background-size: cover;
 
-    /* FIX #1 — ambient glow sphere that ACTUALLY follows cursor */
-    body::after {
-      content: "";
-      position: fixed;
-      width: 380px; height: 380px;
-      background: radial-gradient(circle, rgba(255,255,255,0.30), transparent 70%);
-      pointer-events: none;
-      z-index: 0;
-      border-radius: 50%;
-      left: var(--mx);
-      top:  var(--my);
-      transform: translate(-50%, -50%);
-      transition: left 0.55s var(--ease-ios), top 0.55s var(--ease-ios);
-    }
+  background-position: center;
 
-    h2,h3,h4 { font-family: 'Nunito', sans-serif; font-weight: 700; }
+  background-repeat: no-repeat;
 
-    /* ══════════════════════════════════════════════════
-       HEADER
-    ══════════════════════════════════════════════════ */
-    header {
-      background: linear-gradient(145deg, rgba(26,58,58,0.92), rgba(42,100,90,0.88));
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      padding: 18px 22px 50px;
-      color: white;
-      border-bottom-left-radius: 32px;
-      border-bottom-right-radius: 32px;
-      box-shadow: 0 6px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.15);
-      position: relative;
-      overflow: hidden;
-      z-index: 5;
-      cursor: default;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    header::before {
-      content:""; position: absolute; inset: 0;
-      background: linear-gradient(120deg, rgba(255,255,255,0.10) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .header-branding h2 {
-      margin: 0; font-size: 1.25rem; font-weight: 800;
-      display: flex; align-items: center; gap: 10px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.30);
-    }
-    .header-branding small {
-      display: block; margin-top: 4px;
-      opacity: 0.75; font-size: 0.78rem; font-weight: 400; letter-spacing: 0.3px;
-    }
+  background-attachment: fixed;
+  }
+  body {
+  -webkit-overflow-scrolling: touch;
+}
 
-    /* Hidden 5-dot tap counter */
-    #tapIndicator {
-      position: absolute;
-      bottom: 14px; right: 18px;
-      display: flex; gap: 5px;
-      opacity: 0;
-      transition: opacity 0.3s var(--ease-ios);
-      pointer-events: none;
-    }
-    #tapIndicator.visible { opacity: 1; }
-    #tapIndicator span {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.30);
-      border: 1px solid rgba(255,255,255,0.45);
-      transition: background 0.2s, transform 0.25s var(--ease-ios), box-shadow 0.2s;
-    }
-    #tapIndicator span.lit {
-      background: white;
-      transform: scale(1.35);
-      box-shadow: 0 0 7px rgba(255,255,255,0.75);
-    }
+@supports (-webkit-touch-callout: none) {
+  body {
+    background-attachment: scroll;
+  }
+}
+  /* Teal ambient orb — follows cursor */
+  body::after {
+    content: "";
+    position: fixed;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle,
+      rgba(42,157,143,0.20) 0%,
+      rgba(42,157,143,0.06) 45%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    left: var(--mx); top: var(--my);
+    transform: translate(-50%, -50%);
+    transition: left 0.6s var(--ease-ios), top 0.6s var(--ease-ios);
+    mix-blend-mode: screen;
+  }
+  /* Warm secondary orb — bottom-right, static */
+  body::before {
+    content: "";
+    position: fixed;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle,
+      rgba(233,196,106,0.13) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    right: 5%; bottom: 18%;
+    mix-blend-mode: screen;
+  }
 
-    /* ══════════════════════════════════════════════════
-       MAIN CONTAINER
-    ══════════════════════════════════════════════════ */
-    .main-container {
-      max-width: 800px;
-      margin: -34px auto 0;
-      padding: 0 14px;
-      position: relative;
-      z-index: 10;
-    }
+  h2,h3,h4 { font-family: 'Nunito', sans-serif; font-weight: 700; }
 
-    /* ══════════════════════════════════════════════════
-       INFO CARD
-    ══════════════════════════════════════════════════ */
-    @keyframes gentle-float {
-      0%,100% { transform: translateY(0) translateZ(0); }
-      50%      { transform: translateY(-4px) translateZ(0); }
-    }
-    .info-card {
-      background: var(--glass-bg-heavy);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.55);
-      border-radius: var(--radius-xl);
-      padding: 16px 20px;
-      margin-bottom: 18px;
-      display: flex; align-items: flex-start; gap: 14px;
-      animation: gentle-float 5s ease-in-out infinite;
-      position: relative; overflow: hidden;
-      transform: translateZ(0); /* FIX #2 */
-    }
-    .info-card::before {
-      content:""; position: absolute;
-      top:0; left:0; right:0; height:1px;
-      background: linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent);
-    }
-    .info-icon {
-      background: linear-gradient(135deg, var(--primary), rgba(42,157,143,0.7));
-      width: 42px; height: 42px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; color: white; font-size: 1.1rem;
-      box-shadow: 0 4px 12px var(--primary-glow);
-    }
-    .info-content h4 { margin: 0 0 4px; font-size: 0.9rem; color: var(--primary-dark); }
-    .info-content p  { margin: 0; font-size: 0.78rem; color: var(--text-muted); line-height: 1.55; }
+  /* ═══════════════════════════════════════════════════════
+     HEADER — transparent glass over photo
+  ═══════════════════════════════════════════════════════ */
+  header {
+    background: linear-gradient(
+      175deg,
+      rgba(10,35,32,0.70) 0%,
+      rgba(26,58,58,0.50) 60%,
+      rgba(20,50,45,0.38) 100%
+    );
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    padding: 20px 22px 54px;
+    color: white;
+    border-bottom-left-radius: 36px;
+    border-bottom-right-radius: 36px;
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      inset 0 -1px 0 rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+    z-index: 5;
+    cursor: default;
+    user-select: none; -webkit-user-select: none;
+  }
+  header::before {
+    content:""; position: absolute; inset: 0;
+    background:
+      linear-gradient(155deg, rgba(255,255,255,0.11) 0%, transparent 45%),
+      linear-gradient(to bottom, rgba(42,157,143,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  /* Animated shimmer sweep */
+  header::after {
+    content:""; position: absolute;
+    top:-60%; left:-40%;
+    width:55%; height:200%;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255,255,255,0.07) 50%,
+      transparent 60%
+    );
+    animation: headerShimmer 9s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes headerShimmer {
+    0%,100% { transform: translateX(0);   opacity: 0.5; }
+    50%      { transform: translateX(280%);opacity: 1;   }
+  }
+  .header-branding h2 {
+    margin: 0; font-size: 1.3rem; font-weight: 800;
+    display: flex; align-items: center; gap: 10px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.30);
+    letter-spacing: -0.3px;
+  }
+  .header-branding small {
+    display: block; margin-top: 5px;
+    opacity: 0.68; font-size: 0.76rem; font-weight: 400;
+    letter-spacing: 0.9px; text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  }
 
-    /* ══════════════════════════════════════════════════
-       CALENDAR WRAPPER
-    ══════════════════════════════════════════════════ */
-    .calendar-wrapper {
-      background: var(--glass-bg-heavy);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--glass-border);
-      /* FIX #8 + #2 */
-      box-shadow: var(--glass-shadow-lg), inset 0 1px 0 rgba(255,255,255,0.60);
-      border-radius: var(--radius-xl);
-      padding: 22px 18px 18px;
-      position: relative; overflow: hidden;
-      transform: perspective(1000px) translateZ(0); /* FIX #2 */
-    }
-    /* Top sheen */
-    .calendar-wrapper::before {
-      content:""; position: absolute;
-      top:0; left:0; right:0; height:1px;
-      background: linear-gradient(90deg,transparent,rgba(255,255,255,0.80),transparent);
-      z-index: 1; pointer-events: none;
-    }
-    /* FIX #3 — liquid highlight sweep on hover */
-    .calendar-wrapper::after {
-      content:""; position: absolute; inset: 0; pointer-events: none;
-      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.26), transparent 70%);
-      opacity: 0;
-      transition: opacity 0.4s var(--ease-ios);
-      z-index: 2; border-radius: inherit;
-    }
-    .calendar-wrapper:hover::after { opacity: 1; }
+  /* Hidden 5-dot tap-counter */
+  #tapIndicator {
+    position: absolute; bottom: 14px; right: 18px;
+    display: flex; gap: 5px;
+    opacity: 0; transition: opacity 0.3s var(--ease-ios);
+    pointer-events: none;
+  }
+  #tapIndicator.visible { opacity: 1; }
+  #tapIndicator span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+    border: 1px solid rgba(255,255,255,0.42);
+    transition: background 0.2s, transform 0.25s var(--ease-ios), box-shadow 0.2s;
+  }
+  #tapIndicator span.lit {
+    background: white; transform: scale(1.35);
+    box-shadow: 0 0 7px rgba(255,255,255,0.75);
+  }
 
-    .calendar-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 22px; position: relative; z-index: 3;
-    }
-    .month-year {
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.2rem; font-weight: 800;
-      color: var(--primary-dark); text-transform: capitalize; letter-spacing: -0.3px;
-    }
-    .calendar-nav { display: flex; gap: 8px; }
-    .calendar-nav button {
-      background: rgba(255,255,255,0.38);
-      backdrop-filter: var(--glass-blur-sm);
-      -webkit-backdrop-filter: var(--glass-blur-sm);
-      border: 1px solid rgba(255,255,255,0.52);
-      width: 38px; height: 38px; border-radius: 12px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--primary-dark);
-      /* FIX #6 — inner shadow like native iOS */
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.70), 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.4s var(--ease-ios); /* FIX #4 */
-      font-size: 0.85rem;
-    }
-    .calendar-nav button:active { transform: scale(0.88); background: rgba(255,255,255,0.62); }
+  /* ═══════════════════════════════════════════════════════
+     MAIN CONTAINER
+  ═══════════════════════════════════════════════════════ */
+  .main-container {
+    max-width: 800px;
+    margin: -36px auto 0;
+    padding: 0 14px;
+    position: relative; z-index: 10;
+  }
 
-    /* ══════════════════════════════════════════════════
-       CALENDAR GRID
-    ══════════════════════════════════════════════════ */
-    .calendar-grid-header {
-      display: grid; grid-template-columns: repeat(7,1fr);
-      margin-bottom: 8px; position: relative; z-index: 3;
-    }
-    .weekday {
-      text-align: center; font-size: 0.7rem; font-weight: 700;
-      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .calendar-days {
-      display: grid; grid-template-columns: repeat(7,1fr);
-      gap: 5px; position: relative; z-index: 3;
-    }
+  /* ═══════════════════════════════════════════════════════
+     INFO CARD
+  ═══════════════════════════════════════════════════════ */
+  @keyframes gentle-float {
+    0%,100% { transform: translateY(0) translateZ(0); }
+    50%      { transform: translateY(-5px) translateZ(0); }
+  }
+  .info-card {
+    background: rgba(255,255,255,0.13);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255,255,255,0.24);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.45);
+    border-radius: var(--radius-xl);
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    display: flex; align-items: flex-start; gap: 14px;
+    animation: gentle-float 5.5s ease-in-out infinite;
+    position: relative; overflow: hidden;
+    transform: translateZ(0);
+  }
+  .info-card::before {
+    content:""; position: absolute;
+    top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.60),transparent);
+  }
+  .info-icon {
+    background: linear-gradient(135deg, var(--primary), rgba(42,157,143,0.70));
+    width: 42px; height: 42px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: white; font-size: 1.1rem;
+    box-shadow: 0 4px 14px var(--primary-glow);
+  }
+  .info-content h4 { margin: 0 0 4px; font-size: 0.9rem; color: white; font-weight: 700; }
+  .info-content p  { margin: 0; font-size: 0.78rem; color: rgba(255,255,255,0.72); line-height: 1.55; }
 
-    /* Base day cell */
-    .day-cell {
-      aspect-ratio: 1/1;
-      background: rgba(255,255,255,0.35);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.42);
-      border-radius: var(--radius-md);
-      position: relative; cursor: pointer;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-start;
-      padding-top: 6px; overflow: hidden;
-      transition: all 0.4s var(--ease-ios); /* FIX #4 */
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-    /* Inner light sheen */
-    .day-cell::before {
-      content:""; position: absolute; inset: 0; border-radius: inherit;
-      background: linear-gradient(130deg, rgba(255,255,255,0.55), transparent 60%);
-      opacity: 0.5; pointer-events: none; z-index: 1;
-    }
-    /* FIX #11 — liquid press ripple */
-    .day-cell::after {
-      content:""; position: absolute; inset: 0; border-radius: inherit;
-      background: radial-gradient(circle, rgba(255,255,255,0.52), transparent 70%);
-      opacity: 0; pointer-events: none; z-index: 2;
-      transition: opacity 0.25s;
-    }
-    .day-cell:active::after { opacity: 0.75; }
-    /* FIX #5 — depth hover */
-    .day-cell:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.11);
-    }
-    .day-cell:active {
-      transform: scale(0.88);
-      background: rgba(255,255,255,0.62);
-    }
+  /* ═══════════════════════════════════════════════════════
+     CALENDAR WRAPPER — real glass + caustic water + highlight
+  ═══════════════════════════════════════════════════════ */
+  .calendar-wrapper {
+    background: rgba(255,255,255,0.14);
+    backdrop-filter: blur(30px) saturate(165%);
+    -webkit-backdrop-filter: blur(30px) saturate(165%);
+    border: 1px solid rgba(255,255,255,0.28);
+    box-shadow:
+      0 12px 44px rgba(0,0,0,0.30),
+      inset 0 1px 0 rgba(255,255,255,0.55),
+      inset 0 -1px 0 rgba(255,255,255,0.14);
+    border-radius: 28px;
+    padding: 22px 18px 18px;
+    position: relative; overflow: hidden;
+    transform: perspective(1200px) rotateX(2deg) translateZ(0);
+  }
+  /* Caustic water grid animation */
+  .calendar-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
 
-    .day-num {
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700; font-size: 0.92rem;
-      z-index: 3; line-height: 1; color: var(--text-main);
-    }
+  background: url('https://i.imgur.com/8IuucQZ.png');
+  background-size: cover;
 
-    .day-cell.has-res {
-      background: rgba(42,157,143,0.16);
-      border-color: rgba(42,157,143,0.40);
-      box-shadow: 0 2px 10px rgba(42,157,143,0.14);
-    }
-    .day-cell.has-res .day-num { color: var(--primary-dark); }
+  opacity: 0.18;
+  mix-blend-mode: overlay;
 
-    /* FIX #9 — soft iOS danger, not solid Android red */
-    .day-cell.is-full {
-      background: var(--danger-soft) !important;
-      border: 1px solid var(--danger-border) !important;
-      box-shadow: 0 3px 14px rgba(255,59,48,0.12) !important;
-    }
-    .day-cell.is-full .day-num { color: #b52020 !important; font-weight: 800; }
-    .day-cell.is-full .res-count {
-      background: rgba(255,59,48,0.12) !important;
-      color: var(--danger) !important; font-weight: 800 !important;
-      border: 1px solid rgba(255,59,48,0.20);
-    }
+  animation: waterMove 18s linear infinite;
+  pointer-events: none;
+}
 
-    .day-cell.today {
-      background: rgba(233,196,106,0.32) !important;
-      border: 1px solid rgba(233,196,106,0.60) !important;
-      box-shadow: 0 4px 16px rgba(233,196,106,0.28) !important;
-    }
-    .day-cell.today .day-num { color: #7a5000 !important; font-weight: 800; }
-    .day-cell.today .res-count {
-      background: rgba(255,255,255,0.60) !important;
-      color: #a06800 !important;
-      border: 1px solid rgba(233,196,106,0.42);
-    }
+@keyframes waterMove {
+  0%   { transform: translate(0,0) scale(1.05); }
+  50%  { transform: translate(-40px,-25px) scale(1.08); }
+  100% { transform: translate(0,0) scale(1.05); }
+}
+  /* Liquid highlight sweep */
+  .calendar-wrapper::after {
+    content:""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+    background: linear-gradient(
+      118deg,
+      transparent 28%,
+      rgba(255,255,255,0.18) 50%,
+      transparent 72%
+    );
+    opacity: 0.55;
+    transition: opacity 0.4s var(--ease-ios);
+    border-radius: inherit;
+  }
+  .calendar-wrapper:hover::after { opacity: 0.88; }
 
-    .res-indicator {
-      margin-top: auto; margin-bottom: 5px;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 2px; width: 100%;
-      position: relative; z-index: 3;
-    }
-    .res-count {
-      font-size: 0.6rem; font-weight: 700;
-      color: var(--primary-dark);
-      background: rgba(255,255,255,0.65); backdrop-filter: blur(6px);
-      padding: 2px 7px; border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.38);
-    }
+  /* ── Calendar header & nav ── */
+  .calendar-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 22px; position: relative; z-index: 3;
+  }
+  .month-year {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.2rem; font-weight: 800; color: white;
+    text-transform: capitalize; letter-spacing: -0.3px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+  }
+  .calendar-nav { display: flex; gap: 8px; }
+  .calendar-nav button {
+    background: rgba(255,255,255,0.20);
+    backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid rgba(255,255,255,0.36);
+    width: 38px; height: 38px; border-radius: 12px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: white;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.50), 0 4px 12px rgba(0,0,0,0.22);
+    transition: all 0.4s var(--ease-ios); font-size: 0.85rem;
+  }
+  .calendar-nav button:active { transform: scale(0.88); background: rgba(255,255,255,0.35); }
 
-    /* Legend */
-    .legend {
-      display: flex; justify-content: center;
-      gap: 14px; margin-top: 22px;
-      font-size: 0.72rem; color: var(--text-muted); flex-wrap: wrap;
-      border-top: 1px solid rgba(255,255,255,0.35);
-      padding-top: 14px; position: relative; z-index: 3;
-    }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
-    .dot { width:12px; height:12px; border-radius:5px; display:inline-block; border:1px solid rgba(255,255,255,0.42); }
+  /* ── Grid ── */
+  .calendar-grid-header {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    margin-bottom: 8px; position: relative; z-index: 3;
+  }
+  .weekday {
+    text-align: center; font-size: 0.68rem; font-weight: 700;
+    color: rgba(255,255,255,0.58); text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .calendar-days {
+    display: grid; grid-template-columns: repeat(7,1fr);
+    gap: 5px; position: relative; z-index: 3;
+  }
 
-    /* ══════════════════════════════════════════════════
-       FOOTER
-    ══════════════════════════════════════════════════ */
-    .footer-link { margin-top: 24px; text-align: center; }
-    .footer-link a {
-      color: var(--text-muted); font-size: 0.85rem; text-decoration: none;
-      padding: 10px 22px;
-      background: var(--glass-bg-heavy);
-      backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm);
-      border: 1px solid var(--glass-border);
-      border-radius: 30px; box-shadow: var(--glass-shadow);
-      display: inline-flex; align-items: center; gap: 8px;
-      transition: all 0.4s var(--ease-ios);
-    }
-    .footer-link a:active { transform: scale(0.95); }
+  /* ── Day cell ── */
+  .day-cell {
+    aspect-ratio: 1/1;
+    background: rgba(255,255,255,0.16);
+    backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.32);
+    border-radius: var(--radius-md);
+    position: relative; cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    padding-top: 6px; overflow: hidden;
+    transition: all 0.4s var(--ease-ios);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.45);
+  }
+  /* Inner light sheen */
+  .day-cell::before {
+    content:""; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(130deg, rgba(255,255,255,0.50), transparent 58%);
+    opacity: 0.45; pointer-events: none; z-index: 1;
+  }
+  /* Liquid press ripple */
+  .day-cell::after {
+    content:""; position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(circle, rgba(255,255,255,0.50), transparent 68%);
+    opacity: 0; pointer-events: none; z-index: 2;
+    transition: opacity 0.22s;
+  }
+  .day-cell:active::after { opacity: 0.75; }
+  .day-cell:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.50);
+  }
+  .day-cell:active { transform: scale(0.88); background: rgba(255,255,255,0.30); }
 
-    /* ══════════════════════════════════════════════════
-       FULL WARNING POPUP
-    ══════════════════════════════════════════════════ */
-    .info-popup-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.22);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); /* FIX #7 */
-      z-index: 2500;
-      display: none; align-items: center; justify-content: center; padding: 20px;
-    }
-    .info-popup-content {
-      background: rgba(255,255,255,0.72);
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255,255,255,0.55);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.7);
-      width: 100%; max-width: 380px;
-      border-radius: 28px; padding: 32px 26px; text-align: center;
-      animation: popIn 0.35s var(--ease-ios);
-      position: relative; overflow: hidden;
-    }
-    .info-popup-content::before {
-      content:""; position: absolute; top:0; left:0; right:0; height:1px;
-      background: linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent);
-    }
-    @keyframes popIn { from{opacity:0;transform:scale(0.85);} to{opacity:1;transform:scale(1);} }
-    .info-popup-icon {
-      width:60px; height:60px; border-radius:20px;
-      background: var(--danger-soft); border:1px solid var(--danger-border);
-      display:inline-flex; align-items:center; justify-content:center;
-      font-size:1.8rem; color:var(--danger); margin-bottom:16px;
-      box-shadow: 0 4px 16px rgba(255,59,48,0.13);
-    }
-    .info-popup-title { font-size:1.1rem; font-weight:800; margin-bottom:10px; color:var(--text-main); }
-    .info-popup-text  { font-size:0.85rem; color:#555; line-height:1.65; margin-bottom:24px; }
-    .info-popup-btn {
-      background: linear-gradient(135deg, rgba(255,59,48,0.82), rgba(200,40,30,0.88));
-      color:white; border:none; padding:14px 30px; border-radius:50px;
-      font-weight:700; cursor:pointer; font-size:0.95rem; width:100%;
-      box-shadow: 0 6px 20px rgba(255,59,48,0.22);
-      transition: transform 0.3s var(--ease-ios); letter-spacing:-0.2px;
-    }
-    .info-popup-btn:active { transform:scale(0.96); }
+  .day-num {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.92rem;
+    z-index: 3; line-height: 1;
+    color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.40);
+  }
 
-    /* ══════════════════════════════════════════════════
-       DETAIL BOTTOM SHEET
-    ══════════════════════════════════════════════════ */
-    .detail-overlay {
-      position:fixed; inset:0;
-      background: rgba(0,0,0,0.20);
-      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-      z-index:1000; display:none; align-items:flex-end; justify-content:center;
-    }
-    .detail-overlay.active { display:flex; animation:fadeIn 0.25s ease; }
-    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  /* Has reservation — teal glass */
+  .day-cell.has-res {
+    background: rgba(42,157,143,0.32);
+    border-color: rgba(42,157,143,0.55);
+    box-shadow: 0 4px 16px rgba(42,157,143,0.28), inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  .day-cell.has-res .day-num { color: white; text-shadow: 0 1px 5px rgba(0,60,50,0.50); }
 
-    .detail-sheet {
-      background: rgba(238,245,244,0.88);
-      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-      border:1px solid rgba(255,255,255,0.38);
-      width:100%; max-width:600px; height:90vh;
-      border-top-left-radius:28px; border-top-right-radius:28px;
-      display:flex; flex-direction:column; overflow:hidden;
-      animation:slideUpBig 0.38s var(--ease-ios);
-      /* FIX #8 */
-      box-shadow: 0 -12px 50px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.60);
-      position:relative;
-    }
-    /* iOS grabber */
-    .detail-sheet::before {
-      content:""; position:absolute; top:10px; left:50%; transform:translateX(-50%);
-      width:40px; height:5px; background:rgba(0,0,0,0.18); border-radius:10px; z-index:20;
-    }
-    .detail-sheet.red-mode .sheet-header { border-bottom:1.5px solid var(--danger-border); }
-    .detail-sheet.red-mode #sheetDate { color:#b02020 !important; }
+  /* Full — iOS subtle danger + X cross mark */
+  .day-cell.is-full {
+    background: rgba(255,59,48,0.20) !important;
+    border: 1px solid rgba(255,59,48,0.42) !important;
+    box-shadow: 0 4px 16px rgba(255,59,48,0.20) !important;
+  }
+  .day-cell.is-full .day-num { color: #ffccc8 !important; font-weight: 800; }
+  .day-cell.is-full .res-count {
+    background: rgba(255,59,48,0.28) !important; color: white !important;
+    font-weight: 800 !important; border: 1px solid rgba(255,59,48,0.35);
+  }
+  /* X diagonal cross */
+  .day-cell.is-full::after {
+    content:""; position: absolute; inset: 0;
+    background:
+      linear-gradient( 45deg, transparent 42%, rgba(255,80,60,0.30) 48%, transparent 54%),
+      linear-gradient(-45deg, transparent 42%, rgba(255,80,60,0.30) 48%, transparent 54%);
+    opacity: 1 !important; z-index: 4; pointer-events: none;
+  }
 
-    .pulsing-badge {
-      position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
-      background: linear-gradient(135deg, rgba(255,59,48,0.88), rgba(200,40,30,0.94));
-      color:white; padding:10px 26px; border-radius:30px;
-      font-weight:700; font-size:0.88rem;
-      box-shadow:0 6px 22px rgba(255,59,48,0.30);
-      animation:pulse-red 2s infinite;
-      z-index:100; pointer-events:none; display:none; white-space:nowrap;
-      border:1.5px solid rgba(255,255,255,0.28); backdrop-filter:blur(8px);
-    }
-    .detail-sheet.red-mode .pulsing-badge { display:block; }
-    @keyframes pulse-red {
-      0%   { transform:translateX(-50%) scale(1);    box-shadow:0 0 0 0 rgba(255,59,48,0.42); }
-      70%  { transform:translateX(-50%) scale(1.04); box-shadow:0 0 0 14px rgba(255,59,48,0); }
-      100% { transform:translateX(-50%) scale(1);    box-shadow:0 0 0 0 rgba(255,59,48,0); }
-    }
-    @keyframes slideUpBig { from{transform:translateY(100%);} to{transform:translateY(0);} }
+  /* Today — golden glass */
+  .day-cell.today {
+    background: rgba(233,196,106,0.35) !important;
+    border: 1px solid rgba(233,196,106,0.65) !important;
+    box-shadow: 0 4px 18px rgba(233,196,106,0.32), inset 0 1px 0 rgba(255,255,255,0.45) !important;
+  }
+  .day-cell.today .day-num { color: #fff6cc !important; font-weight: 800; text-shadow: 0 1px 6px rgba(100,60,0,0.55); }
+  .day-cell.today .res-count {
+    background: rgba(255,255,255,0.28) !important; color: #ffd860 !important;
+    border: 1px solid rgba(233,196,106,0.50);
+  }
 
-    .sheet-header {
-      background:rgba(255,255,255,0.52); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-      border-bottom:1px solid rgba(255,255,255,0.35);
-      padding:22px 20px 14px;
-      display:flex; justify-content:space-between; align-items:center;
-      z-index:10; flex-shrink:0; box-shadow:0 2px 12px rgba(0,0,0,0.04);
-    }
-    .btn-sheet-back {
-      background:rgba(255,255,255,0.52); backdrop-filter:var(--glass-blur-sm); -webkit-backdrop-filter:var(--glass-blur-sm);
-      border:1px solid rgba(255,255,255,0.50); color:var(--primary-dark);
-      padding:9px 18px; border-radius:20px; font-size:0.84rem; font-weight:600; cursor:pointer;
-      display:flex; align-items:center; gap:7px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), 0 2px 8px rgba(0,0,0,0.07);
-      transition:all 0.35s var(--ease-ios);
-    }
-    .btn-sheet-back:active { transform:scale(0.94); }
+  .res-indicator {
+    margin-top: auto; margin-bottom: 5px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 2px; width: 100%;
+    position: relative; z-index: 3;
+  }
+  .res-count {
+    font-size: 0.6rem; font-weight: 700; color: white;
+    background: rgba(0,0,0,0.28); backdrop-filter: blur(6px);
+    padding: 2px 7px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.20);
+  }
 
-    .sheet-content { flex:1; overflow-y:auto; padding:20px 16px 90px; -webkit-overflow-scrolling:touch; }
-    #locGrid { display:flex; flex-direction:column; gap:20px; padding-bottom:80px; }
+  /* ── Legend & swipe hint ── */
+  .legend {
+    display: flex; justify-content: center;
+    gap: 14px; margin-top: 22px;
+    font-size: 0.72rem; color: rgba(255,255,255,0.68); flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 14px; position: relative; z-index: 3;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .dot { width:12px; height:12px; border-radius:5px; display:inline-block; border:1px solid rgba(255,255,255,0.35); }
 
-    /* ══════════════════════════════════════════════════
-       LOCATION CARDS
-    ══════════════════════════════════════════════════ */
-    .loc-card {
-      background:var(--glass-bg-heavy); backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
-      border:1px solid var(--glass-border);
-      box-shadow:var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.55);
-      border-radius:var(--radius-xl); overflow:hidden;
-      transition:transform 0.4s var(--ease-ios), box-shadow 0.4s var(--ease-ios); /* FIX #4 */
-      flex-shrink:0; position:relative;
-    }
-    /* FIX #3 — liquid highlight on hover */
-    .loc-card::after {
-      content:""; position:absolute; inset:0; pointer-events:none;
-      background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.26), transparent 70%);
-      opacity:0; transition:opacity 0.4s var(--ease-ios); z-index:10; border-radius:inherit;
-    }
-    .loc-card:hover { transform:translateY(-4px); box-shadow:var(--glass-shadow-lg); }
-    .loc-card:hover::after { opacity:1; }
+  /* Swipe hint — touch devices only */
+  .swipe-hint {
+    text-align: center; margin-top: 10px;
+    font-size: 0.68rem; color: rgba(255,255,255,0.45);
+    letter-spacing: 0.4px;
+    display: none; align-items: center; justify-content: center; gap: 6px;
+    opacity: 0;
+    animation: hintFade 4s ease-in-out 1.8s forwards;
+  }
+  @media (hover: none) { .swipe-hint { display: flex; } }
+  @keyframes hintFade {
+    0%   { opacity:0; transform:translateY(4px); }
+    20%  { opacity:1; transform:translateY(0); }
+    80%  { opacity:1; }
+    100% { opacity:0; }
+  }
+  .swipe-hint i { font-size: 0.72rem; }
 
-    .loc-header {
-      height:145px; min-height:145px; position:relative;
-      background-size:cover; background-position:center;
-      display:flex; align-items:flex-end; cursor:pointer; overflow:hidden;
-    }
-    .loc-header::after {
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 60%, transparent 100%);
-      pointer-events:none;
-    }
-    .loc-title {
-      position:relative; z-index:2; width:100%; padding:14px 16px; color:white;
-      display:flex; justify-content:space-between; align-items:flex-end; pointer-events:none;
-    }
-    .loc-name { font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem; text-shadow:0 2px 8px rgba(0,0,0,0.5); white-space:normal; max-width:68%; line-height:1.2; }
-    .loc-badge { font-size:0.72rem; background:rgba(255,255,255,0.20); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); padding:5px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.35); font-weight:700; white-space:nowrap; }
+  /* ── Footer link ── */
+  .footer-link { margin-top: 24px; text-align: center; }
+  .footer-link a {
+    color: rgba(255,255,255,0.75); font-size: 0.85rem; text-decoration: none;
+    padding: 10px 22px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 30px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.28);
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.4s var(--ease-ios);
+  }
+  .footer-link a:active { transform: scale(0.95); }
 
-    .btn-view-photo {
-      position:absolute; top:14px; right:14px; z-index:20;
-      width:38px; height:38px; border-radius:50%;
-      background:rgba(255,255,255,0.20); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-      border:1px solid rgba(255,255,255,0.46);
-      color:white; font-size:1rem; display:flex; align-items:center; justify-content:center;
-      cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.14);
-      transition:all 0.3s var(--ease-ios); pointer-events:auto;
-    }
-    .btn-view-photo:active { transform:scale(0.88); background:rgba(255,255,255,0.42); }
+  /* ═══════════════════════════════════════════════════════
+     FULL WARNING POPUP
+  ═══════════════════════════════════════════════════════ */
+  .info-popup-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.30);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    z-index: 2500;
+    display: none; align-items: center; justify-content: center; padding: 20px;
+  }
+  .info-popup-content {
+    background: rgba(18,38,36,0.88);
+    backdrop-filter: blur(28px) saturate(150%); -webkit-backdrop-filter: blur(28px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.20);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.20);
+    width: 100%; max-width: 380px;
+    border-radius: 28px; padding: 32px 26px; text-align: center;
+    animation: popIn 0.35s var(--ease-ios);
+    position: relative; overflow: hidden;
+  }
+  .info-popup-content::before {
+    content:""; position: absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.50),transparent);
+  }
+  @keyframes popIn { from{opacity:0;transform:scale(0.84);} to{opacity:1;transform:scale(1);} }
+  .info-popup-icon {
+    width:60px; height:60px; border-radius:20px;
+    background: var(--danger-soft); border:1px solid var(--danger-border);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:1.8rem; color:var(--danger); margin-bottom:16px;
+    box-shadow: 0 4px 18px rgba(255,59,48,0.22);
+  }
+  .info-popup-title { font-size:1.1rem; font-weight:800; margin-bottom:10px; color:white; }
+  .info-popup-text  { font-size:0.85rem; color:rgba(255,255,255,0.65); line-height:1.65; margin-bottom:24px; }
+  .info-popup-btn {
+    background: linear-gradient(135deg, rgba(255,59,48,0.85), rgba(200,40,30,0.90));
+    color:white; border:none; padding:14px 30px; border-radius:50px;
+    font-weight:700; cursor:pointer; font-size:0.95rem; width:100%;
+    box-shadow: 0 6px 22px rgba(255,59,48,0.28);
+    transition: transform 0.3s var(--ease-ios); letter-spacing:-0.2px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .info-popup-btn:active { transform:scale(0.96); }
 
-    .capacity-bar-container { width:100%; height:5px; background:rgba(0,0,0,0.06); }
-    .capacity-bar-fill { height:100%; transition:width 0.6s var(--ease-ios); }
-    .bar-green  { background:linear-gradient(90deg,#34c759,#30d158); }
-    .bar-yellow { background:linear-gradient(90deg,#ff9f0a,#ffcc02); }
-    .bar-red    { background:linear-gradient(90deg,rgba(255,59,48,0.72),rgba(255,59,48,0.92)); }
+  /* ═══════════════════════════════════════════════════════
+     DETAIL BOTTOM SHEET — dark glass
+  ═══════════════════════════════════════════════════════ */
+  .detail-overlay {
+    position:fixed; inset:0;
+    background: rgba(0,0,0,0.28);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    z-index:1000; display:none; align-items:flex-end; justify-content:center;
+  }
+  .detail-overlay.active { display:flex; animation:fadeIn 0.25s ease; }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 
-    .btn-toggle-loc {
-      width:100%; padding:14px 16px;
-      background:rgba(255,255,255,0.42); border:none; border-top:1px solid rgba(255,255,255,0.30);
-      color:var(--primary-dark); font-weight:600; cursor:pointer;
-      font-size:0.88rem; font-family:'Plus Jakarta Sans',sans-serif;
-      display:flex; align-items:center; justify-content:space-between;
-      transition:background 0.35s var(--ease-ios); letter-spacing:-0.1px;
-    }
-    .btn-toggle-loc:active { background:rgba(255,255,255,0.65); }
-    .btn-toggle-loc.disabled { color:#aaa; cursor:default; }
+  .detail-sheet {
+    background: rgba(10,28,25,0.84);
+    backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.14);
+    width:100%; max-width:600px; height:90vh;
+    border-top-left-radius:32px; border-top-right-radius:32px;
+    display:flex; flex-direction:column; overflow:hidden;
+    animation:slideUpBig 0.40s var(--ease-ios);
+    box-shadow: 0 -16px 60px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.18);
+    position:relative;
+    @supports not (backdrop-filter: blur(10px)) {
+  .calendar-wrapper {
+    background: rgba(0,0,0,0.6);
+  }
+}
+  }
+  /* iOS grabber — white on dark */
+  .detail-sheet::before {
+    content:""; position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    width:36px; height:5px; background: rgba(255,255,255,0.28);
+    border-radius:10px; z-index:20;
+  }
+  .detail-sheet.red-mode .sheet-header { border-bottom:1.5px solid rgba(255,80,60,0.38); }
+  .detail-sheet.red-mode #sheetDate   { color:#ff8070 !important; }
 
-    .loc-body {
-      display:none; background:rgba(255,255,255,0.28);
-      border-top:1px solid rgba(255,255,255,0.26);
-      animation:slideDown 0.35s var(--ease-ios);
-    }
-    @keyframes slideDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+  @keyframes slideUpBig { from{transform:translateY(100%);} to{transform:translateY(0);} }
 
-    .res-item { padding:14px 16px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:flex-start; }
-    .res-item:last-child { border-bottom:none; }
-    .res-info strong { display:block; font-size:0.95rem; color:var(--text-main); margin-bottom:3px; font-weight:700; }
-    .res-info small  { color:#888; font-size:0.78rem; display:block; }
-    .menu-detail-text {
-      margin-top:8px; font-size:0.74rem; color:#555;
-      background:rgba(255,255,255,0.55); backdrop-filter:blur(6px);
-      padding:8px 12px; border-radius:10px;
-      border-left:3px solid var(--secondary);
-      display:inline-block; width:100%; line-height:1.5;
-    }
-    .res-qty {
-      background:rgba(42,157,143,0.13); backdrop-filter:blur(6px);
-      color:var(--primary-dark); padding:6px 12px;
-      border-radius:10px; font-weight:800; font-size:0.9rem;
-      margin-left:10px; min-width:44px; text-align:center;
-      border:1px solid rgba(42,157,143,0.20);
-    }
+  .pulsing-badge {
+    position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
+    background: linear-gradient(135deg, rgba(255,59,48,0.88), rgba(200,40,30,0.95));
+    color:white; padding:10px 26px; border-radius:30px;
+    font-weight:700; font-size:0.88rem;
+    box-shadow:0 6px 24px rgba(255,59,48,0.35);
+    animation:pulse-red 2s infinite;
+    z-index:100; pointer-events:none; display:none; white-space:nowrap;
+    border:1.5px solid rgba(255,255,255,0.25); backdrop-filter:blur(8px);
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .detail-sheet.red-mode .pulsing-badge { display:block; }
+  @keyframes pulse-red {
+    0%   { transform:translateX(-50%) scale(1);    box-shadow:0 0 0 0 rgba(255,59,48,0.45); }
+    70%  { transform:translateX(-50%) scale(1.05); box-shadow:0 0 0 14px rgba(255,59,48,0); }
+    100% { transform:translateX(-50%) scale(1);    box-shadow:0 0 0 0 rgba(255,59,48,0); }
+  }
 
-    /* ══════════════════════════════════════════════════
-       IMAGE LIGHTBOX
-    ══════════════════════════════════════════════════ */
-    .img-modal-overlay {
-      position:fixed; inset:0;
-      background:rgba(0,0,0,0.80); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-      z-index:3000; display:none; flex-direction:column;
-      align-items:center; justify-content:center;
-      opacity:0; transition:opacity 0.3s var(--ease-ios);
-    }
-    .img-modal-overlay.show { opacity:1; }
-    .img-modal-content {
-      max-width:94%; max-height:68vh; border-radius:18px;
-      box-shadow:0 8px 40px rgba(0,0,0,0.5);
-      transform:scale(0.88); transition:transform 0.4s var(--ease-ios); object-fit:contain;
-    }
-    .img-modal-overlay.show .img-modal-content { transform:scale(1); }
-    .img-caption { color:rgba(255,255,255,0.88); margin-top:16px; font-weight:600; font-size:1rem; text-align:center; }
-    .close-img-modal {
-      position:absolute; top:22px; right:22px; color:white; font-size:1.5rem; cursor:pointer;
-      background:rgba(255,255,255,0.18); backdrop-filter:blur(10px);
-      width:48px; height:48px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      border:1px solid rgba(255,255,255,0.26); transition:all 0.3s var(--ease-ios);
-    }
-    .close-img-modal:active { transform:scale(0.88); }
-    .btn-exit-fullscreen {
-      margin-top:22px; background:rgba(255,255,255,0.16); backdrop-filter:blur(10px);
-      border:1px solid rgba(255,255,255,0.26); color:white; padding:11px 26px; border-radius:30px;
-      cursor:pointer; font-size:0.88rem; display:flex; align-items:center; gap:8px;
-      font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; transition:all 0.3s var(--ease-ios);
-    }
-    .btn-exit-fullscreen:active { transform:scale(0.94); }
+  .sheet-header {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255,255,255,0.11);
+    padding: 22px 20px 14px;
+    display:flex; justify-content:space-between; align-items:center;
+    z-index:10; flex-shrink:0;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.22);
+  }
+  #sheetDate  { color: white !important; }
+  #sheetStats { color: rgba(255,255,255,0.48) !important; }
 
-    /* ══════════════════════════════════════════════════
-       FLOATING ADMIN BUTTON
-    ══════════════════════════════════════════════════ */
-    .floating-admin {
-      position:fixed; bottom:28px; right:22px;
-      background:rgba(26,58,58,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-      border:1px solid rgba(255,255,255,0.20); color:white; width:52px; height:52px;
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      box-shadow:0 8px 24px rgba(0,0,0,0.20); z-index:90; cursor:pointer;
-      transition:all 0.35s var(--ease-ios);
-    }
-    .floating-admin:active { transform:scale(0.88); }
+  .btn-sheet-back {
+    background: rgba(255,255,255,0.11);
+    backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm);
+    border: 1px solid rgba(255,255,255,0.18); color: white;
+    padding:9px 18px; border-radius:20px; font-size:0.84rem; font-weight:600; cursor:pointer;
+    display:flex; align-items:center; gap:7px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 10px rgba(0,0,0,0.28);
+    transition: all 0.35s var(--ease-ios);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .btn-sheet-back:active { transform:scale(0.94); background: rgba(255,255,255,0.20); }
 
-    /* ══════════════════════════════════════════════════
-       BUG REPORT MODAL — hidden, 5x tap header
-    ══════════════════════════════════════════════════ */
-    .bug-overlay {
-      position:fixed; inset:0;
-      background:rgba(0,0,0,0.22); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-      z-index:4000; display:none; align-items:center; justify-content:center; padding:20px;
-    }
-    .bug-overlay.show { display:flex; }
-    .bug-modal {
-      background:rgba(255,255,255,0.76); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-      border:1px solid rgba(255,255,255,0.55);
-      box-shadow:0 20px 60px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.8);
-      padding:28px 24px; width:90%; max-width:360px; border-radius:28px;
-      animation:popIn 0.3s var(--ease-ios); position:relative; overflow:hidden;
-    }
-    .bug-modal::before {
-      content:""; position:absolute; top:0; left:0; right:0; height:1px;
-      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent);
-    }
-    .bug-modal h3 { margin:0 0 16px; font-size:1rem; color:var(--primary-dark); display:flex; align-items:center; gap:8px; }
-    .bug-modal textarea {
-      width:100%; padding:12px 14px; margin-bottom:12px;
-      border:1px solid rgba(0,0,0,0.10); border-radius:14px;
-      background:rgba(255,255,255,0.65); backdrop-filter:blur(8px);
-      font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:var(--text-main);
-      resize:vertical; min-height:100px; outline:none; transition:border 0.2s; line-height:1.5;
-    }
-    .bug-modal textarea:focus { border-color:var(--primary); }
-    .bug-modal-actions { display:flex; gap:10px; }
-    .bug-submit {
-      flex:1; padding:13px; border:none; border-radius:14px;
-      background:linear-gradient(135deg,var(--primary),#1a7a6e);
-      color:white; font-weight:700; cursor:pointer;
-      font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
-      box-shadow:0 4px 14px var(--primary-glow);
-      transition:all 0.3s var(--ease-ios);
-    }
-    .bug-submit:active { transform:scale(0.96); }
-    .bug-cancel {
-      padding:13px 20px; border:none; border-radius:14px;
-      background:rgba(0,0,0,0.07); color:#555; font-weight:600;
-      cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
-      transition:all 0.3s var(--ease-ios);
-    }
-    .bug-cancel:active { transform:scale(0.96); }
+  .sheet-content { flex:1; overflow-y:auto; padding:20px 16px 90px; -webkit-overflow-scrolling:touch; }
+  #locGrid { display:flex; flex-direction:column; gap:18px; padding-bottom:80px; }
 
-    /* ══════════════════════════════════════════════════
-       ADMIN MODAL
-    ══════════════════════════════════════════════════ */
-    .admin-overlay {
-      position:fixed; inset:0;
-      background:rgba(0,0,0,0.20); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-      z-index:2000; display:none; align-items:center; justify-content:center;
-    }
-    .admin-overlay.show { display:flex; }
-    .admin-modal {
-      background:rgba(255,255,255,0.76); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-      border:1px solid rgba(255,255,255,0.55);
-      box-shadow:0 20px 60px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.8);
-      padding:28px 24px; width:88%; max-width:340px; border-radius:28px;
-      animation:zoomIn 0.28s var(--ease-ios); position:relative; overflow:hidden;
-    }
-    .admin-modal::before {
-      content:""; position:absolute; top:0; left:0; right:0; height:1px;
-      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9),transparent);
-    }
-    @keyframes zoomIn { from{transform:scale(0.88);opacity:0;} to{transform:scale(1);opacity:1;} }
-    .btn-block {
-      width:100%; padding:13px; border:none; border-radius:14px; font-weight:700;
-      cursor:pointer; margin-bottom:10px;
-      display:flex; align-items:center; justify-content:center; gap:8px;
-      font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
-      transition:all 0.3s var(--ease-ios); letter-spacing:-0.1px;
-    }
-    .btn-block:active { transform:scale(0.96); }
-    .form-input {
-      width:100%; padding:12px 14px; margin-bottom:12px;
-      border:1px solid rgba(255,255,255,0.46); border-radius:12px;
-      font-family:'Plus Jakarta Sans',sans-serif;
-      background:rgba(255,255,255,0.62); backdrop-filter:blur(8px);
-      font-size:0.9rem; color:var(--text-main); outline:none; transition:border 0.2s;
-    }
-    .form-input:focus { border-color:var(--primary); }
+  /* ── Location cards — dark glass ── */
+  @keyframes cardEnter {
+    from { opacity:0; transform:translateY(24px) scale(0.96); }
+    to   { opacity:1; transform:translateY(0)    scale(1); }
+  }
+  .loc-card {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(24px) saturate(150%); -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.13);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.12);
+    border-radius: var(--radius-xl); overflow:hidden;
+    transition: transform 0.4s var(--ease-ios), box-shadow 0.4s var(--ease-ios);
+    flex-shrink:0; position:relative;
+  }
+  .loc-card::after {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background: linear-gradient(118deg, transparent 28%, rgba(255,255,255,0.08), transparent 72%);
+    opacity:0; transition:opacity 0.4s var(--ease-ios); z-index:10; border-radius:inherit;
+  }
+  .loc-card:hover { transform:translateY(-4px); box-shadow:0 18px 48px rgba(0,0,0,0.42); }
+  .loc-card:hover::after { opacity:1; }
 
-    /* Loading */
-    .loading-cell {
-      grid-column:1/-1; text-align:center; padding:32px; color:var(--text-muted);
-      font-size:0.9rem; display:flex; align-items:center; justify-content:center; gap:10px;
-    }
-    @keyframes spin { to{transform:rotate(360deg);} }
-    .spinner { width:20px; height:20px; border-radius:50%; border:2px solid rgba(42,157,143,0.20); border-top-color:var(--primary); animation:spin 0.8s linear infinite; }
+  .loc-header {
+    height:148px; min-height:148px; position:relative;
+    background-size:cover; background-position:center;
+    display:flex; align-items:flex-end; cursor:pointer; overflow:hidden;
+  }
+  .loc-header::after {
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.10) 60%, transparent 100%);
+    pointer-events:none;
+  }
+  .loc-title {
+    position:relative; z-index:2; width:100%; padding:14px 16px; color:white;
+    display:flex; justify-content:space-between; align-items:flex-end; pointer-events:none;
+  }
+  .loc-name { font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem; text-shadow:0 2px 8px rgba(0,0,0,0.55); white-space:normal; max-width:68%; line-height:1.2; }
+  .loc-badge {
+    font-size:0.72rem; background:rgba(255,255,255,0.18); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    padding:5px 12px; border-radius:20px; border:1px solid rgba(255,255,255,0.30);
+    font-weight:700; white-space:nowrap;
+  }
 
-    /* Toast */
-    #bugToast {
-      position:fixed; bottom:100px; left:50%;
-      transform:translateX(-50%) translateY(20px);
-      background:rgba(26,58,58,0.92); backdrop-filter:blur(12px);
-      color:white; padding:12px 22px; border-radius:30px;
-      font-size:0.85rem; font-weight:600;
-      box-shadow:0 6px 24px rgba(0,0,0,0.18);
-      border:1px solid rgba(255,255,255,0.18);
-      opacity:0; transition:all 0.4s var(--ease-ios);
-      z-index:5000; white-space:nowrap; pointer-events:none;
-    }
-    #bugToast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .btn-view-photo {
+    position:absolute; top:14px; right:14px; z-index:20;
+    width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,0.18); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.40); color:white; font-size:1rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 3px 12px rgba(0,0,0,0.22);
+    transition:all 0.3s var(--ease-ios); pointer-events:auto;
+  }
+  .btn-view-photo:active { transform:scale(0.88); background:rgba(255,255,255,0.35); }
+
+  .capacity-bar-container { width:100%; height:5px; background:rgba(255,255,255,0.08); }
+  .capacity-bar-fill { height:100%; transition:width 0.65s var(--ease-ios); }
+  .bar-green  { background:linear-gradient(90deg,#34c759,#30d158); }
+  .bar-yellow { background:linear-gradient(90deg,#ff9f0a,#ffcc02); }
+  .bar-red    { background:linear-gradient(90deg,rgba(255,59,48,0.75),rgba(255,59,48,0.95)); }
+
+  .btn-toggle-loc {
+    width:100%; padding:14px 16px;
+    background: rgba(255,255,255,0.06);
+    border:none; border-top:1px solid rgba(255,255,255,0.09);
+    color: rgba(255,255,255,0.82); font-weight:600; cursor:pointer;
+    font-size:0.88rem; font-family:'Plus Jakarta Sans',sans-serif;
+    display:flex; align-items:center; justify-content:space-between;
+    transition:background 0.35s var(--ease-ios); letter-spacing:-0.1px;
+  }
+  .btn-toggle-loc:active { background:rgba(255,255,255,0.13); }
+  .btn-toggle-loc.disabled { color:rgba(255,255,255,0.28); cursor:default; }
+
+  .loc-body {
+    display:none; background: rgba(0,0,0,0.20);
+    border-top:1px solid rgba(255,255,255,0.07);
+    animation:slideDown 0.35s var(--ease-ios);
+  }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+
+  .res-item { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:flex-start; }
+  .res-item:last-child { border-bottom:none; }
+  .res-info strong { display:block; font-size:0.95rem; color:rgba(255,255,255,0.90); margin-bottom:3px; font-weight:700; }
+  .res-info small  { color:rgba(255,255,255,0.42); font-size:0.78rem; display:block; }
+  .menu-detail-text {
+    margin-top:8px; font-size:0.74rem; color:rgba(255,255,255,0.62);
+    background:rgba(255,255,255,0.07); backdrop-filter:blur(6px);
+    padding:8px 12px; border-radius:10px;
+    border-left:3px solid var(--secondary);
+    display:inline-block; width:100%; line-height:1.5;
+  }
+  .res-qty {
+    background:rgba(42,157,143,0.28); backdrop-filter:blur(6px);
+    color:white; padding:6px 12px;
+    border-radius:10px; font-weight:800; font-size:0.9rem;
+    margin-left:10px; min-width:44px; text-align:center;
+    border:1px solid rgba(42,157,143,0.42);
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     IMAGE LIGHTBOX
+  ═══════════════════════════════════════════════════════ */
+  .img-modal-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.88); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+    z-index:3000; display:none; flex-direction:column;
+    align-items:center; justify-content:center;
+    opacity:0; transition:opacity 0.3s var(--ease-ios);
+  }
+  .img-modal-overlay.show { opacity:1; }
+  .img-modal-content {
+    max-width:94%; max-height:68vh; border-radius:18px;
+    box-shadow:0 10px 48px rgba(0,0,0,0.60);
+    transform:scale(0.86); transition:transform 0.42s var(--ease-ios); object-fit:contain;
+  }
+  .img-modal-overlay.show .img-modal-content { transform:scale(1); }
+  .img-caption { color:rgba(255,255,255,0.82); margin-top:16px; font-weight:600; font-size:1rem; text-align:center; }
+  .close-img-modal {
+    position:absolute; top:22px; right:22px; color:white; font-size:1.5rem; cursor:pointer;
+    background:rgba(255,255,255,0.16); backdrop-filter:blur(10px);
+    width:48px; height:48px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid rgba(255,255,255,0.24); transition:all 0.3s var(--ease-ios);
+  }
+  .close-img-modal:active { transform:scale(0.88); }
+  .btn-exit-fullscreen {
+    margin-top:22px; background:rgba(255,255,255,0.14); backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.24); color:white; padding:11px 26px; border-radius:30px;
+    cursor:pointer; font-size:0.88rem; display:flex; align-items:center; gap:8px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; transition:all 0.3s var(--ease-ios);
+  }
+  .btn-exit-fullscreen:active { transform:scale(0.94); }
+
+  /* ═══════════════════════════════════════════════════════
+     FLOATING ADMIN BUTTON
+  ═══════════════════════════════════════════════════════ */
+  .floating-admin {
+    position:fixed; bottom:28px; right:22px;
+    background:rgba(10,35,32,0.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.18); color:white; width:52px; height:52px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 28px rgba(0,0,0,0.35); z-index:90; cursor:pointer;
+    transition:all 0.35s var(--ease-ios);
+  }
+  .floating-admin:active { transform:scale(0.88); }
+
+  /* ═══════════════════════════════════════════════════════
+     BUG REPORT MODAL — 5x tap header
+  ═══════════════════════════════════════════════════════ */
+  .bug-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.32); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    z-index:4000; display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .bug-overlay.show { display:flex; }
+  .bug-modal {
+    background:rgba(12,30,28,0.90); backdrop-filter:blur(30px) saturate(160%); -webkit-backdrop-filter:blur(30px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.18);
+    box-shadow:0 24px 70px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.18);
+    padding:28px 24px; width:90%; max-width:360px; border-radius:28px;
+    animation:popIn 0.32s var(--ease-ios); position:relative; overflow:hidden;
+  }
+  .bug-modal::before {
+    content:""; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent);
+  }
+  .bug-modal h3 { margin:0 0 16px; font-size:1rem; color:white; display:flex; align-items:center; gap:8px; }
+  .bug-modal textarea {
+    width:100%; padding:12px 14px; margin-bottom:12px;
+    border:1px solid rgba(255,255,255,0.15); border-radius:14px;
+    background:rgba(255,255,255,0.08); backdrop-filter:blur(8px);
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:white;
+    resize:vertical; min-height:100px; outline:none; transition:border 0.2s; line-height:1.5;
+  }
+  .bug-modal textarea::placeholder { color:rgba(255,255,255,0.35); }
+  .bug-modal textarea:focus { border-color:var(--primary); }
+  .bug-modal-actions { display:flex; gap:10px; }
+  .bug-submit {
+    flex:1; padding:13px; border:none; border-radius:14px;
+    background:linear-gradient(135deg,var(--primary),#1a7a6e);
+    color:white; font-weight:700; cursor:pointer;
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
+    box-shadow:0 4px 16px var(--primary-glow); transition:all 0.3s var(--ease-ios);
+  }
+  .bug-submit:active { transform:scale(0.96); }
+  .bug-cancel {
+    padding:13px 20px; border:none; border-radius:14px;
+    background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.70); font-weight:600;
+    cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
+    transition:all 0.3s var(--ease-ios); border:1px solid rgba(255,255,255,0.12);
+  }
+  .bug-cancel:active { transform:scale(0.96); }
+
+  /* ═══════════════════════════════════════════════════════
+     ADMIN MODAL
+  ═══════════════════════════════════════════════════════ */
+  .admin-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.28); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    z-index:2000; display:none; align-items:center; justify-content:center;
+  }
+  .admin-overlay.show { display:flex; }
+  .admin-modal {
+    background:rgba(12,30,28,0.90); backdrop-filter:blur(30px) saturate(160%); -webkit-backdrop-filter:blur(30px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.18);
+    box-shadow:0 24px 70px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.18);
+    padding:28px 24px; width:88%; max-width:340px; border-radius:28px;
+    animation:popIn 0.30s var(--ease-ios); position:relative; overflow:hidden;
+  }
+  .admin-modal::before {
+    content:""; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent);
+  }
+  .btn-block {
+    width:100%; padding:13px; border:none; border-radius:14px; font-weight:700;
+    cursor:pointer; margin-bottom:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem;
+    transition:all 0.3s var(--ease-ios); letter-spacing:-0.1px;
+  }
+  .btn-block:active { transform:scale(0.96); }
+  .form-input {
+    width:100%; padding:12px 14px; margin-bottom:12px;
+    border:1px solid rgba(255,255,255,0.15); border-radius:12px;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:rgba(255,255,255,0.08); backdrop-filter:blur(8px);
+    font-size:0.9rem; color:white; outline:none; transition:border 0.2s;
+  }
+  .form-input::placeholder { color:rgba(255,255,255,0.35); }
+  .form-input:focus { border-color:var(--primary); }
+
+  /* Loading */
+  .loading-cell {
+    grid-column:1/-1; text-align:center; padding:32px;
+    color:rgba(255,255,255,0.50); font-size:0.9rem;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  @keyframes spin { to{transform:rotate(360deg);} }
+  .spinner {
+    width:20px; height:20px; border-radius:50%;
+    border:2px solid rgba(42,157,143,0.25); border-top-color:rgba(42,157,143,0.80);
+    animation:spin 0.85s linear infinite;
+  }
+
+  /* Toast */
+  #bugToast {
+    position:fixed; bottom:100px; left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:rgba(10,35,32,0.92); backdrop-filter:blur(14px);
+    color:white; padding:12px 22px; border-radius:30px;
+    font-size:0.85rem; font-weight:600;
+    box-shadow:0 6px 26px rgba(0,0,0,0.30);
+    border:1px solid rgba(255,255,255,0.16);
+    opacity:0; transition:all 0.42s var(--ease-ios);
+    z-index:5000; white-space:nowrap; pointer-events:none;
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  #bugToast.show { opacity:1; transform:translateX(-50%) translateY(0); }
   </style>
 
 </head>
 <body>
 
-  <!-- ══ HEADER — 5x tap untuk bug report ══ -->
+  <!-- ══ HEADER — 5x tap → bug report ══ -->
 
   <header id="mainHeader">
     <div class="header-branding">
@@ -782,11 +900,11 @@
   <div class="info-icon"><i class="fas fa-info-circle"></i></div>
   <div class="info-content">
     <h4>Info Reservasi &amp; Reguler</h4>
-    <p>Kalender ini khusus <b>Tempat Reservasi</b>. Pengunjung Reguler tetap bisa memilih <b>Tempat Reguler</b> yang tersedia di lokasi.</p>
+    <p>Kalender ini khusus <b>Tempat Reservasi</b>. Pengunjung Reguler tetap bisa memilih <b>Tempat Reguler</b> yang tersedia langsung di lokasi.</p>
   </div>
 </div>
 
-<div class="calendar-wrapper">
+<div class="calendar-wrapper" id="calendarWrapper">
   <div class="calendar-header">
     <div class="month-year" id="monthYear">Loading...</div>
     <div class="calendar-nav">
@@ -802,9 +920,12 @@
     <div class="loading-cell"><div class="spinner"></div> Memuat kalender...</div>
   </div>
   <div class="legend">
-    <div class="legend-item"><span class="dot" style="background:rgba(233,196,106,0.50);border-color:rgba(233,196,106,0.58);"></span> Hari Ini</div>
-    <div class="legend-item"><span class="dot" style="background:rgba(42,157,143,0.20);border-color:rgba(42,157,143,0.38);"></span> Ada Reservasi</div>
+    <div class="legend-item"><span class="dot" style="background:rgba(233,196,106,0.45);border-color:rgba(233,196,106,0.60);"></span> Hari Ini</div>
+    <div class="legend-item"><span class="dot" style="background:rgba(42,157,143,0.38);border-color:rgba(42,157,143,0.55);"></span> Ada Reservasi</div>
     <div class="legend-item"><span class="dot" style="background:var(--danger-soft);border-color:var(--danger-border);"></span> Reservasi Penuh</div>
+  </div>
+  <div class="swipe-hint">
+    <i class="fas fa-chevron-left"></i> geser untuk ganti bulan <i class="fas fa-chevron-right"></i>
   </div>
 </div>
 
@@ -829,8 +950,8 @@
           <i class="fas fa-arrow-left"></i> Kembali
         </button>
         <div style="text-align:right;">
-          <h3 id="sheetDate" style="margin:0;color:var(--primary-dark);font-size:0.98rem;">Detail</h3>
-          <span id="sheetStats" style="font-size:0.73rem;color:#666;">...</span>
+          <h3 id="sheetDate" style="margin:0;font-size:0.98rem;">Detail</h3>
+          <span id="sheetStats" style="font-size:0.73rem;">...</span>
         </div>
       </div>
       <div class="sheet-content"><div id="locGrid"></div></div>
@@ -844,14 +965,14 @@
       <div class="info-popup-icon"><i class="fas fa-exclamation-circle"></i></div>
       <div class="info-popup-title">Kuota Reservasi Penuh</div>
       <div class="info-popup-text">
-        Tempat masih tersedia untuk walk-in! Namun kuota reservasi sudah penuh.
+        Tempat masih tersedia untuk walk-in! Namun kuota reservasi untuk tanggal ini sudah penuh.
         Langsung menuju resto — tim kami akan memilihkan tempat terbaik.
       </div>
       <button class="info-popup-btn" onclick="continueToDetail()">Lihat Detail Tempat</button>
     </div>
   </div>
 
-  <!-- ══ LIGHTBOX ══ -->
+  <!-- ══ IMAGE LIGHTBOX ══ -->
 
   <div class="img-modal-overlay" id="imgModal">
     <span class="close-img-modal" onclick="closeImgModal()">&times;</span>
@@ -862,7 +983,7 @@
     </button>
   </div>
 
-  <!-- ══ BUG REPORT (hidden — 5x tap header) ══ -->
+  <!-- ══ BUG REPORT — hidden, 5x tap header ══ -->
 
   <div class="bug-overlay" id="bugOverlay">
     <div class="bug-modal">
@@ -877,36 +998,49 @@
 
   <!-- ══ TOAST ══ -->
 
-  <div id="bugToast">Laporan terkirim — terima kasih!</div>
+  <div id="bugToast">✓ Laporan terkirim — terima kasih!</div>
 
   <!-- ══ ADMIN MODAL ══ -->
 
   <div class="admin-overlay" id="adminOverlay">
     <div class="admin-modal">
-      <h3 style="margin:0 0 20px;text-align:center;color:var(--primary-dark);font-size:1rem;">
-        <i class="fas fa-shield-alt"></i> Kontrol Manual
+      <h3 style="margin:0 0 20px;text-align:center;color:white;font-size:1rem;">
+        <i class="fas fa-shield-alt" style="color:var(--primary);"></i> Kontrol Manual
       </h3>
       <div id="loginForm">
         <input type="email"    id="adminEmail" class="form-input" placeholder="Email Admin">
         <input type="password" id="adminPass"  class="form-input" placeholder="Password">
-        <button class="btn-block" id="btnLoginAction" style="background:linear-gradient(135deg,var(--primary),#1a7a6e);color:white;">Masuk</button>
-        <button class="btn-block" onclick="closeAdmin()" style="background:rgba(0,0,0,0.07);color:#666;">Batal</button>
+        <button class="btn-block" id="btnLoginAction"
+          style="background:linear-gradient(135deg,var(--primary),#1a7a6e);color:white;">Masuk</button>
+        <button class="btn-block" onclick="closeAdmin()"
+          style="background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.70);border:1px solid rgba(255,255,255,0.12);">Batal</button>
       </div>
       <div id="adminControls" style="display:none;">
-        <p style="font-size:0.82rem;color:#666;text-align:center;margin-bottom:14px;line-height:1.55;">Tandai tanggal ini sebagai "Reservasi Penuh".</p>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.55);text-align:center;margin-bottom:14px;line-height:1.55;">
+          Tandai tanggal ini sebagai "Reservasi Penuh".
+        </p>
         <input type="date" id="dateSelector" class="form-input">
         <div style="display:flex;gap:10px;margin-bottom:16px;">
-          <button class="btn-block" id="markFullBtn"      style="background:linear-gradient(135deg,rgba(255,59,48,0.82),rgba(200,40,30,0.88));color:white;flex:1;"><i class="fas fa-ban"></i> PENUH</button>
-          <button class="btn-block" id="markAvailableBtn" style="background:linear-gradient(135deg,rgba(52,199,89,0.82),rgba(40,160,70,0.88));color:white;flex:1;"><i class="fas fa-check"></i> BUKA</button>
+          <button class="btn-block" id="markFullBtn"
+            style="background:linear-gradient(135deg,rgba(255,59,48,0.82),rgba(200,40,30,0.90));color:white;flex:1;">
+            <i class="fas fa-ban"></i> PENUH
+          </button>
+          <button class="btn-block" id="markAvailableBtn"
+            style="background:linear-gradient(135deg,rgba(52,199,89,0.82),rgba(40,160,70,0.90));color:white;flex:1;">
+            <i class="fas fa-check"></i> BUKA
+          </button>
         </div>
-        <button class="btn-block" onclick="firebase.auth().signOut()" style="background:rgba(0,0,0,0.07);color:#555;">Logout</button>
+        <button class="btn-block" onclick="firebase.auth().signOut()"
+          style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.60);border:1px solid rgba(255,255,255,0.12);">
+          Logout
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════
+  <!-- ══════════════════════════════════════════════════════
        JAVASCRIPT
-  ══════════════════════════════════════════════════ -->
+  ══════════════════════════════════════════════════════ -->
 
   <script>
     /* ── Firebase ── */
@@ -922,7 +1056,7 @@
     const db   = firebase.firestore();
     const auth = firebase.auth();
 
-    /* ── App state ── */
+    /* ── State ── */
     const monthNames = ["Januari","Februari","Maret","April","Mei","Juni",
                         "Juli","Agustus","September","Oktober","November","Desember"];
     let currentMonth = new Date().getMonth();
@@ -933,21 +1067,101 @@
     let pendingDetailData = null;
     const defaultImage = "https://via.placeholder.com/300x200?text=Lokasi";
 
-    /* ════════════════════════════════════════════
-       FIX #1 — Ambient glow follows mouse cursor
-       body::after reads --mx / --my CSS vars.
-    ════════════════════════════════════════════ */
+    /* ──────────────────────────────────────────
+       Ambient orb follows mouse cursor (desktop)
+    ────────────────────────────────────────── */
     document.addEventListener('mousemove', e => {
       document.body.style.setProperty('--mx', e.clientX + 'px');
       document.body.style.setProperty('--my', e.clientY + 'px');
     });
 
-    /* ════════════════════════════════════════════
-       HIDDEN BUG REPORT — 5x tap on header
-       Shows 5 dot progress indicator; resets if
-       idle > 1.8 s; opens modal on 5th tap.
-    ════════════════════════════════════════════ */
-    (function() {
+    /* Parallax — aktif di semua device termasuk iPhone */
+if (window.innerWidth > 768) {
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+
+    document.body.style.backgroundPosition =
+      `center ${y * 0.35}px`;
+
+    const tilt = Math.min(y * 0.02, 6);
+    const el = document.querySelector('.calendar-wrapper');
+
+    if (el) {
+      el.style.transform = `perspective(1200px) rotateX(${tilt}deg)`;
+    }
+  }, { passive: true });
+}
+  const y = window.scrollY;
+
+  document.body.style.backgroundPosition =
+    `center ${y * 0.35}px`;
+
+  const tilt = Math.min(y * 0.02, 6);
+  const el = document.querySelector('.calendar-wrapper');
+
+  if (el) {
+    el.style.transform = `perspective(1200px) rotateX(${tilt}deg)`;
+  }
+}, { passive: true });
+
+    /* ──────────────────────────────────────────
+       Swipe calendar gesture (touch devices)
+    ────────────────────────────────────────── */
+    (function () {
+      let startX = 0, startY = 0, didMove = false;
+      const wrap = document.getElementById('calendarWrapper');
+
+      wrap.addEventListener('touchstart', e => {
+        startX  = e.touches[0].clientX;
+        startY  = e.touches[0].clientY;
+        didMove = false;
+      }, { passive: true });
+
+      wrap.addEventListener('touchmove', () => {
+        didMove = true;
+      }, { passive: true });
+
+      wrap.addEventListener('touchend', e => {
+        if (!didMove) return;
+        const dx = startX - e.changedTouches[0].clientX;
+        const dy = Math.abs(startY - e.changedTouches[0].clientY);
+        if (Math.abs(dx) < 52 || dy > Math.abs(dx)) return;
+
+        const velocity = Math.abs(dx);
+
+if (dx > 0 && velocity > 40) {
+          currentMonth++;
+          if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+          animateCalendarSlide('left');
+        } else if (dx < 0 && velocity > 40) {
+          currentMonth--;
+          if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+          animateCalendarSlide('right');
+        }
+        loadMonthData();
+      }, { passive: true });
+    })();
+
+    /* Slide animation helper — used by swipe & nav buttons */
+    function animateCalendarSlide(dir) {
+      const el = document.getElementById('calendar');
+      const tx = dir === 'left' ? '-38px' : '38px';
+      el.style.transition = 'none';
+      el.style.opacity    = '0';
+      el.style.transform  = `translateX(${tx})`;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.transition = 'opacity 0.36s var(--ease-ios), transform 0.36s var(--ease-ios)';
+          el.style.opacity    = '1';
+          el.style.transform  = 'translateX(0)';
+        });
+      });
+    }
+
+    /* ──────────────────────────────────────────
+       Hidden bug report — 5x tap header
+    ────────────────────────────────────────── */
+    (function () {
       const header    = document.getElementById('mainHeader');
       const indicator = document.getElementById('tapIndicator');
       const dots      = indicator.querySelectorAll('span');
@@ -955,9 +1169,8 @@
 
       header.addEventListener('click', () => {
         count++;
-        dots.forEach((d,i) => d.classList.toggle('lit', i < count));
+        dots.forEach((d, i) => d.classList.toggle('lit', i < count));
         indicator.classList.add('visible');
-
         clearTimeout(idleTimer);
         idleTimer = setTimeout(() => {
           count = 0;
@@ -965,7 +1178,6 @@
           clearTimeout(fadeTimer);
           fadeTimer = setTimeout(() => indicator.classList.remove('visible'), 400);
         }, 1800);
-
         if (count >= 5) {
           count = 0;
           clearTimeout(idleTimer);
@@ -976,9 +1188,13 @@
       });
     })();
 
-    function openBugModal()  { document.getElementById('bugText').value = ''; document.getElementById('bugOverlay').classList.add('show'); }
-    function closeBugModal() { document.getElementById('bugOverlay').classList.remove('show'); }
-
+    function openBugModal() {
+      document.getElementById('bugText').value = '';
+      document.getElementById('bugOverlay').classList.add('show');
+    }
+    function closeBugModal() {
+      document.getElementById('bugOverlay').classList.remove('show');
+    }
     function submitBug() {
       const msg = (document.getElementById('bugText').value || '').trim();
       if (!msg) { document.getElementById('bugText').focus(); return; }
@@ -991,30 +1207,38 @@
       closeBugModal();
       const t = document.getElementById('bugToast');
       t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3200);
+      setTimeout(() => t.classList.remove('show'), 3400);
     }
-
     document.getElementById('bugOverlay').addEventListener('click', e => {
       if (e.target.id === 'bugOverlay') closeBugModal();
     });
 
-    /* ════════════════════════════════════════════
-       INIT
-    ════════════════════════════════════════════ */
+    /* ──────────────────────────────────────────
+       Init
+    ────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', async () => {
       await loadLocations();
-      setupRealtimeListeners();
+      loadMonthData();
       setupAdminLogic();
+
       document.getElementById('prevMonth').addEventListener('click', () => {
-        currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-        setupRealtimeListeners();
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        animateCalendarSlide('right');
+        loadMonthData();
       });
       document.getElementById('nextMonth').addEventListener('click', () => {
-        currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-        setupRealtimeListeners();
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        animateCalendarSlide('left');
+        loadMonthData();
+        function loadMonthData() {
+  setupRealtimeListeners();
+}
       });
     });
 
+    /* ── Load locations from Firestore ── */
     async function loadLocations() {
       try {
         let snap = await db.collection("locations").get();
@@ -1028,19 +1252,40 @@
       } catch(e) { console.warn("Gagal load lokasi:", e); }
     }
 
+    /* ── Realtime listeners ── */
     function setupRealtimeListeners() {
       if (unsubscribeRes)    unsubscribeRes();
       if (unsubscribeStatus) unsubscribeStatus();
-      const mStr  = String(currentMonth + 1).padStart(2,'0');
+
+      const mStr  = String(currentMonth + 1).padStart(2, '0');
       const start = `${currentYear}-${mStr}-01`;
-      const end   = `${currentYear}-${mStr}-31`;
+      const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+const end = `${currentYear}-${mStr}-${String(lastDay).padStart(2, '0')}`;
+
       document.getElementById('calendar').innerHTML =
         '<div class="loading-cell"><div class="spinner"></div> Memuat data...</div>';
-      document.getElementById('monthYear').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      document.getElementById('monthYear').textContent =
+        `${monthNames[currentMonth]} ${currentYear}`;
 
       unsubscribeRes = db.collection("reservations")
-        .where('date','>=',start).where('date','<=',end)
-        .onSnapshot(snap => {
+  .where("date", ">=", start)
+  .where("date", "<=", end)
+  .onSnapshot(snapshot => {
+
+    allReservations = {};
+
+    snapshot.forEach(doc => {
+      const r = doc.data();
+
+      if (!allReservations[r.date]) {
+        allReservations[r.date] = [];
+      }
+
+      allReservations[r.date].push(r);
+    });
+
+    renderCalendar();
+  });
           allReservations = {};
           snap.forEach(doc => {
             const r = doc.data();
@@ -1051,7 +1296,7 @@
         });
 
       unsubscribeStatus = db.collection("date_status")
-        .where('date','>=',start).where('date','<=',end)
+        .where('date', '>=', start).where('date', '<=', end)
         .onSnapshot(snap => {
           dateStatus = {};
           snap.forEach(doc => { dateStatus[doc.data().date] = doc.data().isFull; });
@@ -1059,6 +1304,7 @@
         });
     }
 
+    /* ── Render calendar ── */
     function renderCalendar() {
       const cal      = document.getElementById('calendar');
       cal.innerHTML  = '';
@@ -1066,38 +1312,51 @@
       const daysMax  = new Date(currentYear, currentMonth + 1, 0).getDate();
       const today    = new Date();
 
-      for (let i = 0; i < firstDay; i++) cal.appendChild(document.createElement('div'));
+      for (let i = 0; i < firstDay; i++) {
+        cal.appendChild(document.createElement('div'));
+      }
 
       for (let i = 1; i <= daysMax; i++) {
         const el     = document.createElement('div');
         el.className = 'day-cell';
-        const mStr   = String(currentMonth + 1).padStart(2,'0');
-        const dStr   = String(i).padStart(2,'0');
+        const mStr   = String(currentMonth + 1).padStart(2, '0');
+        const dStr   = String(i).padStart(2, '0');
         const key    = `${currentYear}-${mStr}-${dStr}`;
         const list   = allReservations[key] || [];
         const count  = list.length;
-        const total  = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
-        const isFull = dateStatus[key] === true;
-        const isToday = i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+        const total = list.reduce((s, r) => s + (parseInt(r.jumlah) || 0), 0);
+        const isFull  = dateStatus[key] === true;
+        const isToday = i === today.getDate() &&
+                        currentMonth === today.getMonth() &&
+                        currentYear  === today.getFullYear();
 
         if (isFull) {
           el.classList.add('is-full');
-          el.innerHTML = `<span class="day-num">${i}</span><div class="res-indicator"><div class="res-count">${total > 0 ? total : 'FULL'}</div></div>`;
+          el.innerHTML = `<span class="day-num">${i}</span>
+            <div class="res-indicator">
+              <div class="res-count">${total > 0 ? total : 'FULL'}</div>
+            </div>`;
         } else if (isToday) {
           el.classList.add('today');
-          el.innerHTML = `<span class="day-num">${i}</span>${count > 0 ? `<div class="res-indicator"><div class="res-count">${total}</div></div>` : ''}`;
+          el.innerHTML = `<span class="day-num">${i}</span>
+            ${count > 0 ? `<div class="res-indicator"><div class="res-count">${total}</div></div>` : ''}`;
         } else if (count > 0) {
           el.classList.add('has-res');
-          el.innerHTML = `<span class="day-num">${i}</span><div class="res-indicator"><div class="res-count">${total}</div></div>`;
+          el.innerHTML = `<span class="day-num">${i}</span>
+            <div class="res-indicator"><div class="res-count">${total}</div></div>`;
         } else {
           el.innerHTML = `<span class="day-num">${i}</span>`;
         }
 
-        el.onclick = () => { isFull ? showFullWarning(i, list) : openDetail(i, list, false); };
+        el.onclick = () => {
+          if (isFull) showFullWarning(i, list);
+          else        openDetail(i, list, false);
+        };
         cal.appendChild(el);
       }
     }
 
+    /* ── Full warning ── */
     function showFullWarning(day, list) {
       pendingDetailData = { day, list };
       document.getElementById('fullWarningPopup').style.display = 'flex';
@@ -1107,17 +1366,23 @@
       if (pendingDetailData) openDetail(pendingDetailData.day, pendingDetailData.list, true);
     }
 
+    /* ── Open detail sheet ── */
     function openDetail(day, list, isFullMode = false) {
       const sheet   = document.getElementById('detailSheet');
       const overlay = document.getElementById('detailOverlay');
       isFullMode ? sheet.classList.add('red-mode') : sheet.classList.remove('red-mode');
       overlay.classList.add('active');
-      document.getElementById('sheetDate').textContent = `${day} ${monthNames[currentMonth]} ${currentYear}`;
-      const totalGuests = list.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
-      document.getElementById('sheetStats').textContent = `${list.length} Grup · ${totalGuests} Tamu`;
+
+      document.getElementById('sheetDate').textContent =
+        `${day} ${monthNames[currentMonth]} ${currentYear}`;
+      const totalGuests = list.reduce((s, r) => s + (parseInt(r.jumlah) || 0), 0);
+      document.getElementById('sheetStats').textContent =
+        `${list.length} Grup · ${totalGuests} Tamu`;
 
       const grid = document.getElementById('locGrid');
       grid.innerHTML = '';
+
+      /* Group by location */
       const grouped = {};
       list.forEach(r => {
         let l = r.tempat || 'Lainnya';
@@ -1126,53 +1391,66 @@
         grouped[l].push(r);
       });
 
-      const allLocs = Array.from(new Set([...Object.keys(locationImages), ...Object.keys(locationsConfig)])).sort();
+      const allLocs = Array.from(
+        new Set([...Object.keys(locationImages), ...Object.keys(locationsConfig)])
+      ).sort();
 
-      allLocs.forEach(loc => {
+      allLocs.forEach((loc, idx) => {
         const items = grouped[loc] || [];
         const img   = locationImages[loc] || defaultImage;
         const cap   = locationsConfig[loc] || 100;
-        const curr  = items.reduce((s,r) => s + (parseInt(r.jumlah)||0), 0);
+        const curr = items.reduce((s, r) => s + (parseInt(r.jumlah) || 0), 0);
         const pct   = cap > 0 ? Math.min((curr / cap) * 100, 100) : 0;
         const barColor = pct >= 90 ? 'bar-red' : pct >= 50 ? 'bar-yellow' : 'bar-green';
 
         let htmlItems = '';
         if (items.length > 0) {
-          items.sort((a,b) => (a.jam||'').localeCompare(b.jam||'')).forEach(r => {
+          items.sort((a, b) => (a.jam || '').localeCompare(b.jam || '')).forEach(r => {
             let menuText = '';
             if (r.menus && Array.isArray(r.menus) && r.menus.length > 0) {
-              menuText = `<div class="menu-detail-text">${r.menus.map(m=>m.quantity+'x '+m.name).join('<br>')}</div>`;
+              menuText = `<div class="menu-detail-text">${r.menus.map(m => m.quantity + 'x ' + m.name).join('<br>')}</div>`;
             } else if (r.menu) {
               menuText = `<div class="menu-detail-text">${r.menu}</div>`;
             }
-            const safePhone = r.nomorHp && r.nomorHp.length > 4 ? r.nomorHp.slice(0,-3)+'xxx' : (r.nomorHp||'');
+            const safePhone = r.nomorHp && r.nomorHp.length > 4
+              ? r.nomorHp.slice(0, -3) + 'xxx' : (r.nomorHp || '');
             htmlItems += `
               <div class="res-item">
                 <div class="res-info">
                   <strong>${r.nama}</strong>
-                  <small><i class="far fa-clock"></i> ${r.jam} WIB ${safePhone?' &nbsp;·&nbsp; <i class="fab fa-whatsapp"></i> '+safePhone:''}</small>
+                  <small>
+                    <i class="far fa-clock"></i> ${r.jam} WIB
+                    ${safePhone ? ' &nbsp;·&nbsp; <i class="fab fa-whatsapp"></i> ' + safePhone : ''}
+                  </small>
                   ${menuText}
-                  ${r.tambahan?`<div style="color:var(--highlight);font-size:0.73rem;margin-top:4px;font-style:italic;">Note: ${r.tambahan}</div>`:''}
+                  ${r.tambahan
+                    ? `<div style="color:var(--highlight);font-size:0.73rem;margin-top:4px;font-style:italic;">Note: ${r.tambahan}</div>`
+                    : ''}
                 </div>
                 <div class="res-qty">${r.jumlah}</div>
               </div>`;
           });
         } else {
-          htmlItems = `<div style="padding:20px;text-align:center;color:#bbb;font-size:0.83rem;">Belum ada reservasi — tempat ini masih kosong.</div>`;
+          htmlItems = `<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.28);font-size:0.83rem;">
+            Belum ada reservasi — tempat ini masih kosong.</div>`;
         }
 
         const btnText  = items.length > 0 ? `Lihat ${items.length} Reservasi` : 'Masih Kosong';
         const btnClass = items.length > 0 ? '' : 'disabled';
         const onclk    = items.length > 0 ? 'onclick="toggleAccordion(this)"' : '';
-        const iconHtml = items.length > 0 ? '<i class="fas fa-chevron-down"></i>' : '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
+        const iconHtml = items.length > 0
+          ? '<i class="fas fa-chevron-down"></i>'
+          : '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
 
         const card    = document.createElement('div');
         card.className = 'loc-card';
-        const safeLoc  = loc.replace(/'/g,"\\'");
+        const safeLoc  = loc.replace(/'/g, "\\'");
 
         card.innerHTML = `
-          <div class="loc-header" style="background-image:url('${img}')" onclick="viewPhoto('${img}','${safeLoc}')">
-            <button class="btn-view-photo" onclick="event.stopPropagation();viewPhoto('${img}','${safeLoc}')">
+          <div class="loc-header" style="background-image:url('${img}')"
+               onclick="viewPhoto('${img}', '${safeLoc}')">
+            <button class="btn-view-photo"
+                    onclick="event.stopPropagation(); viewPhoto('${img}', '${safeLoc}')">
               <i class="fas fa-eye"></i>
             </button>
             <div class="loc-title">
@@ -1189,15 +1467,20 @@
           <div class="loc-body">${htmlItems}</div>`;
 
         grid.appendChild(card);
+
+        /* Staggered entrance animation */
+        card.style.animationDelay = `${idx * 62}ms`;
+        card.style.animation = `cardEnter 0.46s cubic-bezier(0.22,1,0.36,1) ${idx * 62}ms both`;
       });
     }
 
+    /* ── Photo lightbox ── */
     function viewPhoto(url, caption) {
       const modal = document.getElementById('imgModal');
       document.getElementById('imgTarget').src = url;
       document.getElementById('imgCaption').textContent = caption;
       modal.style.display = 'flex';
-      setTimeout(() => modal.classList.add('show'), 10);
+      setTimeout(() => modal.classList.add('show'), 12);
     }
     function closeImgModal() {
       const modal = document.getElementById('imgModal');
@@ -1208,17 +1491,22 @@
       if (e.target.id === 'imgModal') closeImgModal();
     });
 
-    window.toggleAccordion = function(btn) {
+    /* ── Accordion ── */
+    window.toggleAccordion = function (btn) {
       const body = btn.nextElementSibling;
-      const icon = btn.querySelector('.fa-chevron-down,.fa-chevron-up');
+      const icon = btn.querySelector('.fa-chevron-down, .fa-chevron-up');
       const open = body.style.display === 'block';
       body.style.display = open ? 'none' : 'block';
       if (icon) icon.className = open ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
-      btn.style.background = open ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.65)';
+      btn.style.background = open ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.13)';
     };
 
-    function closeDetail() { document.getElementById('detailOverlay').classList.remove('active'); }
+    /* ── Close detail ── */
+    function closeDetail() {
+      document.getElementById('detailOverlay').classList.remove('active');
+    }
 
+    /* ── Admin logic ── */
     function setupAdminLogic() {
       const adminBtn = document.getElementById('adminBtn');
       const overlay  = document.getElementById('adminOverlay');
@@ -1233,9 +1521,10 @@
       document.getElementById('btnLoginAction').onclick = () => {
         const e = document.getElementById('adminEmail').value;
         const p = document.getElementById('adminPass').value;
-        auth.signInWithEmailAndPassword(e, p).catch(err => alert("Login Gagal: " + err.message));
+        auth.signInWithEmailAndPassword(e, p)
+          .catch(err => alert("Login Gagal: " + err.message));
       };
-      const updateStatus = async isFull => {
+      const updateStatus = async (isFull) => {
         const d = document.getElementById('dateSelector').value;
         if (!d) return alert("Pilih tanggal dulu");
         try {
