@@ -531,27 +531,31 @@ header {
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(230,230,230,0.9);
-  /* transform saja untuk GPU layer */
+  border: 1px solid rgba(220,228,225,0.95);
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Pastikan flex column agar semua bagian stack vertikal */
+  display: flex;
+  flex-direction: column;
 }
-.loc-card:hover { transform: translateY(-2px); }
+.loc-card:active { transform: scale(0.99); }
 
+/* ── Foto header: TIDAK onclick di sini, hanya tampilan ── */
 .loc-header {
-  height: 130px; min-height: 130px;
+  height: 140px;
+  min-height: 140px;
+  flex-shrink: 0; /* Jangan menyusut */
   position: relative;
-  background-size: cover; background-position: center;
-  display: flex; align-items: flex-end;
-  cursor: pointer;
-  /* Lazy load background images via JS */
+  background-size: cover;
+  background-position: center;
+  background-color: #c8d8d4; /* Fallback warna sebelum gambar load */
+  /* Tidak ada onclick di sini — dikontrol via btn-view-photo saja */
 }
 
 /* Shimmer placeholder saat gambar belum load */
 .loc-header.loading {
-  background-color: #e0e8e5 !important;
-  background-image: linear-gradient(90deg, #e0e8e5 25%, #ccd8d4 50%, #e0e8e5 75%) !important;
+  background-image: linear-gradient(90deg, #d0deda 25%, #bfcfcb 50%, #d0deda 75%) !important;
   background-size: 200% 100% !important;
-  animation: shimmer 1.2s infinite;
+  animation: shimmer 1.4s ease-in-out infinite;
 }
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
@@ -559,35 +563,51 @@ header {
 }
 
 .loc-title {
-  background: linear-gradient(to top, rgba(0,0,0,0.80), transparent);
-  width: 100%; padding: 12px 14px; color: white;
-  display: flex; justify-content: space-between; align-items: flex-end;
-  pointer-events: none;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.82), transparent);
+  padding: 28px 14px 12px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none; /* Klik menembus ke header, bukan ke sini */
 }
-.loc-name { font-weight: 700; font-size: 0.98rem; text-shadow: 0 2px 4px rgba(0,0,0,0.55); white-space: normal; max-width: 70%; line-height: 1.2; }
+.loc-name {
+  font-weight: 700;
+  font-size: 0.98rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.55);
+  max-width: 68%;
+  line-height: 1.25;
+}
 .loc-badge {
   font-size: 0.72rem;
-  background: rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.35);
   padding: 4px 10px;
   border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.30);
   font-weight: 700;
   white-space: nowrap;
 }
 
+/* Tombol foto — pojok kanan atas, pointer-events aktif */
 .btn-view-photo {
-  position: absolute; top: 10px; right: 10px;
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.20);
-  border: 1px solid rgba(255,255,255,0.55);
-  color: white; font-size: 1rem;
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.32);
+  border: 1px solid rgba(255,255,255,0.45);
+  color: white;
+  font-size: 0.95rem;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 20;
+  cursor: pointer;
+  z-index: 10;
   transition: transform 0.18s ease, background 0.18s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-  pointer-events: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+  /* pointer-events: auto — default, TIDAK perlu override */
 }
-.btn-view-photo:hover { background: white; color: var(--primary); transform: scale(1.10); }
+.btn-view-photo:active { transform: scale(0.90); background: white; color: var(--primary); }
 
 /* ── IMAGE MODAL ── */
 .img-modal-overlay {
@@ -1164,18 +1184,18 @@ header.tap-flash { animation: headerFlash 0.16s ease; }
           htmlItems = '<div style="padding:18px;text-align:center;color:#bbb;font-size:0.83rem;">Belum ada reservasi. Tempat ini kosong.</div>';
         }
 
-        const btnText  = items.length > 0 ? `Lihat ${items.length} Reservasi` : 'Masih Kosong';
-        const btnClass = items.length > 0 ? '' : 'disabled';
-        const onclickA = items.length > 0 ? 'onclick="toggleAccordion(this)"' : '';
-        const iconHtml = items.length > 0 ? '<i class="fas fa-chevron-down"></i>' : '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
+        const btnText   = items.length > 0 ? `Lihat ${items.length} Reservasi` : 'Masih Kosong';
+        const btnClass  = items.length > 0 ? '' : 'disabled';
+        const iconHtml  = items.length > 0
+          ? '<i class="fas fa-chevron-down"></i>'
+          : '<i class="fas fa-check-circle" style="color:var(--success);"></i>';
 
         const card = document.createElement('div');
         card.className = 'loc-card';
-        const safeLocName = loc.replace(/'/g, "\\'");
 
         card.innerHTML = `
-          <div class="loc-header loading" data-img="${img}" onclick="viewPhoto('${img}','${safeLocName}')">
-            <button class="btn-view-photo"><i class="fas fa-eye"></i></button>
+          <div class="loc-header loading" data-img="${img}">
+            <button class="btn-view-photo" type="button" aria-label="Lihat foto ${loc}"><i class="fas fa-expand-alt"></i></button>
             <div class="loc-title">
               <span class="loc-name">${loc}</span>
               <span class="loc-badge">${curr} / ${cap} Org</span>
@@ -1184,10 +1204,28 @@ header.tap-flash { animation: headerFlash 0.16s ease; }
           <div class="capacity-bar-container">
             <div class="capacity-bar-fill ${barColor}" style="width:0%;" data-pct="${pct}"></div>
           </div>
-          <button class="btn-toggle-loc ${btnClass}" ${onclickA}>
+          <button class="btn-toggle-loc ${btnClass}" type="button">
             <span>${btnText}</span>${iconHtml}
           </button>
           <div class="loc-body">${htmlItems}</div>`;
+
+        // Event klik tombol foto — hanya pada btn, bukan seluruh header
+        const photoBtn = card.querySelector('.btn-view-photo');
+        // Closure agar img & loc ter-capture dengan benar
+        (function(imgUrl, locName) {
+          photoBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            viewPhoto(imgUrl, locName);
+          }, { passive: true });
+        })(img, loc);
+
+        // Event accordion pada tombol toggle
+        const toggleBtn = card.querySelector('.btn-toggle-loc');
+        if (items.length > 0) {
+          toggleBtn.addEventListener('click', function() {
+            toggleAccordion(this);
+          }, { passive: true });
+        }
 
         frag.appendChild(card);
       });
